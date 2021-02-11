@@ -1,0 +1,16 @@
+# Python packaging
+env/*
+*.egg-info
+build/*
+dist/*
+
+# Python compiled files
+*__pycache__*
+
+# Plot outputs, just in case
+*.pdf
+*.png
+*.mp4
+
+# MacOS
+*.DS_Store
