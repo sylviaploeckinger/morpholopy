@@ -11,6 +11,8 @@ dist/*
 *.pdf
 *.png
 *.mp4
+*.hdf5
+plots/
 
 # MacOS
 *.DS_Store

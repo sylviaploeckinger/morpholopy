@@ -7,12 +7,23 @@ from matplotlib import gridspec
 from sphviewer.tools import QuickView
 from matplotlib.colors import LogNorm
 
-def plot_galaxy(pstars,kappa,ihalo):
+def get_normalized_image(image,vmin=None,vmax=None):
+    if(vmin==None):
+        vmin = np.min(image)
+    if(vmax==None):
+        vmax = np.max(image)
+
+    image=np.clip(image,vmin,vmax)
+    image=(image-vmin)/(vmax-vmin)
+    return image
+
+def plot_galaxy(pstars,kappa,ihalo,parttype):
     # partsDATA contains particles data and is structured as follow
     # [ (:3)Position[Mpc]: (0)X | (1)Y | (2)Z ]
-    cmap_stars = plt.cm.magma
-    
-    r_img = 5
+    if parttype == 4: cmap = plt.cm.magma
+    if parttype == 0: cmap = plt.cm.viridis
+
+    r_img = 15
     xmin = -r_img
     ymin = -r_img
     xmax = r_img
@@ -36,10 +47,12 @@ def plot_galaxy(pstars,kappa,ihalo):
     rcParams.update(params)
     fig = plt.figure()
     ax = plt.subplot(1,2,1)
-    ax.set_title(r"$\kappa_{\mathrm{co}} = $%0.2f / face on" % (kappa))
+    if parttype == 4: title = r"Stellar component, $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
+    if parttype == 0: title = r"HI+H2 gas, $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
+    ax.set_title(title)
 
     ###### plot one side ########################
-    qv = QuickView(pstars, mass=np.ones(len(pstars)), plot=False,
+    qv = QuickView(pstars, mass=np.ones(len(pstars)), nb=48, logscale=True, plot=False,
                    r='infinity', p=0, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
@@ -49,14 +62,14 @@ def plot_galaxy(pstars,kappa,ihalo):
     plt.ylabel('y [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    im = ax.imshow(img, cmap=cmap_stars, norm=LogNorm(), extent=ext)
+    img = get_normalized_image(img)
+    im = ax.imshow(img, cmap=cmap, norm=LogNorm(), extent=ext)
     ax.autoscale(False)
     
     ###### plot another side ########################
     ax = plt.subplot(1,2,2)
-    ax.set_title("Edge on")
     
-    qv = QuickView(pstars, mass=np.ones(len(pstars)), plot=False,
+    qv = QuickView(pstars, mass=np.ones(len(pstars)), nb=48, logscale=True, plot=False,
                    r='infinity', p=90, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
@@ -66,10 +79,12 @@ def plot_galaxy(pstars,kappa,ihalo):
     plt.ylabel('z [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    im = ax.imshow(img, cmap=cmap_stars, norm=LogNorm(), extent=ext)
+    img = get_normalized_image(img)
+    im = ax.imshow(img, cmap=cmap, norm=LogNorm(), extent=ext)
     ax.autoscale(False)
    
-    outfile = "galaxy_%i.png" % (ihalo)
+    if parttype == 0: outfile = "./plots/galaxy_gas_%i.png" % (ihalo)
+    if parttype == 4: outfile = "./plots/galaxy_stars_%i.png" % (ihalo)
     fig.savefig(outfile, dpi=150)
     print("Saved: %s" % (outfile))
     plt.close("all")
@@ -109,7 +124,10 @@ def plot_momentum(stellar_mass,momentum,parttype):
     
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel(ylabel)
-    plt.savefig("./momentum_parttype_%i.png"%parttype, dpi=200)
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.axis([1e6,1e10,1e-1,1e3])
+    plt.savefig("./plots/momentum_parttype_%i.png"%parttype, dpi=200)
     plt.close()
 
 def plot_kappa(stellar_mass,kappa,parttype):
@@ -142,9 +160,10 @@ def plot_kappa(stellar_mass,kappa,parttype):
     
     plt.plot(stellar_mass, kappa, 'o', color=color)
     
+    plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel(r"$\kappa_{\mathrm{co}}$")
-    plt.savefig("./Kappa_co_parttype_%i.png"%parttype, dpi=200)
+    plt.savefig("./plots/Kappa_co_parttype_%i.png"%parttype, dpi=200)
     plt.close()
 
 def plot_axis_ratios(stellar_mass,axis_ratios,parttype):
@@ -181,6 +200,7 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype):
 
     plt.plot(stellar_mass, axis_ratios[:,0], 'o', color=color)
 
+    plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel("c/a")
 
@@ -189,6 +209,8 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype):
     plt.grid("True")
 
     plt.plot(stellar_mass, axis_ratios[:,1], 'o', color=color)
+
+    plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel("c/b")
 
@@ -198,42 +220,43 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype):
     
     plt.plot(stellar_mass, axis_ratios[:,2], 'o', color=color)
     
+    plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel("b/a")
 
-    plt.savefig("./Axis_ratios_parttype_%i.png"%parttype, dpi=200)
+    plt.savefig("./plots/Axis_ratios_parttype_%i.png"%parttype, dpi=200)
     plt.close()
 
 
 def plot_morphology(galaxy_data):
 
     # plot kappa for stars and gas :
-    plot_kappa(galaxy_data.stellar_mass,galaxy_data.kappa_co,4)
-    plot_kappa(galaxy_data.stellar_mass,galaxy_data.gas_kappa_co,0)
+    plot_kappa(10**galaxy_data.stellar_mass,galaxy_data.kappa_co,4)
+    plot_kappa(10**galaxy_data.stellar_mass,galaxy_data.gas_kappa_co,0)
 
     # plot specific angular momentum  for stars and gas :
-    plot_momentum(galaxy_data.stellar_mass,galaxy_data.momentum,4)
-    plot_momentum(galaxy_data.stellar_mass,galaxy_data.gas_momentum,0)
+    plot_momentum(10**galaxy_data.stellar_mass,galaxy_data.momentum,4)
+    plot_momentum(10**galaxy_data.stellar_mass,galaxy_data.gas_momentum,0)
 
     # plot axis ratios
     axis_ratios = np.zeros((len(galaxy_data.axis_ca),3))
     axis_ratios[:,0] = galaxy_data.axis_ca
     axis_ratios[:,1] = galaxy_data.axis_cb
     axis_ratios[:,2] = galaxy_data.axis_ba
-    plot_axis_ratios(galaxy_data.stellar_mass,axis_ratios,4)
+    plot_axis_ratios(10**galaxy_data.stellar_mass,axis_ratios,4)
 
     axis_ratios = np.zeros((len(galaxy_data.gas_axis_ca),3))
     axis_ratios[:,0] = galaxy_data.gas_axis_ca
     axis_ratios[:,1] = galaxy_data.gas_axis_cb
     axis_ratios[:,2] = galaxy_data.gas_axis_ba
-    plot_axis_ratios(galaxy_data.stellar_mass,axis_ratios,0)
+    plot_axis_ratios(10**galaxy_data.stellar_mass,axis_ratios,0)
 
 def plot_galaxy_sparts(partsDATA,kappa,ihalo):
     # partsDATA contains particles data and is structured as follow
     # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z ]
     
     # Plot ranges
-    r_img = 5
+    r_img = 15
     xmin = -r_img
     ymin = -r_img
     xmax = r_img
@@ -253,7 +276,7 @@ def plot_galaxy_sparts(partsDATA,kappa,ihalo):
         "figure.subplot.top": 0.9,
         "figure.subplot.wspace": 0.3,
         "figure.subplot.hspace": 0.3,
-        "lines.markersize": 0.5,
+        "lines.markersize": 0.2,
         "lines.linewidth": 0.2,
     }
     rcParams.update(params)
@@ -278,7 +301,7 @@ def plot_galaxy_sparts(partsDATA,kappa,ihalo):
     ax.set_ylim(ymin, ymax)
     plt.plot(pstars[:,0],pstars[:,2],'o')
     ax.autoscale(False)
-    outfile = "galaxy_stars_%i.png" % (ihalo)
+    outfile = "./plots/galaxy_sparts_%i.png" % (ihalo)
     fig.savefig(outfile, dpi=150)
     print("Saved: %s" % (outfile))
     plt.close("all")
@@ -288,7 +311,7 @@ def plot_galaxy_gas_parts(partsDATA,kappa,ihalo):
     # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z ]
     
     # Plot ranges
-    r_img = 5
+    r_img = 15
     xmin = -r_img
     ymin = -r_img
     xmax = r_img
@@ -308,7 +331,7 @@ def plot_galaxy_gas_parts(partsDATA,kappa,ihalo):
         "figure.subplot.top": 0.9,
         "figure.subplot.wspace": 0.3,
         "figure.subplot.hspace": 0.3,
-        "lines.markersize": 1.0,
+        "lines.markersize": 0.2,
         "lines.linewidth": 0.2,
     }
     rcParams.update(params)
@@ -333,7 +356,7 @@ def plot_galaxy_gas_parts(partsDATA,kappa,ihalo):
     ax.set_ylim(ymin, ymax)
     plt.plot(pstars[:,0],pstars[:,2],'o',color='tab:green')
     ax.autoscale(False)
-    outfile = "galaxy_gas_%i.png" % (ihalo)
+    outfile = "./plots/galaxy_parts_%i.png" % (ihalo)
     fig.savefig(outfile, dpi=150)
     print("Saved: %s" % (outfile))
     plt.close("all")

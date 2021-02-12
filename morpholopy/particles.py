@@ -4,7 +4,7 @@ from functions import calculate_kappa_co, AxialRatios
 
 def H2fraction(Temp,Den,Metal,z):
     
-    filename = '/Users/Camila/swift-sim-tests/UV_dust1_CR1_G1_shield1.hdf5'
+    filename = 'UV_dust1_CR1_G1_shield1.hdf5'
     
     with h5py.File(filename, "r") as f:
         RedshiftBins       = f['TableBins/RedshiftBins'][:]

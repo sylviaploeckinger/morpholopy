@@ -13,8 +13,8 @@ import unyt
 
 class Sim:
     def __init__(self,folder,snap):
-        self.snapshot = os.path.join(folder,"colibre_00%02i.hdf5"%snap)
-        self.subhalo_properties = os.path.join(folder,"subhalo_00%02i.properties.0"%snap)
+        self.snapshot = os.path.join(folder,"colibre_0%03i.hdf5"%snap)
+        self.subhalo_properties = os.path.join(folder,"halo_0%03i.properties.0"%snap)
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
@@ -22,8 +22,8 @@ class Sim:
 
 if __name__ == '__main__':
 
-    file = '/Users/Camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data'
-    snapshot = 34
+    file = '/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY'
+    snapshot = 623
     #file = sys.argv[1]
     #snapshot = int(sys.argv[2])
 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     stellar_mass.convert_to_units("msun")
     
     # Selecting galaxies more massive than lower limit
-    lower_mass = 1e8 * unyt.msun #! Option of lower limit
+    lower_mass = 1e6 * unyt.msun #! Option of lower limit
     halo_catalogue = np.where(stellar_mass >= lower_mass)[0]
     
     # Selecting centrals only
@@ -67,13 +67,16 @@ if __name__ == '__main__':
         morphology, particle_data = calculate_morphology(subhalo_data, stars_data, 4, siminfo)
 
         # Make galaxy plot perhaps.. only first 10.
-        #if i < 10: plot_galaxy(particle_data,morphology,i)
-        if i < 10: plot_galaxy_sparts(particle_data,morphology[0],i)
+        if i < 10: 
+            plot_galaxy(particle_data,morphology[0],i,4)
+            plot_galaxy_sparts(particle_data,morphology[0],i)
             
         # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas
         gas_morphology, particle_data = calculate_morphology(subhalo_data, gas_data, 0, siminfo)
 
-        if i < 10: plot_galaxy_gas_parts(particle_data,gas_morphology[0],i)
+        if i < 10: # Only 10 most massive..
+            plot_galaxy_gas_parts(particle_data,gas_morphology[0],i)
+            plot_galaxy(particle_data,gas_morphology[0],i,0)
 
         # Add gas data
         morphology = np.append(morphology, gas_morphology)
