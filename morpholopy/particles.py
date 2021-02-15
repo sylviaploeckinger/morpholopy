@@ -70,7 +70,7 @@ def make_gas_particle_data(siminfo):
     
     return snapshot_data
 
-def make_particle_data(siminfo,groups,halo_id,parttype):
+def make_particle_data(siminfo,groups,halo_id):
     #def make_particle_data(siminfo, parttype):
     # Create particle data :
     # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz
@@ -82,31 +82,29 @@ def make_particle_data(siminfo,groups,halo_id,parttype):
         generate_extra_mask=True
     )
 
-    if parttype == 0:
-        gas_mass = data.gas.masses[mask.gas].value * 1e10 #Msun
-        gas_n_parts = len(gas_mass)
-        gas_data = np.zeros((gas_n_parts,9))
-        gas_data[:,0:3] = data.gas.coordinates[mask.gas].value * siminfo.a * 1e3 #kpc
-        gas_data[:, 8] = gas_mass # Msun
-        gas_data[:,4:7] = data.gas.velocities[mask.gas].value #km/s
-        gas_data[:,7] = data.gas.smoothing_lengths[mask.gas].value * siminfo.a * 1e3 #kpc
+    gas_mass = data.gas.masses[mask.gas].value * 1e10 #Msun
+    gas_n_parts = len(gas_mass)
+    gas_data = np.zeros((gas_n_parts,9))
+    gas_data[:,0:3] = data.gas.coordinates[mask.gas].value * siminfo.a * 1e3 #kpc
+    gas_data[:, 3] = gas_mass # Msun
+    gas_data[:,4:7] = data.gas.velocities[mask.gas].value #km/s
+    gas_data[:,7] = data.gas.smoothing_lengths[mask.gas].value * siminfo.a * 1e3 #kpc
+    
+    #XH = data.gas.element_mass_fractions.hydrogen[mask.gas].value
+    #gas_HI = data.gas.species_fractions.HI[mask.gas].value
+    #gas_H2 = data.gas.species_fractions.H2[mask.gas].value * 2.
+    #gas_HI_H2 = gas_HI * XH * gas_mass + gas_H2 * XH * gas_mass
+    #gas_data[:, 3] = gas_HI_H2 # Msun
 
-        XH = data.gas.element_mass_fractions.hydrogen[mask.gas].value
-        gas_HI = data.gas.species_fractions.HI[mask.gas].value
-        gas_H2 = data.gas.species_fractions.H2[mask.gas].value * 2.
-        gas_HI_H2 = gas_HI * XH * gas_mass + gas_H2 * XH * gas_mass
-        gas_data[:, 3] = gas_HI_H2 # Msun
-        return gas_data
-
-    if parttype == 4:
-        stars_mass = data.stars.masses[mask.stars].value * 1e10
-        stars_n_parts = len(stars_mass)
-        stars_data = np.zeros((stars_n_parts,8))
-        stars_data[:,0:3] = data.stars.coordinates[mask.stars].value * siminfo.a * 1e3 #kpc
-        stars_data[:,3] = stars_mass #Msun
-        stars_data[:,4:7] = data.stars.velocities[mask.stars].value #km/s
-        stars_data[:,7] = data.stars.smoothing_lengths[mask.stars].value * siminfo.a * 1e3 #kpc
-        return stars_data
+    stars_mass = data.stars.masses[mask.stars].value * 1e10
+    stars_n_parts = len(stars_mass)
+    stars_data = np.zeros((stars_n_parts,8))
+    stars_data[:,0:3] = data.stars.coordinates[mask.stars].value * siminfo.a * 1e3 #kpc
+    stars_data[:,3] = stars_mass #Msun
+    stars_data[:,4:7] = data.stars.velocities[mask.stars].value #km/s
+    stars_data[:,7] = data.stars.smoothing_lengths[mask.stars].value * siminfo.a * 1e3 #kpc
+    
+    return gas_data, stars_data
 
 
 def calculate_morphology(subhalo_data, part_data, siminfo):

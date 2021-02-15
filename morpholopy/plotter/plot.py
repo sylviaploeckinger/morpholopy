@@ -1,6 +1,6 @@
 from matplotlib.colors import LogNorm
 from pylab import *
-#from sphviewer.tools import QuickView
+from sphviewer.tools import QuickView
 from plotter.html import add_web_section
 
 def get_normalized_image(image,vmin=None,vmax=None):
@@ -15,7 +15,7 @@ def get_normalized_image(image,vmin=None,vmax=None):
     return image
 
 
-def plot_galaxy(parts_data, kappa, mass, ihalo, parttype, GalPlotsInWeb):
+def plot_galaxy(parts_data, kappa, mass_galaxy, ihalo, parttype, GalPlotsInWeb):
     # partsDATA contains particles data and is structured as follow
     # [ (:3)Position[Mpc]: (0)X | (1)Y | (2)Z ]
     if parttype == 4: cmap = plt.cm.magma
@@ -25,7 +25,7 @@ def plot_galaxy(parts_data, kappa, mass, ihalo, parttype, GalPlotsInWeb):
     hsml_parts = parts_data[:, 7]
     mass = parts_data[:, 3]
 
-    r_img = 8
+    r_img = 10
     xmin = -r_img
     ymin = -r_img
     xmax = r_img
@@ -70,8 +70,8 @@ def plot_galaxy(parts_data, kappa, mass, ihalo, parttype, GalPlotsInWeb):
 
     ###### plot another side ########################
     ax = plt.subplot(1, 2, 2)
-    if parttype == 4: title = r"Stellar component, $\log_{10} M_{*}/M_{\odot} = $%0.2f" % (mass)
-    if parttype == 0: title = r"HI+H2 gas, $\log_{10} M_{gas}/M_{\odot} = $%0.2f" % (mass)
+    if parttype == 4: title = "Stellar component, $\log_{10}$ $M_{*}/M_{\odot} = $%0.2f" % (mass_galaxy)
+    if parttype == 0: title = "HI+H2 gas, $\log_{10}$ $M_{gas}/M_{\odot} = $%0.2f" % (mass_galaxy)
     ax.set_title(title)
 
     qv = QuickView(pstars, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
@@ -97,8 +97,8 @@ def plot_galaxy(parts_data, kappa, mass, ihalo, parttype, GalPlotsInWeb):
     if parttype == 0: title = "Galaxy %i / Gas component" % (ihalo)
     if parttype == 4: title = "Galaxy %i / Stellar component" % (ihalo)
     caption = "Face-on (left) and edge-on (right)."
-    if parttype == 0: id = abs(hash("galaxy gas"))
-    if parttype == 4: id = abs(hash("galaxy stars"))
+    if parttype == 0: id = abs(hash("galaxy gas %i" % (ihalo)))
+    if parttype == 4: id = abs(hash("stars galaxy %i" % (ihalo)))
     GalPlotsInWeb.load_plots(title, caption, outfile, id)
 
 def plot_momentum(stellar_mass,momentum,parttype,MorphologyPlotsInWeb):
@@ -370,7 +370,7 @@ def plot_galaxy_sparts(partsDATA,kappa,mass,ihalo,PlotsInWeb):
 
     title = "Galaxy %i / Star particles" % (ihalo)
     caption = "Face-on (left) and edge-on (right)."
-    id = abs(hash("galaxy stars parts"))
+    id = abs(hash("galaxy stars parts %i" % (ihalo)))
     PlotsInWeb.load_plots(title, caption, outfile, id)
 
 def plot_galaxy_gas_parts(partsDATA,kappa,mass,ihalo,PlotsInWeb):
@@ -430,5 +430,5 @@ def plot_galaxy_gas_parts(partsDATA,kappa,mass,ihalo,PlotsInWeb):
 
     title = "Galaxy %i / Gas particles" % (ihalo)
     caption = "Face-on (left) and edge-on (right)."
-    id = abs(hash("galaxy gas parts"))
+    id = abs(hash("galaxy gas parts %i" % (ihalo)))
     PlotsInWeb.load_plots(title, caption, outfile, id)

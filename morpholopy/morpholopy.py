@@ -50,7 +50,7 @@ if __name__ == '__main__':
     gas_mass.convert_to_units("msun")
 
     # Selecting galaxies more massive than lower limit
-    lower_mass = 1e9 * unyt.msun #! Option of lower limit
+    lower_mass = 1e6 * unyt.msun #! Option of lower limit
     halo_catalogue = np.where(stellar_mass >= lower_mass)[0]
     
     # Selecting centrals only
@@ -79,19 +79,17 @@ if __name__ == '__main__':
         subhalo_data[5] = float(properties.velocities.vzcminpot[halo])
 
         # Calculate morphology estimators: kappa, axial ratios for stars
-        stars_data = make_particle_data(siminfo,groups,halo,4)
+        gas_data, stars_data = make_particle_data(siminfo,groups,halo)
         morphology, stars_data = calculate_morphology(subhalo_data, stars_data, siminfo)
-
         # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas
-        gas_data = make_particle_data(siminfo,groups,halo,0)
         gas_morphology, gas_data = calculate_morphology(subhalo_data, gas_data, siminfo)
 
         # Make galaxy plot perhaps.. only first 10.
         if i < 10:
             plot_galaxy_sparts(stars_data,morphology[0],stellar_mass[i], i,PartPlotsInWeb)
             plot_galaxy_gas_parts(gas_data,gas_morphology[0],gas_mass[i],i,PartPlotsInWeb)
-            #plot_galaxy(stars_data,morphology[0],stellar_mass[i],i,4,GalPlotsInWeb)
-            #plot_galaxy(gas_data,gas_morphology[0],gas_mass[i],i,0,GalPlotsInWeb)
+            plot_galaxy(stars_data,morphology[0],stellar_mass[i],i,4,GalPlotsInWeb)
+            plot_galaxy(gas_data,gas_morphology[0],gas_mass[i],i,0,GalPlotsInWeb)
 
         last = num_halos-1
         if num_halos > 10 : last = 9
@@ -101,10 +99,10 @@ if __name__ == '__main__':
             plots = PartPlotsInWeb.plots_details
             add_web_section(web,title,id,plots)
 
-            #title = 'Visualizations (SPH-viewer)'
-            #id = abs(hash("galaxy sph"))
-            #plots = GalPlotsInWeb.plots_details
-            #add_web_section(web,title,id,plots)
+            title = 'Visualizations (SPH-viewer)'
+            id = abs(hash("galaxy sph"))
+            plots = GalPlotsInWeb.plots_details
+            add_web_section(web,title,id,plots)
 
         # Store info in galaxy class and continue
         morphology = np.append(morphology, gas_morphology)
