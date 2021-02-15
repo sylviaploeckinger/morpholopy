@@ -18,8 +18,8 @@ import unyt
 class Sim:
     def __init__(self,folder,snap):
         self.snapshot = os.path.join(folder,"colibre_0%03i.hdf5"%snap)
-        self.subhalo_properties = os.path.join(folder,"subhalo_0%03i.properties.0"%snap)
-        self.catalog_groups = os.path.join(folder,"subhalo_0%03i.catalog_groups.0"%snap)
+        self.subhalo_properties = os.path.join(folder,"halo_0%03i.properties.0"%snap)
+        self.catalog_groups = os.path.join(folder,"halo_0%03i.catalog_groups.0"%snap)
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
@@ -27,13 +27,13 @@ class Sim:
 
 if __name__ == '__main__':
 
-    #file = '/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY'
-    #snapshot = 623
+    file = '/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY'
+    snapshot = 623
     #file = sys.argv[1]
     #snapshot = int(sys.argv[2])
 
-    file = '/Users/Camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data'
-    snapshot = 34
+    #file = '/Users/Camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data'
+    #snapshot = 34
     siminfo = Sim(file, snapshot)
 
     # Loading simulation data in website table
@@ -91,15 +91,20 @@ if __name__ == '__main__':
         if i < 10:
             plot_galaxy_sparts(stars_data,morphology[0],stellar_mass[i], i,PartPlotsInWeb)
             plot_galaxy_gas_parts(gas_data,gas_morphology[0],gas_mass[i],i,PartPlotsInWeb)
-            #plot_galaxy(particle_data,morphology[0],stellar_mass[i],i,4,GalPlotsInWeb)
-            #plot_galaxy(particle_data,gas_morphology[0],gas_mass[i],i,0,GalPlotsInWeb)
+            plot_galaxy(particle_data,morphology[0],stellar_mass[i],i,4,GalPlotsInWeb)
+            plot_galaxy(particle_data,gas_morphology[0],gas_mass[i],i,0,GalPlotsInWeb)
 
         last = num_halos-1
         if num_halos > 10 : last = 9
         if i == last :
-            title = 'Visualizations'
+            title = 'Visualizations (Particles)'
             id = abs(hash("galaxy particles"))
             plots = PartPlotsInWeb.plots_details
+            add_web_section(web,title,id,plots)
+
+            title = 'Visualizations (SPH-viewer)'
+            id = abs(hash("galaxy sph"))
+            plots = GalPlotsInWeb.plots_details
             add_web_section(web,title,id,plots)
 
         # Store info in galaxy class and continue
