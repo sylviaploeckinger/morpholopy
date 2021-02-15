@@ -1,6 +1,8 @@
 import numpy as np
 import h5py
 from functions import calculate_kappa_co, AxialRatios
+from velociraptor.swift.swift import to_swiftsimio_dataset
+
 
 def H2fraction(Temp,Den,Metal,z):
     
@@ -68,50 +70,48 @@ def make_gas_particle_data(siminfo):
     
     return snapshot_data
 
-def make_particle_data(siminfo,parttype):
-    
+def make_particle_data(siminfo,groups,halo_id,parttype):
+    #def make_particle_data(siminfo, parttype):
     # Create particle data :
-    # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz]
-    snapshot_file = h5py.File(siminfo.snapshot, "r")
-    num_parttype = snapshot_file["/Header"].attrs["NumPart_Total"][parttype]
-    snapshot_data = np.zeros((num_parttype,7))
-    snapshot_data[:,0:3] = snapshot_file['PartType%i/Coordinates'%parttype][:][:] * siminfo.a * 1e3 #kpc
-    snapshot_data[:,3] = snapshot_file['PartType%i/Masses'%parttype][:] * 1e10 #Msun
-    snapshot_data[:,4:7] = snapshot_file['PartType%i/Velocities'%parttype][:][:] #km/s
-    return snapshot_data
+    # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz
+    # | (7) hsml ]
 
-def select_parts(subhalo,siminfo,parttype):
-    # Selecting particles within 30kpc aperture
-    # subhalo contain subhalo data and is strutured as follow
-    # [ (0:3)CentreOfPotential[kpc]: (0)X | (1)Y | (2)Z  | (3:6)Velocity[km/s]: (3)Vx | (4)Vy | (5)Vz  | (6)R200c[kpc]]
-    snapshot_file = h5py.File(siminfo.snapshot, "r")
-    num_parttype = snapshot_file["/Header"].attrs["NumPart_Total"][parttype]
-    parts_data = snapshot_file['PartType%i/Coordinates'%parttype][:][:] * siminfo.a * 1e3 #kpc
-    mask = np.arange(0,num_parttype,1)
-    
-    # Center positions & unwrap space
-    parts_data[:,:3]-=subhalo[0:3].astype('float')-siminfo.boxSize/2   # centering onto subhalo CoP, and unwrap the box
-    parts_data[:,:3]%=(siminfo.boxSize)
-    parts_data[:,:3]-=siminfo.boxSize/2                                # end the unwrap
-    
-    # Compute distances
-    distancesDATA = np.linalg.norm(parts_data[:,:3],axis=1)
-    
-    # Restrict particles
-    mask = distancesDATA < 30
-    return mask
+    particles, unbound_particles = groups.extract_halo(halo_id=int(halo_id))
+    data, mask = to_swiftsimio_dataset(particles,
+        siminfo.snapshot,
+        generate_extra_mask=True
+    )
+
+    if parttype == 0:
+        gas_mass = data.gas.masses[mask.gas].value * 1e10 #Msun
+        gas_n_parts = len(gas_mass)
+        gas_data = np.zeros((gas_n_parts,9))
+        gas_data[:,0:3] = data.gas.coordinates[mask.gas].value * siminfo.a * 1e3 #kpc
+        gas_data[:, 8] = gas_mass # Msun
+        gas_data[:,4:7] = data.gas.velocities[mask.gas].value #km/s
+        gas_data[:,7] = data.gas.smoothing_lengths[mask.gas].value * siminfo.a * 1e3 #kpc
+
+        XH = data.gas.element_mass_fractions.hydrogen[mask.gas].value
+        gas_HI = data.gas.species_fractions.HI[mask.gas].value
+        gas_H2 = data.gas.species_fractions.H2[mask.gas].value * 2.
+        gas_HI_H2 = gas_HI * XH * gas_mass + gas_H2 * XH * gas_mass
+        gas_data[:, 3] = gas_HI_H2 # Msun
+        return gas_data
+
+    if parttype == 4:
+        stars_mass = data.stars.masses[mask.stars].value * 1e10
+        stars_n_parts = len(stars_mass)
+        stars_data = np.zeros((stars_n_parts,8))
+        stars_data[:,0:3] = data.stars.coordinates[mask.stars].value * siminfo.a * 1e3 #kpc
+        stars_data[:,3] = stars_mass #Msun
+        stars_data[:,4:7] = data.stars.velocities[mask.stars].value #km/s
+        stars_data[:,7] = data.stars.smoothing_lengths[mask.stars].value * siminfo.a * 1e3 #kpc
+        return stars_data
 
 
-def calculate_morphology(subhalo_data, part_data, parttype, siminfo):
-
+def calculate_morphology(subhalo_data, part_data, siminfo):
     # Subhalo data :
     # [ (0:3)CentreOfPotential[kpc]: (0)X | (1)Y | (2)Z  | (3:6)Velocity[km/s]: (3)Vx | (4)Vy | (5)Vz]
-
-    # Select particles from this particular halo
-    mask = select_parts(subhalo_data, siminfo, parttype)
-
-    # Create particle data
-    part_data = part_data[mask,:]
 
     # Calculate kappa and specific angular momentum
     kappa, momentum, part_data = calculate_kappa_co(subhalo_data,part_data,siminfo)

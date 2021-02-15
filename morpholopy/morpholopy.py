@@ -1,20 +1,25 @@
 """
 Description here
 """
+
 import sys
 import os
 import h5py
 import numpy as np
 from velociraptor import load
+from velociraptor.particles import load_groups
+
 from catalogue import Galaxy_data
-from particles import calculate_morphology, make_particle_data, make_gas_particle_data
+from particles import calculate_morphology, make_particle_data
+from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline
 from plotter.plot import plot_galaxy, plot_morphology, plot_galaxy_sparts, plot_galaxy_gas_parts
 import unyt
 
 class Sim:
     def __init__(self,folder,snap):
         self.snapshot = os.path.join(folder,"colibre_0%03i.hdf5"%snap)
-        self.subhalo_properties = os.path.join(folder,"halo_0%03i.properties.0"%snap)
+        self.subhalo_properties = os.path.join(folder,"subhalo_0%03i.properties.0"%snap)
+        self.catalog_groups = os.path.join(folder,"subhalo_0%03i.catalog_groups.0"%snap)
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
@@ -22,18 +27,31 @@ class Sim:
 
 if __name__ == '__main__':
 
-    file = '/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY'
-    snapshot = 623
+    #file = '/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY'
+    #snapshot = 623
     #file = sys.argv[1]
     #snapshot = int(sys.argv[2])
 
+    file = '/Users/Camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data'
+    snapshot = 34
     siminfo = Sim(file, snapshot)
+
+    # Loading simulation data in website table
+    web = make_web(siminfo)
+    PartPlotsInWeb = PlotsInPipeline()
+    GalPlotsInWeb = PlotsInPipeline()
+    MorphologyPlotsInWeb = PlotsInPipeline()
+
+    # Loading halo catalogue
     properties = load(siminfo.subhalo_properties)
+    groups = load_groups(siminfo.catalog_groups, catalogue=properties)
     stellar_mass = properties.masses.m_star_30kpc
     stellar_mass.convert_to_units("msun")
-    
+    gas_mass = properties.masses.m_gas_30kpc
+    gas_mass.convert_to_units("msun")
+
     # Selecting galaxies more massive than lower limit
-    lower_mass = 1e6 * unyt.msun #! Option of lower limit
+    lower_mass = 1e9 * unyt.msun #! Option of lower limit
     halo_catalogue = np.where(stellar_mass >= lower_mass)[0]
     
     # Selecting centrals only
@@ -44,11 +62,9 @@ if __name__ == '__main__':
     # Sample :
     num_halos = len(halo_catalogue)
     stellar_mass = np.log10(stellar_mass[halo_catalogue])
+    gas_mass = np.log10(gas_mass[halo_catalogue])
     galaxy_data = Galaxy_data(stellar_mass,num_halos)
 
-    # Create data for stars and gas
-    stars_data = make_particle_data(siminfo,4)
-    gas_data = make_gas_particle_data(siminfo)
 
     # Loop over sample to calculate morphological parameters
     for halo, i in zip(halo_catalogue, range(0,num_halos)):
@@ -64,31 +80,36 @@ if __name__ == '__main__':
         subhalo_data[5] = float(properties.velocities.vzcminpot[halo])
 
         # Calculate morphology estimators: kappa, axial ratios for stars
-        morphology, particle_data = calculate_morphology(subhalo_data, stars_data, 4, siminfo)
+        stars_data = make_particle_data(siminfo,groups,halo,4)
+        morphology, stars_data = calculate_morphology(subhalo_data, stars_data, siminfo)
+
+        # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas
+        gas_data = make_particle_data(siminfo,groups,halo,0)
+        gas_morphology, gas_data = calculate_morphology(subhalo_data, gas_data, siminfo)
 
         # Make galaxy plot perhaps.. only first 10.
-        if i < 10: 
-            plot_galaxy(particle_data,morphology[0],i,4)
-            plot_galaxy_sparts(particle_data,morphology[0],i)
-            
-        # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas
-        gas_morphology, particle_data = calculate_morphology(subhalo_data, gas_data, 0, siminfo)
+        if i < 10:
+            plot_galaxy_sparts(stars_data,morphology[0],stellar_mass[i], i,PartPlotsInWeb)
+            plot_galaxy_gas_parts(gas_data,gas_morphology[0],gas_mass[i],i,PartPlotsInWeb)
+            #plot_galaxy(particle_data,morphology[0],stellar_mass[i],i,4,GalPlotsInWeb)
+            #plot_galaxy(particle_data,gas_morphology[0],gas_mass[i],i,0,GalPlotsInWeb)
 
-        if i < 10: # Only 10 most massive..
-            plot_galaxy_gas_parts(particle_data,gas_morphology[0],i)
-            plot_galaxy(particle_data,gas_morphology[0],i,0)
+        last = num_halos-1
+        if num_halos > 10 : last = 9
+        if i == last :
+            title = 'Visualizations'
+            id = abs(hash("galaxy particles"))
+            plots = PartPlotsInWeb.plots_details
+            add_web_section(web,title,id,plots)
 
-        # Add gas data
-        morphology = np.append(morphology, gas_morphology)
-        
         # Store info in galaxy class and continue
+        morphology = np.append(morphology, gas_morphology)
         galaxy_data.add_morphology(morphology,i)
 
     # Finish plotting and output hdf5 file
-    plot_morphology(galaxy_data)
-    #output_to_hdf5(galaxy_data)
+    plot_morphology(galaxy_data,web,MorphologyPlotsInWeb)
 
-
+    render_web(web)
 
 
 

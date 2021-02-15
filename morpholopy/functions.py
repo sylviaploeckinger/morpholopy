@@ -32,7 +32,7 @@ def calculate_kappa_co(subhalo,partsDATA,siminfo):
     # Compute momentum
     smomentums = np.cross(particlesDATA[:,:3],particlesDATA[:,4:7])
     momentum = np.sum(particlesDATA[:,3][:,np.newaxis]*smomentums,axis=0)
-    
+
     # Compute specific angular momentum
     sa_momentum = momentum / Mstar
     sa_momentum = np.linalg.norm(sa_momentum)
@@ -48,7 +48,6 @@ def calculate_kappa_co(subhalo,partsDATA,siminfo):
     
     # Apply rotation so that momentum vector corresponds to z-axis
     momentum /= np.linalg.norm(momentum)
-    
     particlesDATA[:,0:3] = apply_rotation(particlesDATA[:,0:3],momentum)
     
     # Return
