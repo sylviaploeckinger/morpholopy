@@ -1,6 +1,6 @@
 from matplotlib.colors import LogNorm
 from pylab import *
-from sphviewer.tools import QuickView
+#from sphviewer.tools import QuickView
 from plotter.html import add_web_section
 
 def get_normalized_image(image,vmin=None,vmax=None):
@@ -54,7 +54,7 @@ def plot_galaxy(parts_data, kappa, mass, ihalo, parttype, GalPlotsInWeb):
     ax.set_title(title)
 
     ###### plot one side ########################
-    qv = QuickView(pstars, mass=mass, logscale=True, hsml=hsml_parts, plot=False,
+    qv = QuickView(pstars, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
                    r='infinity', p=0, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
@@ -74,7 +74,7 @@ def plot_galaxy(parts_data, kappa, mass, ihalo, parttype, GalPlotsInWeb):
     if parttype == 0: title = r"HI+H2 gas, $\log_{10} M_{gas}/M_{\odot} = $%0.2f" % (mass)
     ax.set_title(title)
 
-    qv = QuickView(pstars, hsml=hsml_parts, logscale=True, plot=False,
+    qv = QuickView(pstars, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
                    r='infinity', p=90, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
