@@ -5,7 +5,7 @@ Description here
 import os
 import h5py
 import numpy as np
-from velociraptor import load
+from velociraptor import load as load_catalogue
 from velociraptor.particles import load_groups
 
 from catalogue import Galaxy_data
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     MorphologyPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue
-    properties = load(siminfo.subhalo_properties)
+    properties = load_catalogue(siminfo.subhalo_properties)
     groups = load_groups(siminfo.catalog_groups, catalogue=properties)
     stellar_mass = properties.masses.m_star_30kpc
     stellar_mass.convert_to_units("msun")
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     gas_mass.convert_to_units("msun")
 
     # Selecting galaxies more massive than lower limit
-    lower_mass = 1e6 * unyt.msun #! Option of lower limit
+    lower_mass = 1e10 * unyt.msun #! Option of lower limit
     halo_catalogue = np.where(stellar_mass >= lower_mass)[0]
     
     # Selecting centrals only
