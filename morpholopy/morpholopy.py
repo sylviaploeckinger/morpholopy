@@ -3,10 +3,11 @@ Description here
 """
 
 import os
+import sys
 import h5py
 import numpy as np
 from velociraptor import load as load_catalogue
-from velociraptor.particles import load_groups
+#from velociraptor.particles import load_groups
 
 from catalogue import Galaxy_data
 from particles import calculate_morphology, make_particle_data
@@ -19,6 +20,7 @@ class Sim:
         self.snapshot = os.path.join(folder,"colibre_0%03i.hdf5"%snap)
         self.subhalo_properties = os.path.join(folder,"halo_0%03i.properties.0"%snap)
         self.catalog_groups = os.path.join(folder,"halo_0%03i.catalog_groups.0"%snap)
+        self.catalog_particles = os.path.join(folder, "halo_0%03i.catalog_particles.0" % snap)
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
@@ -43,7 +45,7 @@ if __name__ == '__main__':
 
     # Loading halo catalogue
     properties = load_catalogue(siminfo.subhalo_properties)
-    groups = load_groups(siminfo.catalog_groups, catalogue=properties)
+    #groups = load_groups(siminfo.catalog_groups, catalogue=properties)
     stellar_mass = properties.masses.m_star_30kpc
     stellar_mass.convert_to_units("msun")
     gas_mass = properties.masses.m_gas_30kpc
@@ -78,26 +80,27 @@ if __name__ == '__main__':
         subhalo_data[4] = float(properties.velocities.vycminpot[halo])
         subhalo_data[5] = float(properties.velocities.vzcminpot[halo])
 
+        # Get some data
+        gas_data, stars_data = make_particle_data(siminfo,halo)
         # Calculate morphology estimators: kappa, axial ratios for stars
-        gas_data, stars_data = make_particle_data(siminfo,groups,halo)
         morphology, stars_data = calculate_morphology(subhalo_data, stars_data, siminfo)
         # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas
         gas_morphology, gas_data = calculate_morphology(subhalo_data, gas_data, siminfo)
 
         # Make galaxy plot perhaps.. only first 10.
         if i < 10:
-            plot_galaxy_sparts(stars_data,morphology[0],stellar_mass[i], i,PartPlotsInWeb)
-            plot_galaxy_gas_parts(gas_data,gas_morphology[0],gas_mass[i],i,PartPlotsInWeb)
+            #plot_galaxy_sparts(stars_data,morphology[0],stellar_mass[i], i,PartPlotsInWeb)
+            #plot_galaxy_gas_parts(gas_data,gas_morphology[0],gas_mass[i],i,PartPlotsInWeb)
             plot_galaxy(stars_data,morphology[0],stellar_mass[i],i,4,GalPlotsInWeb)
             plot_galaxy(gas_data,gas_morphology[0],gas_mass[i],i,0,GalPlotsInWeb)
 
         last = num_halos-1
         if num_halos > 10 : last = 9
         if i == last :
-            title = 'Visualizations (Particles)'
-            id = abs(hash("galaxy particles"))
-            plots = PartPlotsInWeb.plots_details
-            add_web_section(web,title,id,plots)
+            #title = 'Visualizations (Particles)'
+            #id = abs(hash("galaxy particles"))
+            #plots = PartPlotsInWeb.plots_details
+            #add_web_section(web,title,id,plots)
 
             title = 'Visualizations (SPH-viewer)'
             id = abs(hash("galaxy sph"))

@@ -1,6 +1,6 @@
 from matplotlib.colors import LogNorm
 from pylab import *
-from sphviewer.tools import QuickView
+#from sphviewer.tools import QuickView
 from plotter.html import add_web_section
 
 def get_normalized_image(image,vmin=None,vmax=None):
