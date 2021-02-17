@@ -1,33 +1,57 @@
-import numpy as np
-from scipy.spatial.transform import Rotation as R
+"""
+Some helper functions .
 
-def apply_rotation(pos,momentum):
-    
-    # Apply rotation
-    Lz = momentum[2]
-    L = np.sqrt(momentum[0]**2+momentum[1]**2+momentum[2]**2)
-    Lyz = np.sqrt(momentum[1]**2+momentum[2]**2)
-    phi = np.arccos(Lz/Lyz)
-    if momentum[1]<0: phi = 2*np.pi-phi
-    
-    pstars = pos[:,0:3].copy()
-    rotation = R.from_euler('x', [phi], degrees=False)
-    pstars_rot = rotation.apply(pstars)
-    momentum_rot = rotation.apply(momentum)
-    
-    Lz = momentum_rot[0][2]
-    Lxz = np.sqrt(momentum_rot[0][0]**2+momentum_rot[0][2]**2)
-    beta = np.arccos(Lz/Lxz)
-    if momentum[1]<0: beta = 2*np.pi-beta
-    rotation = R.from_euler('y', [beta], degrees=False)
-    pstars_rot = rotation.apply(pstars_rot)
-    momentum_rot = rotation.apply(momentum_rot)
-    
-    Lx = momentum_rot[0][0]
-    Lxy = np.sqrt(momentum_rot[0][0]**2+momentum_rot[0][1]**2)
-    gamma = np.arccos(Lx/Lxy)
-    rotation = R.from_euler('z', [gamma], degrees=False)
-    pstars_rot = rotation.apply(pstars_rot)
-    momentum_rot = rotation.apply(momentum_rot)
-    
-    return pstars_rot
+Contains the argument parser and default parsing results.
+
+See the README for available argument parsers.
+"""
+
+import argparse as ap
+import glob
+from typing import Optional
+
+snapshot_filename: Optional[str]
+
+parser = ap.ArgumentParser(
+    description="""General argument parser for isolated galaxy scripts."""
+)
+
+parser.add_argument(
+    "-d",
+    "--directory",
+    help="Directory containing snapshots. Required.",
+    type=str,
+    required=True,
+)
+
+parser.add_argument(
+    "-n",
+    "--number",
+    help="Snapshot number to visualise. If not present, the latest snapshot is used.",
+    type=int,
+    required=True,
+    default=None,
+)
+
+parser.add_argument(
+    "-o",
+    "--output",
+    help="Output directory for the figures. If not present, the same directory as the snapshots are in is used.",
+    required=False,
+    default=None,
+)
+
+args = parser.parse_args()
+
+# Now provide postprocessing to those arguments.
+
+if args.number is None:
+    snapshot_filename = sorted(
+        glob.glob(f"{args.directory}/{args.snapshot}_*.hdf5"),
+        key=lambda x: int(x[-9:-5]),
+    )[-1]
+    args.number = int(snapshot_filename[-9:-5])
+
+if args.output is None:
+    args.output = args.directory
+

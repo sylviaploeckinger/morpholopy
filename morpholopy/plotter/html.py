@@ -33,10 +33,10 @@ def add_web_section(web,title,id,plots):
     web.variables["sections"].append(dict(title=title, id=id, plots=plots,))
     return
 
-def render_web(web):
+def render_web(web,output_path):
     web.add_metadata(page_name="MorpholoPy Page")
     web.render_webpage()
-    web.save_html("index.html")
+    web.save_html(f"{output_path}/index.html")
     return
 
 def format_number(number):
