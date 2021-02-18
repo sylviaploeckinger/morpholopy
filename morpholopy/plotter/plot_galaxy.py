@@ -1,5 +1,5 @@
 from pylab import *
-#from sphviewer.tools import QuickView
+from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from numpy import matmul
 
