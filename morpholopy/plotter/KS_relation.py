@@ -36,6 +36,10 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
     # Rotate co-ordinates as required
     x, y, _ = np.matmul(rotation_matrix, data[:,:3].T)
 
+    #binsize = 0.25  # kpc
+    #edges = (np.arange(161) - (160 / 2.)) * binsize
+    #Hmass = np.histogram2d(x, y, bins=(edges, edges), normed=False, weights=m)
+
     x = (x - x_min) / x_range
     y = (y - y_min) / y_range
 
@@ -55,6 +59,7 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
         ):
             image[particle_cell_x, particle_cell_y] += mass * inverse_cell_area
     return image
+    #return Hmass[0]
 
 def project_gas(data, mode, resolution, region, rotation_matrix):
 
@@ -64,11 +69,14 @@ def project_gas(data, mode, resolution, region, rotation_matrix):
     y_range = region[1] - region[0]
     area = 1.0 / (x_range * y_range)
     image *= area
+    #binsize = 0.5
+    #area = 1.0 / binsize**2
+    #image *= area
     return image
 
 def KS_relation(data, ang_momentum, mode):
 
-    size = 1 #kpc
+    size = 0.65 #kpc
     image_diameter = 60
     extent = [-30, 30]  #kpc
     number_of_pixels = int(image_diameter / size + 1)
@@ -87,7 +95,7 @@ def KS_relation(data, ang_momentum, mode):
     map_mass[map_mass == 0] = 1e-6
 
     surface_density = np.log10(map_mass.flatten()) #Msun / kpc^2
-    surface_density -= 6 #Msun / pc^2
+    surface_density -= 6  #Msun / pc^2
     SFR_surface_density = np.log10(map_SFR.flatten()) #Msun / yr / kpc^2
 
     surface_range = np.arange(-1, 7, .25)
@@ -145,10 +153,10 @@ def make_KS_plots(data, ang_momentum, mode, index, output_path):
     figure()
     ax = plt.subplot(1, 1, 1)
 
-    plt.plot(surface_density, SFR_surface_density, label="Our run")
+    plt.plot(surface_density, SFR_surface_density)
     plt.fill_between(surface_density, SFR_surface_density - SFR_surface_density_err_down,
                      SFR_surface_density + SFR_surface_density_err_up, alpha=0.2)
-    plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), color="red", label="KS law (Kennicutt 98)", linestyle="--")
+    plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), color="red", label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$", linestyle="--")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
     plt.ylim(-7.0, 1.0)
@@ -172,7 +180,20 @@ def make_KS_plots(data, ang_momentum, mode, index, output_path):
 
 
 
-def KS_plots(data, ang_momentum, index, output_path):
+def KS_plots(data, ang_momentum, index, KSPlotsInWeb, output_path):
 
     for mode, project in enumerate(["molecular_hydrogen_masses", "not_ionized_hydrogen_masses"]):
+
             make_KS_plots(data, ang_momentum, mode, index, output_path)
+
+            if mode == 0:
+                outfile = f"{output_path}/KS_molecular_relation_%i.png" % (index)
+                title = "Galaxy %i / KS relation (H2 mass)" % (index)
+                id = abs(hash("galaxy KS relation H2 %i" % (index)))
+            if mode == 1:
+                title = "Galaxy %i / KS relation (H2+HI mass)" % (index)
+                id = abs(hash("galaxy KS relation H2+HI %i" % (index)))
+                outfile = f"{output_path}/KS_relation_best_%i.png" % (index)
+
+            caption = "KS relation."
+            KSPlotsInWeb.load_plots(title, caption, outfile, id)

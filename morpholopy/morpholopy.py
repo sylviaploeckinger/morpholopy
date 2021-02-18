@@ -50,7 +50,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e10 * unyt.msun  # ! Option of lower limit
+    lower_mass = 1e8 * unyt.msun  # ! Option of lower limit
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
             #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
             #plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-            KS_plots(gas_data, gas_ang_momentum, i, output_path)
+            KS_plots(gas_data, gas_ang_momentum, i, KSPlotsInWeb, output_path)
 
         last = halo_data.num-1
         if halo_data.num > 10 : last = 9
@@ -87,9 +87,10 @@ if __name__ == '__main__':
             #plots = GalPlotsInWeb.plots_details
             #add_web_section(web,title,id,plots)
 
-        # Store info in galaxy class and continue
-        #morphology = np.append(morphology, gas_morphology)
-        #galaxy_data.add_morphology(morphology,i)
+            title = 'KS relation'
+            id = abs(hash("galaxy KS relation"))
+            plots = KSPlotsInWeb.plots_details
+            add_web_section(web,title,id,plots)
 
     # Finish plotting and output hdf5 file
     plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path )

@@ -32,8 +32,8 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
         "figure.figsize": (7, 4),
         "figure.subplot.left": 0.1,
         "figure.subplot.right": 0.95,
-        "figure.subplot.bottom": 0.2,
-        "figure.subplot.top": 0.9,
+        "figure.subplot.bottom": 0.1,
+        "figure.subplot.top": 0.8,
         "figure.subplot.wspace": 0.3,
         "figure.subplot.hspace": 0.3,
         "lines.markersize": 0.2,
@@ -62,14 +62,26 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     if parttype ==4:
         kappa = halo_data.kappa_co[index]
         mass = halo_data.stellar_mass[index]
-        title = r" - $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
+        ac = halo_data.axis_ca[index]
+        cb = halo_data.axis_cb[index]
+        ba = halo_data.axis_ba[index]
+        title = r" $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
         title += " - $\log_{10}$ $M_{*}/M_{\odot} = $%0.2f" % (mass)
+        title += " \n a/c = %0.2f," % (ac)
+        title += " c/b = %0.2f," % (cb)
+        title += " b/a = %0.2f" % (ba)
         color = 'tab:blue'
     if parttype ==0:
         kappa = halo_data.gas_kappa_co[index]
         mass = halo_data.gas_mass[index]
-        title = r" - $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
+        ac = halo_data.gas_axis_ca[index]
+        cb = halo_data.gas_axis_cb[index]
+        ba = halo_data.gas_axis_ba[index]
+        title = r" $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
         title += " - $\log_{10}$ $M_{gas}/M_{\odot} = $%0.2f" % (mass)
+        title += " \n a/c = %0.2f," % (ac)
+        title += " c/b = %0.2f," % (cb)
+        title += " b/a = %0.2f" % (ba)
         color = 'tab:green'
     ax.set_title(title)
 
@@ -136,8 +148,8 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
         "figure.figsize": (7, 4),
         "figure.subplot.left": 0.12,
         "figure.subplot.right": 0.95,
-        "figure.subplot.bottom": 0.2,
-        "figure.subplot.top": 0.9,
+        "figure.subplot.bottom": 0.1,
+        "figure.subplot.top": 0.8,
         "figure.subplot.wspace": 0.4,
         "figure.subplot.hspace": 0.4,
         "lines.markersize": 0.5,
@@ -170,13 +182,25 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     if parttype ==4:
         kappa = halo_data.kappa_co[index]
         mass_galaxy = halo_data.stellar_mass[index]
-        title = r" - $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
+        ac = halo_data.axis_ca[index]
+        cb = halo_data.axis_cb[index]
+        ba = halo_data.axis_ba[index]
+        title = r" $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
         title += " - $\log_{10}$ $M_{*}/M_{\odot} = $%0.2f" % (mass_galaxy)
+        title += " \n a/c = %0.2f," % (ac)
+        title += " c/b = %0.2f," % (cb)
+        title += " b/a = %0.2f" % (ba)
     if parttype ==0:
         kappa = halo_data.gas_kappa_co[index]
         mass_galaxy = halo_data.gas_mass[index]
-        title = r" - $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
+        ac = halo_data.gas_axis_ca[index]
+        cb = halo_data.gas_axis_cb[index]
+        ba = halo_data.gas_axis_ba[index]
+        title = r" $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
         title += " - $\log_{10}$ $M_{gas}/M_{\odot} = $%0.2f" % (mass_galaxy)
+        title += " \n a/c = %0.2f," % (ac)
+        title += " c/b = %0.2f," % (cb)
+        title += " b/a = %0.2f" % (ba)
     ax.set_title(title)
 
     qv = QuickView(pos_edge_on, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
