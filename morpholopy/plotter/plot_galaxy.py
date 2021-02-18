@@ -131,7 +131,9 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis="y")
 
     pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = pos_face_on.T
     pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = pos_edge_on.T
 
     hsml_parts = parts_data[:, 7]
     mass = parts_data[:, 3]
