@@ -50,7 +50,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e8 * unyt.msun  # ! Option of lower limit
+    lower_mass = 1e6 * unyt.msun  # ! Option of lower limit
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters
@@ -67,25 +67,25 @@ if __name__ == '__main__':
 
         # Make galaxy plot perhaps.. only first 10.
         if i < 10:
-            plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, PartPlotsInWeb, output_path)
-            plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, PartPlotsInWeb, output_path)
+            #plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, PartPlotsInWeb, output_path)
+            #plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, PartPlotsInWeb, output_path)
 
-            #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-            #plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+            plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+            plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
             KS_plots(gas_data, gas_ang_momentum, i, KSPlotsInWeb, output_path)
 
         last = halo_data.num-1
         if halo_data.num > 10 : last = 9
         if i == last :
-            title = 'Visualizations (Particles)'
-            id = abs(hash("galaxy particles"))
-            plots = PartPlotsInWeb.plots_details
-            add_web_section(web,title,id,plots)
-
-            #title = 'Visualizations (SPH-viewer)'
-            #id = abs(hash("galaxy sph"))
-            #plots = GalPlotsInWeb.plots_details
+            #title = 'Visualizations (Particles)'
+            #id = abs(hash("galaxy particles"))
+            #plots = PartPlotsInWeb.plots_details
             #add_web_section(web,title,id,plots)
+
+            title = 'Visualizations (SPH-viewer)'
+            id = abs(hash("galaxy sph"))
+            plots = GalPlotsInWeb.plots_details
+            add_web_section(web,title,id,plots)
 
             title = 'KS relation'
             id = abs(hash("galaxy KS relation"))
