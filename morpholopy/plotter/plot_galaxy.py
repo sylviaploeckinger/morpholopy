@@ -103,6 +103,8 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     caption = "Face-on (left) and edge-on (right)."
     if parttype ==4: id = abs(hash("galaxy stars parts %i" % (index)))
     if parttype ==0: id = abs(hash("galaxy gas parts %i" % (index)))
+    if parttype ==4: outfile = "galaxy_sparts_%i.png" % (index)
+    if parttype ==0: outfile = "galaxy_parts_%i.png" % (index)
     PlotsInWeb.load_plots(title, caption, outfile, id)
 
 
@@ -228,4 +230,6 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     caption = "Face-on (left) and edge-on (right)."
     if parttype == 0: id = abs(hash("galaxy gas %i" % (index)))
     if parttype == 4: id = abs(hash("stars galaxy %i" % (index)))
+    if parttype == 0: outfile = "galaxy_gas_%i.png" % (index)
+    if parttype == 4: outfile = "galaxy_stars_%i.png" % (index)
     GalPlotsInWeb.load_plots(title, caption, outfile, id)

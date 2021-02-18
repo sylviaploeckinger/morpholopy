@@ -34,11 +34,6 @@ class SimInfo:
 if __name__ == '__main__':
     from utils import *
 
-    #file = '/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY'
-    #snapshot = 623
-
-    #file = '/Users/Camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data'
-    #snapshot = 34
     output_path = args.output
     siminfo = SimInfo(args.directory, args.number)
 
@@ -50,7 +45,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e6 * unyt.msun  # ! Option of lower limit
+    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters

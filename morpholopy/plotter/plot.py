@@ -48,7 +48,7 @@ def plot_momentum(stellar_mass,momentum,parttype,MorphologyPlotsInWeb,output_pat
 
     caption = "Ratio between the total angular momentum of stars (or gas) within 30 kpc of "
     caption += "aperture divided by the total mass in stars (or gas)."
-    filename = f"{output_path}/momentum_parttype_%i.png"%parttype
+    filename = "momentum_parttype_%i.png"%parttype
     id = abs(hash("momentum %i"%parttype))
 
     MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
@@ -95,7 +95,7 @@ def plot_kappa(stellar_mass,kappa,parttype,MorphologyPlotsInWeb,output_path):
     caption = "Kappa corotation is defined as the fraction of kinetic energy in a galaxy "
     caption += "that is in ordered rotation. Note that the rotating contribution is calculated "
     caption += "only for prograde rotation."
-    filename = f"{output_path}/Kappa_co_parttype_%i.png"%parttype
+    filename = "Kappa_co_parttype_%i.png"%parttype
     id = abs(hash("kappa co %i"%parttype))
     MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
 
@@ -166,7 +166,7 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype,MorphologyPlotsInWeb,outp
     caption = "Axial ratios of galaxies more massive than 1e6 Msun in stellar mass. "
     caption += "a, b and c (a >= b >= c) represent the lengths of the primary axes. "
     caption += "Ratios have been calculated following eqs. (1) and (2) from Trayford+2018."
-    filename = f"{output_path}/Axis_ratios_parttype_%i.png"%parttype
+    filename = "Axis_ratios_parttype_%i.png"%parttype
     id = abs(hash("galaxy axis %i"%parttype))
     MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
 

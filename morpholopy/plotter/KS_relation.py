@@ -187,13 +187,13 @@ def KS_plots(data, ang_momentum, index, KSPlotsInWeb, output_path):
             make_KS_plots(data, ang_momentum, mode, index, output_path)
 
             if mode == 0:
-                outfile = f"{output_path}/KS_molecular_relation_%i.png" % (index)
+                outfile = "KS_molecular_relation_%i.png" % (index)
                 title = "Galaxy %i / KS relation (H2 mass)" % (index)
                 id = abs(hash("galaxy KS relation H2 %i" % (index)))
             if mode == 1:
                 title = "Galaxy %i / KS relation (H2+HI mass)" % (index)
                 id = abs(hash("galaxy KS relation H2+HI %i" % (index)))
-                outfile = f"{output_path}/KS_relation_best_%i.png" % (index)
+                outfile = "KS_relation_best_%i.png" % (index)
 
             caption = "KS relation."
             KSPlotsInWeb.load_plots(title, caption, outfile, id)
