@@ -53,7 +53,7 @@ def make_particle_data(siminfo,halo_id):
     gas_H2 = data.gas.species_fractions.H2[mask_gas].value * 2.
     gas_data[:, 8] = gas_HI * XH * gas_mass # Msun
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
-    gas_data[:, 10] = data.gas.star_formation_rates[mask.gas].value
+    gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10
     stars_n_parts = len(stars_mass)
@@ -66,17 +66,17 @@ def make_particle_data(siminfo,halo_id):
     return gas_data, stars_data
 
 
-def calculate_morphology(halo_data, part_data, siminfo, i, parttype):
+def calculate_morphology(halo_data, part_data, siminfo, halo_index, parttype):
 
     # Calculate kappa and specific angular momentum
-    kappa, specific_momentum, momentum, part_data = calculate_kappa_co(halo_data,part_data,siminfo,i)
+    kappa, specific_momentum, momentum, part_data = calculate_kappa_co(halo_data, part_data, siminfo, halo_index)
     
     # Calculate axis ratios
     axis_1, axis_2, axis_3 = AxialRatios(part_data[:,:3], part_data[:,3])
     morphology = np.array([kappa, specific_momentum, axis_1, axis_2, axis_3])
 
     #Store morphology parameters in halo data and continue
-    if parttype == 4: halo_data.add_stellar_morphology(morphology, i):
-    if parttype == 0: halo_data.add_gas_morphology(morphology, i):
+    if parttype == 4: halo_data.add_stellar_morphology(morphology, halo_index)
+    if parttype == 0: halo_data.add_gas_morphology(morphology, halo_index)
 
     return momentum, part_data

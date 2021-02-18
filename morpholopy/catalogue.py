@@ -19,7 +19,7 @@ class HaloCatalogue:
         catalogue = catalogue[centrals]
 
         self.num = len(catalogue)
-        self.halo_index = catalogue
+        self.halo_index = [ catalogue[i] for i in range(self.num) ]
 
         # Sample :
         self.stellar_mass = np.log10(stellar_mass[catalogue])
@@ -38,13 +38,13 @@ class HaloCatalogue:
         self.gas_axis_ba = [ None for i in range(self.num) ]
 
         # Subhalo data :
-        self.xminpot = float(properties.positions.xcminpot[catalogue]) * 1e3
-        self.yminpot = float(properties.positions.ycminpot[catalogue]) * 1e3
-        self.zminpot = float(properties.positions.zcminpot[catalogue]) * 1e3
+        self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3
+        self.yminpot = properties.positions.ycminpot[catalogue].value * 1e3
+        self.zminpot = properties.positions.zcminpot[catalogue].value * 1e3
 
-        self.vxminplot = float(properties.velocities.vxcminpot[catalogue])
-        self.vyminplot = float(properties.velocities.vycminpot[catalogue])
-        self.vzminplot = float(properties.velocities.vzcminpot[catalogue])
+        self.vxminpot = properties.velocities.vxcminpot[catalogue].value
+        self.vyminpot = properties.velocities.vycminpot[catalogue].value
+        self.vzminpot = properties.velocities.vzcminpot[catalogue].value
 
     def add_stellar_morphology(self,data,index):
         self.kappa_co[index] = data[0]

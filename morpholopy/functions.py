@@ -1,27 +1,27 @@
 import numpy as np
 
-def calculate_kappa_co(halo_data,partsDATA,siminfo,ihalo):
+def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     # subhalo contain subhalo data and is strutured as follow
     # [ (0:3)CentreOfPotential[kpc]: (0)X | (1)Y | (2)Z  | (3:6)Velocity[km/s]: (3)Vx | (4)Vy | (5)Vz  | (6)R200c[kpc]]
     # partsDATA contains particles data and is structured as follow
     # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz | (7)hsml]
     
     particlesDATA = np.array(partsDATA).copy()                    # isolating a copy
-    #particlesDATA[:,:3]-=subhalo[0:3].astype('float')-siminfo.boxSize/2   # centering onto subhalo CoP, and unwrap the box
 
+    #particlesDATA[:,:3]-=subhalo[0:3].astype('float')-siminfo.boxSize/2   # centering onto subhalo CoP, and unwrap the box
     # Centering onto subhalo CoP
-    particlesDATA[:, 0] -= halo_data.xminpot[ihalo]
-    particlesDATA[:, 1] -= halo_data.yminpot[ihalo]
-    particlesDATA[:, 2] -= halo_data.zminpot[ihalo]
+    particlesDATA[:, 0] -= halo_data.xminpot[halo_index]
+    particlesDATA[:, 1] -= halo_data.yminpot[halo_index]
+    particlesDATA[:, 2] -= halo_data.zminpot[halo_index]
     particlesDATA[:, :3] += siminfo.boxSize/2
     particlesDATA[:, :3] %=(siminfo.boxSize)
     particlesDATA[:, :3] -=siminfo.boxSize/2        # end the unwrap
 
     # Center velocities on the subhalo CoM velocity
     #particlesDATA[:,4:7]-=subhalo[3:6].astype('float')
-    particlesDATA[:, 4] -= halo_data.vxminpot[ihalo]
-    particlesDATA[:, 5] -= halo_data.vyminpot[ihalo]
-    particlesDATA[:, 6] -= halo_data.vzminpot[ihalo]
+    particlesDATA[:, 4] -= halo_data.vxminpot[halo_index]
+    particlesDATA[:, 5] -= halo_data.vyminpot[halo_index]
+    particlesDATA[:, 6] -= halo_data.vzminpot[halo_index]
 
     # Compute distances
     distancesDATA = np.linalg.norm(particlesDATA[:,:3],axis=1)

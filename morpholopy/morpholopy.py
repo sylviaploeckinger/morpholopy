@@ -14,7 +14,9 @@ from particles import calculate_morphology, make_particle_data
 from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline
 from plotter.plot import plot_morphology
 from plotter.plot_galaxy import plot_galaxy, plot_galaxy_parts
-from plotter.KS_relation import KS_plots
+
+from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
+from plotter.KS_relation import KS_plots, KS_relation, project_gas
 
 import unyt
 
@@ -70,7 +72,7 @@ if __name__ == '__main__':
 
             #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
             #plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-            KS_plots(gas_data,i,output_path)
+            KS_plots(gas_data, gas_ang_momentum, i, output_path)
 
         last = halo_data.num-1
         if halo_data.num > 10 : last = 9
