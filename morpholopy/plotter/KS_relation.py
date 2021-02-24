@@ -242,7 +242,7 @@ def make_KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     plt.plot(np.log10(Sigma_g),np.log10(Sigma_g)- np.log10(Sigma_star)+6.,color="red",
              label="KS law (Kennicutt 98)",linestyle="--")
     plt.xlim(0,3.0)
-    plt.ylim(3.5, 11.5)
+    plt.ylim(2, 14)
 
     if mode == 0:
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
@@ -256,6 +256,95 @@ def make_KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
         plt.ylabel("log $\\rm t_{gas} = (\\Sigma_{HI} + \\Sigma_{H_2} )/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         plt.savefig(f"{output_path}/gas_depletion_timescale_best_%i.png" % (index))
 
+def surface_ratios(data, ang_momentum):
+
+    size = 0.65 #kpc
+    image_diameter = 60
+    extent = [-30, 30]  #kpc
+    number_of_pixels = int(image_diameter / size + 1)
+
+    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum)
+
+    # Calculate the SPH smoothed maps
+    map_H2 = project_gas(data, 0, number_of_pixels, extent, face_on_rotation_matrix)
+    map_gas = project_gas(data, 1, number_of_pixels, extent, face_on_rotation_matrix)
+
+    # Bounds
+    map_H2[map_H2 <= 0] = 1e-6
+    map_gas[map_gas <= 0] = 1e-6
+
+    surface_density = np.log10(map_gas.flatten()) #Msun / kpc^2
+    H2_surface_density = np.log10(map_H2.flatten()) #Msun / kpc^2
+    ratio_density = H2_surface_density - surface_density # no units
+    surface_density -= 6  #Msun / pc^2
+
+    surface_range = np.arange(-1, 7, .25)
+
+    Ratio_values = np.zeros(len(surface_range)-1)
+    Ratio_err_down = np.zeros(len(surface_range)-1)
+    Ratio_err_up = np.zeros(len(surface_range)-1)
+
+    perc = [16, 86]
+
+    for i in range(0, len(surface_range) - 2):
+        mask = (surface_density > surface_range[i]) & (surface_density < surface_range[i + 1])
+        surface = ratio_density[mask]
+        if len(surface)>0:
+            Ratio_values[i] = np.median(ratio_density[mask])
+        try:
+            Ratio_err_down[i], Ratio_err_up[i] = np.transpose(np.percentile(ratio_density[mask], perc))
+        except:
+            Ratio_err_down[i], Ratio_err_up[i] = [0., 0.]
+
+    plot_surface_range = (surface_range[1:] + surface_range[:-1]) / 2.
+    Ratio_err_down = np.abs(Ratio_err_down - Ratio_values)
+    Ratio_err_up = np.abs(Ratio_err_up - Ratio_values)
+
+    return plot_surface_range, Ratio_values, Ratio_err_down, Ratio_err_up
+
+def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path):
+
+    # Get the surface densities
+    Sigma_gas, Sigma_ratio, \
+    Sigma_ratio_err_down, Sigma_ratio_err_up = surface_ratios(data, ang_momentum)
+
+
+    # Plot parameters
+    params = {
+        "font.size": 12,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (5, 4),
+        "figure.subplot.left": 0.15,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.18,
+        "figure.subplot.top": 0.8,
+        "lines.markersize": 6,
+        "lines.linewidth": 2.0,
+    }
+    rcParams.update(params)
+
+    figure()
+    ax = plt.subplot(1, 1, 1)
+    sfr_galaxy = galaxy_data.star_formation_rate[index]
+    mass_galaxy = galaxy_data.stellar_mass[index]
+    gas_mass_galaxy = galaxy_data.gas_mass[index]
+    title = r"Star formation rate = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    ax.set_title(title)
+
+    plt.plot(Sigma_gas, Sigma_ratio)
+    plt.fill_between(Sigma_gas, Sigma_ratio - Sigma_ratio_err_down,
+                     Sigma_ratio + Sigma_ratio_err_up, alpha=0.2)
+    plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
+    plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
+
+    plt.xlim(-1.0, 3.0)
+    plt.ylim(-7.0, 1.0)
+
+    plt.savefig(f"{output_path}/Surface_density_ratio_%i.png" % (index))
+    plt.close()
 
 def calculate_integrated_quantities(data, ang_momentum, radius, mode):
 
@@ -292,9 +381,9 @@ def KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_path):
             title = "KS relation (H2 mass)"
             id = abs(hash("galaxy KS relation H2 %i" % (index)))
         if mode == 1:
+            outfile = "KS_relation_best_%i.png" % (index)
             title = "KS relation (H2+HI mass)"
             id = abs(hash("galaxy KS relation H2+HI %i" % (index)))
-            outfile = "KS_relation_best_%i.png" % (index)
 
         caption = "KS relation."
         KSPlotsInWeb.load_plots(title, caption, outfile, id)
@@ -310,5 +399,14 @@ def KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_path):
 
         caption = "Gas depletion times."
         KSPlotsInWeb.load_plots(title, caption, outfile, id)
+
+
+    make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path)
+
+    title = "Surface density ratios"
+    id = abs(hash("density ratio H2+HI %i" % (index)))
+    outfile = "Surface_density_ratio_%i.png" % (index)
+    caption = "Surface density ratios."
+    KSPlotsInWeb.load_plots(title, caption, outfile, id)
 
     return Sigma_gas, Sigma_SFR

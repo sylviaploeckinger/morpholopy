@@ -48,9 +48,9 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     # Compute rotational velocities
     smomentumz = np.sum(momentum*smomentums/np.linalg.norm(momentum),axis=1)
     cyldistances = np.sqrt(distancesDATA**2-np.sum(momentum*particlesDATA[:,:3]/np.linalg.norm(momentum),axis=1)**2)
-    cylmin = np.min(cyldistances[cyldistances>0])
-    cyldistances[cyldistances==0] = cylmin
-    vrots = smomentumz/cyldistances
+    #cylmin = np.min(cyldistances[cyldistances>0])
+    #cyldistances[cyldistances==0] = cylmin
+    vrots = smomentumz / cyldistances
     
     # Compute kappa_co
     Mvrot2 = np.sum((particlesDATA[:,3]*vrots**2)[vrots>0])
@@ -58,8 +58,7 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     
     # Apply rotation so that momentum vector corresponds to z-axis
     momentum /= np.linalg.norm(momentum)
-    #particlesDATA[:,0:3] = apply_rotation(particlesDATA[:,0:3],momentum)
-    
+
     # Return
     return kappa_co, sa_momentum, momentum, particlesDATA
 
