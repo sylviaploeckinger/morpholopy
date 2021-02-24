@@ -48,6 +48,8 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     # Compute rotational velocities
     smomentumz = np.sum(momentum*smomentums/np.linalg.norm(momentum),axis=1)
     cyldistances = np.sqrt(distancesDATA**2-np.sum(momentum*particlesDATA[:,:3]/np.linalg.norm(momentum),axis=1)**2)
+    cylmin = np.min(cyldistances[cyldistances>0])
+    cyldistances[cyldistances==0] = cylmin
     vrots = smomentumz/cyldistances
     
     # Compute kappa_co
@@ -130,8 +132,11 @@ def AxialRatios(rs, ms):
         rs - CoM subtracted positions of *selected* particles in galactic units
         ms - *selected* particle masses in galactic units
         zaza'''
+    radius = np.linalg.norm(rs[:, :3], axis=1)
+    rs = rs[radius>0,:]
+    ms = ms[radius>0]
     rs2 = rs**2
-    
+
     # construct MoI tensor
     I_xx                    = ((rs2[:,[1,2]].sum(axis=-1) / abs((rs2[:,[1,2]].sum(axis=-1))**0.5))*ms)
     I_xx = I_xx[np.isnan(I_xx)==False]     # remove nans
@@ -156,11 +161,11 @@ def AxialRatios(rs, ms):
     # Get and order eigenvalues
     W,V                   = np.linalg.eig(I)
     W1, W2, W3            = np.sort(W)[::-1]
-    
+
     # compute axes (unnormalised as we don't need absolute values)
-    a                     = np.sqrt(W1 + W2 - W3)
-    b                     = np.sqrt(W1 + W3 - W2)
-    c                     = np.sqrt(W2 + W3 - W1)
+    a                     = np.sqrt(np.abs(W1 + W2 - W3))
+    b                     = np.sqrt(np.abs(W1 + W3 - W2))
+    c                     = np.sqrt(np.abs(W2 + W3 - W1))
     
     return c/a, c/b, b/a
 

@@ -9,6 +9,11 @@ class HaloCatalogue:
         stellar_mass.convert_to_units("msun")
         gas_mass = properties.masses.m_gas_30kpc
         gas_mass.convert_to_units("msun")
+        half_mass_radius_star = properties.radii.r_halfmass_star
+        half_mass_radius_star.convert_to_units("kpc")
+        half_mass_radius_gas = properties.radii.r_halfmass_gas
+        half_mass_radius_gas.convert_to_units("kpc")
+        sfr = properties.apertures.sfr_gas_30_kpc
 
         # Selecting galaxies more massive than lower limit
         catalogue = np.where(stellar_mass >= lower_mass)[0]
@@ -24,6 +29,9 @@ class HaloCatalogue:
         # Sample :
         self.stellar_mass = np.log10(stellar_mass[catalogue])
         self.gas_mass = np.log10(gas_mass[catalogue])
+        self.halfmass_radius_star = half_mass_radius_star[catalogue]
+        self.halfmass_radius_gas = half_mass_radius_gas[catalogue]
+        self.star_formation_rate = sfr[catalogue]
 
         self.kappa_co = [ None for i in range(self.num) ]
         self.momentum = [ None for i in range(self.num) ]
@@ -36,6 +44,11 @@ class HaloCatalogue:
         self.gas_axis_ca = [ None for i in range(self.num) ]
         self.gas_axis_cb = [ None for i in range(self.num) ]
         self.gas_axis_ba = [ None for i in range(self.num) ]
+
+        self.sigma_H2 = [ None for i in range(self.num) ]
+        self.sigma_gas = [ None for i in range(self.num) ]
+        self.sigma_SFR = [ None for i in range(self.num) ]
+
 
         # Subhalo data :
         self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3
@@ -59,3 +72,8 @@ class HaloCatalogue:
         self.gas_axis_ca[index] = data[2]
         self.gas_axis_cb[index] = data[3]
         self.gas_axis_ba[index] = data[4]
+
+    def add_surface_density(self, data, index):
+        self.sigma_H2[index] = data[0]
+        self.sigma_gas[index] = data[1]
+        self.sigma_SFR[index] = data[2]

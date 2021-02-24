@@ -171,6 +171,65 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype,MorphologyPlotsInWeb,outp
     MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
 
 
+def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, MorphologyPlotsInWeb, output_path):
+
+    # Plot parameters
+    params = {
+        "font.size": 12,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (5, 4),
+        "figure.subplot.left": 0.15,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.18,
+        "figure.subplot.top": 0.9,
+        "lines.markersize": 6,
+        "lines.linewidth": 2.0,
+    }
+    rcParams.update(params)
+
+    figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plt.plot(sigma_H2, sigma_SFR, 'o')
+
+    plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+    plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
+    plt.xlim(-2.0, 2.0)
+    plt.ylim(-3.0, 1.0)
+    plt.savefig(f"{output_path}/surface_density_gas.png", dpi=200)
+    plt.close()
+
+    caption = "Ratio between the total angular momentum of stars (or gas) within 30 kpc of "
+    caption += "aperture divided by the total mass in stars (or gas)."
+    filename = "surface_density_gas.png"
+    id = abs(hash("surface_density_gas"))
+
+    MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
+
+    #######
+    figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plt.plot(sigma_gas, sigma_SFR, 'o')
+
+    plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+    plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
+    plt.xlim(-2.0, 2.0)
+    plt.ylim(-3.0, 1.0)
+    plt.savefig(f"{output_path}/surface_density_H2.png", dpi=200)
+    plt.close()
+
+    caption = "Ratio between the total angular momentum of stars (or gas) within 30 kpc of "
+    caption += "aperture divided by the total mass in stars (or gas)."
+    filename = "surface_density_H2.png"
+    id = abs(hash("surface_density_H2"))
+
+    MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
+
+
 def plot_morphology(galaxy_data,web,MorphologyPlotsInWeb,output_path):
 
     # plot kappa for stars and gas :
@@ -213,4 +272,12 @@ def plot_morphology(galaxy_data,web,MorphologyPlotsInWeb,output_path):
     plots = MorphologyPlotsInWeb.plots_details
     add_web_section(web, title, id, plots)
 
+    MorphologyPlotsInWeb.reset_plots_list()
 
+    # plot surface densities
+    plot_surface_densities(galaxy_data.sigma_SFR,galaxy_data.sigma_gas,galaxy_data.sigma_H2,MorphologyPlotsInWeb,output_path)
+
+    title = 'Surface densities'
+    id = abs(hash("Surface density"))
+    plots = MorphologyPlotsInWeb.plots_details
+    add_web_section(web, title, id, plots)

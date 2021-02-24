@@ -3,7 +3,6 @@ Description here
 """
 
 import os
-import sys
 import h5py
 import numpy as np
 from velociraptor import load as load_catalogue
@@ -13,12 +12,11 @@ from catalogue import HaloCatalogue
 from particles import calculate_morphology, make_particle_data
 from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline
 from plotter.plot import plot_morphology
-from plotter.plot_galaxy import plot_galaxy, plot_galaxy_parts
+from plotter.plot_galaxy import visualize_galaxy
 
-from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
-from plotter.KS_relation import KS_plots, KS_relation, project_gas
-
+from plotter.KS_relation import KS_plots
 import unyt
+
 
 class SimInfo:
     def __init__(self,folder,snap):
@@ -45,7 +43,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e6 * unyt.msun  # ! Option of lower limit
+    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters
@@ -62,30 +60,41 @@ if __name__ == '__main__':
 
         # Make galaxy plot perhaps.. only first 10.
         if i < 10:
-            plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, PartPlotsInWeb, output_path)
-            plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, PartPlotsInWeb, output_path)
 
-            plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-            plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-            KS_plots(gas_data, gas_ang_momentum, i, KSPlotsInWeb, output_path)
+            visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
+                             halo_data, i, GalPlotsInWeb, output_path)
 
-        last = halo_data.num-1
-        if halo_data.num > 10 : last = 9
-        if i == last :
-            title = 'Visualizations (Particles)'
-            id = abs(hash("galaxy particles"))
-            plots = PartPlotsInWeb.plots_details
-            add_web_section(web,title,id,plots)
+            Sigma_gas, Sigma_SFR = KS_plots(gas_data, gas_ang_momentum,
+                                            halo_data, i,
+                                            GalPlotsInWeb, output_path)
 
-            title = 'Visualizations (SPH-viewer)'
-            id = abs(hash("galaxy sph"))
+            Sigma = np.array([Sigma_gas[0], Sigma_gas[1], Sigma_SFR[0]])
+            halo_data.add_surface_density(Sigma, i)
+
+            title = '%i Galaxy ' % (i+1)
+            id = abs(hash("galaxy and ks relation %i" %i))
             plots = GalPlotsInWeb.plots_details
             add_web_section(web,title,id,plots)
 
-            title = 'KS relation'
-            id = abs(hash("galaxy KS relation"))
-            plots = KSPlotsInWeb.plots_details
-            add_web_section(web,title,id,plots)
+            GalPlotsInWeb.reset_plots_list()
+
+        #last = halo_data.num-1
+        #if halo_data.num > 10 : last = 9
+        #if i == last :
+            #title = 'Visualizations (Particles)'
+            #id = abs(hash("galaxy particles"))
+            #plots = PartPlotsInWeb.plots_details
+            #add_web_section(web,title,id,plots)
+
+            #title = 'Visualizations (SPH-viewer)'
+            #id = abs(hash("galaxy sph"))
+            #plots = GalPlotsInWeb.plots_details
+            #add_web_section(web,title,id,plots)
+
+            #title = 'KS relation'
+            #id = abs(hash("galaxy KS relation"))
+            #plots = KSPlotsInWeb.plots_details
+            #add_web_section(web,title,id,plots)
 
     # Finish plotting and output hdf5 file
     plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path )
