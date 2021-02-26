@@ -190,7 +190,7 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
         "figure.subplot.right": 0.85,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.9,
-        "lines.markersize": 6,
+        "lines.markersize": 4,
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)
@@ -201,7 +201,7 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
 
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), '--',color='grey',label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$")
     plt.scatter(sigma_H2, sigma_SFR, c=stellar_mass, alpha=.9, s=25,
-                vmin=6, vmax=12, cmap='CMRmap_r', edgecolors='none', zorder=2)
+                vmin=6, vmax=10, cmap='CMRmap_r', edgecolors='none', zorder=2)
 
     plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
@@ -211,7 +211,7 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
     plt.legend()
     cbar_ax = fig.add_axes([0.87, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[6,7,8,9,10,11,12], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[6,7,8,9,10], cax=cbar_ax)
     cb.set_label(label='$\log_{10}$ M$_{*}$/M$_{\odot}$', labelpad=0.5)
     plt.savefig(f"{output_path}/surface_density_gas.png", dpi=200)
     plt.close()
@@ -230,7 +230,7 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
 
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), '--',color='grey',label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$")
     plt.scatter(sigma_gas, sigma_SFR, c=stellar_mass, alpha=.9, s=25,
-                vmin=6, vmax=12, cmap='CMRmap_r', edgecolors='none', zorder=2)
+                vmin=6, vmax=10, cmap='CMRmap_r', edgecolors='none', zorder=2)
 
 
     plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
@@ -240,7 +240,7 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
     plt.legend()
     cbar_ax = fig.add_axes([0.87, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[6,7,8,9,10,11,12], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[6,7,8,9,10], cax=cbar_ax)
     cb.set_label(label='$\log_{10}$ M$_{*}$/M$_{\odot}$', labelpad=0.5)
     plt.savefig(f"{output_path}/surface_density_H2.png", dpi=200)
     plt.close()

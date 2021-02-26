@@ -1,3 +1,8 @@
+"""
+Acknowledgements:
+The routines that calculate disc fractions, circularities and axis ratios have been written by James Trayford.
+"""
+
 import numpy as np
 
 def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
@@ -47,11 +52,12 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     
     # Compute rotational velocities
     smomentumz = np.sum(momentum*smomentums/np.linalg.norm(momentum),axis=1)
-    cyldistances = np.sqrt(distancesDATA**2-np.sum(momentum*particlesDATA[:,:3]/np.linalg.norm(momentum),axis=1)**2)
+    cyldistances = distancesDATA**2-np.sum(momentum*particlesDATA[:,:3]/np.linalg.norm(momentum),axis=1)**2
+    cyldistances = np.sqrt(np.abs(cyldistances))
     cylmin = np.min(cyldistances[cyldistances>0])
     cyldistances[cyldistances==0] = cylmin
     vrots = smomentumz / cyldistances
-    
+
     # Compute kappa_co
     Mvrot2 = np.sum((particlesDATA[:,3]*vrots**2)[vrots>0])
     kappa_co = Mvrot2/np.sum(particlesDATA[:,3]*(np.linalg.norm(particlesDATA[:,4:7],axis=1))**2)

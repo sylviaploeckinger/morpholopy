@@ -41,7 +41,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit
+    lower_mass = 1e6 * unyt.msun  # ! Option of lower limit
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters

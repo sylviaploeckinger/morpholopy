@@ -26,6 +26,12 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     if parttype == 0: density = np.log10(partsDATA[:,11])
     if parttype == 4: density = np.log10(partsDATA[:, 8])
 
+    # Sort particles for better viewing
+    arg_sort = np.argsort(density)
+    density = density[arg_sort]
+    pos_face_on = pos_face_on[arg_sort,:]
+    pos_edge_on = pos_edge_on[arg_sort,:]
+
     # Plot parameters
     params = {
         "font.size": 11,
@@ -45,12 +51,8 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
     fig = plt.figure()
     ax = plt.subplot(1, 2, 1)
-    if parttype ==4:
-        title = "Stellar component"
-        color = 'tab:blue'
-    if parttype ==0:
-        title = "Gas component"
-        color = 'tab:green'
+    if parttype ==4: title = "Stellar component"
+    if parttype ==0: title = "Gas component"
     ax.set_title(title)
     ax.tick_params(labelleft=True, labelbottom=True, length=0)
     plt.xlabel('x [kpc]')
@@ -58,7 +60,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
 
-    plt.scatter(pos_face_on[:, 0], pos_face_on[:, 1], c=density, alpha=1, s=15,
+    plt.scatter(pos_face_on[:, 0], pos_face_on[:, 1], c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
     ax.autoscale(False)
 
@@ -74,7 +76,6 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
         title += " \n c/a = %0.2f," % (ac)
         title += " c/b = %0.2f," % (cb)
         title += " b/a = %0.2f" % (ba)
-        color = 'tab:blue'
     if parttype ==0:
         kappa = halo_data.gas_kappa_co[index]
         mass = halo_data.gas_mass[index]
@@ -86,7 +87,6 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
         title += " \n c/a = %0.2f," % (ac)
         title += " c/b = %0.2f," % (cb)
         title += " b/a = %0.2f" % (ba)
-        color = 'tab:green'
     ax.set_title(title)
 
     ax.tick_params(labelleft=True, labelbottom=True, length=0)
@@ -94,7 +94,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     plt.ylabel('z [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    plt.scatter(pos_edge_on[:, 0], pos_edge_on[:, 1], c=density, alpha=1, s=15,
+    plt.scatter(pos_edge_on[:, 0], pos_edge_on[:, 1], c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
 
     ax.autoscale(False)
@@ -242,7 +242,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
 
     cbar_ax = fig.add_axes([0.86, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ims, ticks=[3, 4, 5, 6, 7, 8], cax=cbar_ax)
+    cb = plt.colorbar(ims, ticks=[3, 4, 5, 6, 7, 8], cax=cbar_ax, extend='both')
     cb.set_label(label=r'$\log_{10}$ $\rho$ [M$_{\odot}$/kpc$^{3}$]', labelpad=0.5)
 
 
@@ -271,8 +271,8 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
 def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
-    plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
     plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)

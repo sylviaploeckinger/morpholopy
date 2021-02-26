@@ -1,8 +1,14 @@
+"""
+Acknowledgements:
+The routines making and plotting the KS relation have been written by Folkert Nobels,
+while the specific scatter and project pixel routines were developed by Josh Borrow.
+"""
+
 from pylab import *
 import numpy as np
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 import scipy.stats as stat
-
+from .loadObservationalData import read_obs_data
 
 def scatter(x, y, m, res):
 
@@ -37,10 +43,6 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
     # Rotate co-ordinates as required
     x, y, _ = np.matmul(rotation_matrix, data[:,:3].T)
 
-    #binsize = 0.25  # kpc
-    #edges = (np.arange(161) - (160 / 2.)) * binsize
-    #Hmass = np.histogram2d(x, y, bins=(edges, edges), normed=False, weights=m)
-
     x = (x - x_min) / x_range
     y = (y - y_min) / y_range
 
@@ -60,7 +62,6 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
         ):
             image[particle_cell_x, particle_cell_y] += mass * inverse_cell_area
     return image
-    #return Hmass[0]
 
 def project_gas(data, mode, resolution, region, rotation_matrix):
 
@@ -161,12 +162,17 @@ def KS_relation(data, ang_momentum, mode):
     tgas_values_err_down = np.abs(tgas_values_err_down - tgas_values)
     tgas_values_err_up = np.abs(tgas_values_err_up - tgas_values)
 
-    return plot_surface_range, SFR_values, SFR_values_err_down, \
-           SFR_values_err_up, tgas_values, tgas_values_err_down, \
-           tgas_values_err_up
+    #return plot_surface_range, SFR_values, SFR_values_err_down, \
+    #       SFR_values_err_up, tgas_values, tgas_values_err_down, \
+    #       tgas_values_err_up
+
+    return surface_density, SFR_surface_density, tgas
 
 
 def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
+
+    # read the observational data for the KS relations
+    observational_data = read_obs_data("./plotter/obs_data")
 
     # Get the default KS relation for correct IMF
     def KS(sigma_g, n, A):
@@ -176,9 +182,11 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
 
     # Get the surface densities
-    surface_density, SFR_surface_density, \
-    SFR_surface_density_err_down, SFR_surface_density_err_up, \
-    tgas, tgas_err_down, tgas_err_up = KS_relation(data, ang_momentum, mode)
+    #surface_density, SFR_surface_density, \
+    #SFR_surface_density_err_down, SFR_surface_density_err_up, \
+    #tgas, tgas_err_down, tgas_err_up = KS_relation(data, ang_momentum, mode)
+
+    surface_density, SFR_surface_density, tgas = KS_relation(data, ang_momentum, mode)
 
 
     # Plot parameters
@@ -191,7 +199,7 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.8,
-        "lines.markersize": 6,
+        "lines.markersize": 4,
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)
@@ -205,25 +213,45 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
-    plt.plot(surface_density, SFR_surface_density)
-    plt.fill_between(surface_density, SFR_surface_density - SFR_surface_density_err_down,
-                     SFR_surface_density + SFR_surface_density_err_up, alpha=0.2)
+    plt.plot(surface_density, SFR_surface_density, 'o', color='tab:blue')
+    #plt.fill_between(surface_density, SFR_surface_density - SFR_surface_density_err_down,
+    #                 SFR_surface_density + SFR_surface_density_err_up, alpha=0.2)
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), color="red", label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$", linestyle="--")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
-    plt.ylim(-7.0, 1.0)
+    plt.ylim(-7.0, 3.0)
 
     if mode == 0:
+        # load the observational data
+        for ind, observation in enumerate(observational_data):
+            if observation.gas_surface_density is not None:
+                if (observation.description == "Bigiel et al. (2008) inner"):
+                    data = observation.bin_data_KS_molecular(np.arange(-1, 3, .25), 0.4)
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                                 label=observation.description, color='tab:orange')
+
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-        plt.legend()
+        plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.savefig(f"{output_path}/KS_molecular_relation_%i.png" % (index))
         #np.savetxt(f"{output_path}/KS_molecular_relation_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
         #     tgas_err_down, tgas_err_up]))
 
     elif mode == 1:
+        # load the observational data
+        for ind, observation in enumerate(observational_data):
+            if observation.gas_surface_density is not None:
+                if (observation.description == "Bigiel et al. (2008) inner"):
+                    data = observation.bin_data_KS(np.arange(-1, 3, .25), 0.4)
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                                 label=observation.description, color='tab:green')
+                elif (observation.description == "Bigiel et al. (2010) outer"):
+                    data2 = observation.bin_data_KS(np.arange(-1, 3, .25), 0.4)
+                    plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o",
+                                 label=observation.description, color='tab:orange')
+
         plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-        plt.legend()
+        plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.savefig(f"{output_path}/KS_relation_best_%i.png" % (index))
         #np.savetxt(f"{output_path}/KS_relation_best_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
@@ -237,22 +265,42 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
 
-    plt.plot(surface_density, tgas)
-    plt.fill_between(surface_density, tgas-tgas_err_down,  tgas+tgas_err_up,alpha=0.2)
+    plt.plot(surface_density, tgas, 'o', color='tab:blue')
+    #plt.fill_between(surface_density, tgas-tgas_err_down,  tgas+tgas_err_up,alpha=0.2)
     plt.plot(np.log10(Sigma_g),np.log10(Sigma_g)- np.log10(Sigma_star)+6.,color="red",
              label="KS law (Kennicutt 98)",linestyle="--")
-    plt.xlim(0,3.0)
+    plt.xlim(-1,3.0)
     plt.ylim(2, 14)
 
     if mode == 0:
+        # load the observational data
+        for ind, observation in enumerate(observational_data):
+            if observation.gas_surface_density is not None:
+                if (observation.description == "Bigiel et al. (2008) inner"):
+                    data = observation.bin_data_gas_depletion_molecular(np.arange(-1, 3, .25), 0.4)
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                                 label=observation.description, color='tab:orange')
+
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-        plt.legend()
+        plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_%i.png" % (index))
 
     elif mode == 1:
+        # load the observational data
+        for ind, observation in enumerate(observational_data):
+            if observation.gas_surface_density is not None:
+                if (observation.description == "Bigiel et al. (2008) inner"):
+                    data = observation.bin_data_gas_depletion(np.arange(-1, 3, .25), 0.4)
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                                 label=observation.description, color='tab:green')
+                elif (observation.description == "Bigiel et al. (2010) outer"):
+                    data2 = observation.bin_data_gas_depletion(np.arange(-1, 3, .25), 0.4)
+                    plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o",
+                                 label=observation.description, color='tab:orange')
+
         plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-        plt.legend()
+        plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = (\\Sigma_{HI} + \\Sigma_{H_2} )/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         plt.savefig(f"{output_path}/gas_depletion_timescale_best_%i.png" % (index))
 
@@ -300,13 +348,15 @@ def surface_ratios(data, ang_momentum):
     Ratio_err_down = np.abs(Ratio_err_down - Ratio_values)
     Ratio_err_up = np.abs(Ratio_err_up - Ratio_values)
 
-    return plot_surface_range, Ratio_values, Ratio_err_down, Ratio_err_up
+    #return plot_surface_range, Ratio_values, Ratio_err_down, Ratio_err_up
+    return surface_density, ratio_density
 
 def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path):
 
     # Get the surface densities
-    Sigma_gas, Sigma_ratio, \
-    Sigma_ratio_err_down, Sigma_ratio_err_up = surface_ratios(data, ang_momentum)
+    #Sigma_gas, Sigma_ratio, \
+    #Sigma_ratio_err_down, Sigma_ratio_err_up = surface_ratios(data, ang_momentum)
+    Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum)
 
 
     # Plot parameters
@@ -319,7 +369,7 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.8,
-        "lines.markersize": 6,
+        "lines.markersize": 4,
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)
@@ -334,9 +384,9 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
 
-    plt.plot(Sigma_gas, Sigma_ratio)
-    plt.fill_between(Sigma_gas, Sigma_ratio - Sigma_ratio_err_down,
-                     Sigma_ratio + Sigma_ratio_err_up, alpha=0.2)
+    plt.plot(Sigma_gas, Sigma_ratio, 'o', color='tab:blue')
+    #plt.fill_between(Sigma_gas, Sigma_ratio - Sigma_ratio_err_down,
+    #                 Sigma_ratio + Sigma_ratio_err_up, alpha=0.2)
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
     plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
 
@@ -357,15 +407,23 @@ def calculate_integrated_quantities(data, ang_momentum, radius, mode):
     surface = np.pi * radius**2
     if mode == 0: m = data[select,9]
     if mode == 1: m = data[select,9]+data[select,8]
-    Sigma_gas = np.log10( np.sum(m)  / surface ) - 6. #Msun / pc^2
 
-    sfr = data[select,10]
-    sfr = sfr[sfr>0]
-    Sigma_SFR = np.log10( np.sum(sfr) / surface ) #Msun / yr / kpc^2
+    # If we have gas within rhalfMs
+    if len(m)>0:
+        Sigma_gas = np.log10( np.sum(m)  / surface ) - 6. #Msun / pc^2
+
+        sfr = data[select,10]
+        sfr = sfr[sfr>0]
+        Sigma_SFR = np.log10( np.sum(sfr) / surface ) #Msun / yr / kpc^2
+
+    else:
+        Sigma_gas = -6
+        Sigma_SFR = -6
 
     return Sigma_gas, Sigma_SFR
 
 def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_path):
+
 
     for mode, project in enumerate(["molecular_hydrogen_masses", "not_ionized_hydrogen_masses"]):
 
@@ -407,11 +465,14 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
 
 def calculate_surface_densities(data, ang_momentum, galaxy_data, index):
 
-    radius = galaxy_data.halfmass_radius_star[index]
+    # If we have gas, calculate ..
+    if len(data)>0:
 
-    # Mode ==0 : "molecular_hydrogen_masses"
-    # Mode ==1 : "not_ionized_hydrogen_masses"
-    Sigma_H2, Sigma_SFR_H2 = calculate_integrated_quantities(data, ang_momentum, radius, 0)
-    Sigma_gas, Sigma_SFR = calculate_integrated_quantities(data, ang_momentum, radius, 1)
-    Sigma = np.array([Sigma_H2, Sigma_gas, Sigma_SFR])
-    galaxy_data.add_surface_density(Sigma, index)
+        radius = galaxy_data.halfmass_radius_star[index]
+
+        # Mode ==0 : "molecular_hydrogen_masses"
+        # Mode ==1 : "not_ionized_hydrogen_masses"
+        Sigma_H2, Sigma_SFR_H2 = calculate_integrated_quantities(data, ang_momentum, radius, 0)
+        Sigma_gas, Sigma_SFR = calculate_integrated_quantities(data, ang_momentum, radius, 1)
+        Sigma = np.array([Sigma_H2, Sigma_gas, Sigma_SFR])
+        galaxy_data.add_surface_density(Sigma, index)
