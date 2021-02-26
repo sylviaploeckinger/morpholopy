@@ -36,7 +36,7 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
 
     particlesDATA = particlesDATA[extract,:]
     distancesDATA = distancesDATA[extract]
-    Mstar = np.sum(particlesDATA[:,3])                            #compute total in-aperture stellar mass
+    Mstar = np.sum(particlesDATA[:,3])        #compute total in-aperture stellar mass
 
     # Compute 30kpc CoM to Sub CoM velocty offset & recenter
     dvVmass = np.sum(particlesDATA[:,3][:,np.newaxis]*particlesDATA[:,4:7],axis=0) / Mstar
