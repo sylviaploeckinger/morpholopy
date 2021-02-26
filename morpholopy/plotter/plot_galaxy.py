@@ -238,12 +238,12 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
     img = get_normalized_image(img)
-    ax.imshow(img, cmap=cmap, extent=ext)
+    ims = ax.imshow(img, cmap=cmap, extent=ext)
     ax.autoscale(False)
 
     cbar_ax = fig.add_axes([0.86, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[3, 4, 5, 6, 7], cax=cbar_ax)
+    cb = plt.colorbar(ims, ticks=[3, 4, 5, 6, 7], cax=cbar_ax)
     cb.set_label(label=r'$\log_{10}$ $\rho$ [M$_{\odot}$/kpc$^{3}$]', labelpad=0.5)
 
 
