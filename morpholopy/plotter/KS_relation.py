@@ -166,7 +166,7 @@ def KS_relation(data, ang_momentum, mode):
            tgas_values_err_up
 
 
-def make_KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
+def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
 
     # Get the default KS relation for correct IMF
     def KS(sigma_g, n, A):
@@ -365,16 +365,11 @@ def calculate_integrated_quantities(data, ang_momentum, radius, mode):
 
     return Sigma_gas, Sigma_SFR
 
-def KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_path):
-
-    Sigma_gas = np.zeros(2)
-    Sigma_SFR = np.zeros(2)
-    radius = galaxy_data.halfmass_radius_star[index]
+def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_path):
 
     for mode, project in enumerate(["molecular_hydrogen_masses", "not_ionized_hydrogen_masses"]):
 
-        make_KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path)
-        Sigma_gas[mode], Sigma_SFR[mode] = calculate_integrated_quantities(data, ang_momentum, radius, mode)
+        KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path)
 
         if mode == 0:
             outfile = "KS_molecular_relation_%i.png" % (index)
@@ -409,4 +404,14 @@ def KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_path):
     caption = "Surface density ratios."
     KSPlotsInWeb.load_plots(title, caption, outfile, id)
 
-    return Sigma_gas, Sigma_SFR
+
+def calculate_surface_densities(data, ang_momentum, galaxy_data, index):
+
+    radius = galaxy_data.halfmass_radius_star[index]
+
+    # Mode ==0 : "molecular_hydrogen_masses"
+    # Mode ==1 : "not_ionized_hydrogen_masses"
+    Sigma_H2, Sigma_SFR_H2 = calculate_integrated_quantities(data, ang_momentum, radius, 0)
+    Sigma_gas, Sigma_SFR = calculate_integrated_quantities(data, ang_momentum, radius, 1)
+    Sigma = np.array([Sigma_H2, Sigma_gas, Sigma_SFR])
+    galaxy_data.add_surface_density(Sigma, index)

@@ -42,7 +42,7 @@ def make_particle_data(siminfo,halo_id):
 
     gas_mass = data.gas.masses[mask_gas].value * 1e10 #Msun
     gas_n_parts = len(gas_mass)
-    gas_data = np.zeros((gas_n_parts,11))
+    gas_data = np.zeros((gas_n_parts,12))
     gas_data[:,0:3] = data.gas.coordinates[mask_gas].value * siminfo.a * 1e3 #kpc
     gas_data[:, 3] = gas_mass # Msun
     gas_data[:,4:7] = data.gas.velocities[mask_gas].value #km/s
@@ -54,15 +54,16 @@ def make_particle_data(siminfo,halo_id):
     gas_data[:, 8] = gas_HI * XH * gas_mass # Msun
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
     gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value
+    gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * 1e3)**3) #Msun / kpc^3
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10
     stars_n_parts = len(stars_mass)
-    stars_data = np.zeros((stars_n_parts,8))
+    stars_data = np.zeros((stars_n_parts,9))
     stars_data[:,0:3] = data.stars.coordinates[mask_stars].value * siminfo.a * 1e3 #kpc
     stars_data[:,3] = stars_mass #Msun
     stars_data[:,4:7] = data.stars.velocities[mask_stars].value #km/s
     stars_data[:,7] = data.stars.smoothing_lengths[mask_stars].value * siminfo.a * 1e3 #kpc
-    
+    stars_data[:, 8] = stars_mass * (1.2348 / stars_data[:,7])**3 #Msun/kpc^3
     return gas_data, stars_data
 
 
