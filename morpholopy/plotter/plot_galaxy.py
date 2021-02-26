@@ -128,13 +128,15 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
 def get_normalized_image(image,vmin=None,vmax=None):
     if(vmin==None):
-        vmin = np.min(image[image>0])
-        image[image==0] = vmin
+        #vmin = np.min(image[image>0])
+        #image[image==0] = vmin
+        image[image<1e3] = 1e3
     if(vmax==None):
-        vmax = np.max(image)
-
-    image=np.clip(image,vmin,vmax)
-    image=(image-vmin)/(vmax-vmin)
+        #vmax = np.max(image)
+        image[image>1e7] = 1e7
+    image = np.log10(image)
+    #image=np.clip(image,vmin,vmax)
+    #image=(image-vmin)/(vmax-vmin)
     return image
 
 def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsInWeb, output_path):
@@ -185,7 +187,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     ax.set_title(title)
 
     ###### plot one side ########################
-    qv = QuickView(pos_face_on, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
+    qv = QuickView(pos_face_on, mass=mass, hsml=hsml_parts, logscale=False, plot=False,
                    r='infinity', p=0, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
@@ -195,7 +197,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     plt.ylabel('y [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    #img = get_normalized_image(img)
+    img = get_normalized_image(img)
     ax.imshow(img, cmap=cmap, extent=ext)
     ax.autoscale(False)
 
@@ -225,7 +227,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
         title += " b/a = %0.2f" % (ba)
     ax.set_title(title)
 
-    qv = QuickView(pos_edge_on, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
+    qv = QuickView(pos_edge_on, mass=mass, hsml=hsml_parts, logscale=False, plot=False,
                    r='infinity', p=90, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
@@ -235,13 +237,13 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     plt.ylabel('z [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    #img = get_normalized_image(img)
+    img = get_normalized_image(img)
     ax.imshow(img, cmap=cmap, extent=ext)
     ax.autoscale(False)
 
     cbar_ax = fig.add_axes([0.86, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[4, 6, 8, 10], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[3, 4, 5, 6, 7], cax=cbar_ax)
     cb.set_label(label=r'$\log_{10}$ $\rho$ [M$_{\odot}$/kpc$^{3}$]', labelpad=0.5)
 
 
