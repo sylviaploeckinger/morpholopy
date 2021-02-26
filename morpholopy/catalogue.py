@@ -16,7 +16,7 @@ class HaloCatalogue:
         sfr = properties.apertures.sfr_gas_30_kpc
 
         # Selecting galaxies more massive than lower limit
-        catalogue = np.where(gas_mass >= lower_mass)[0]
+        catalogue = np.where((stellar_mass >= lower_mass) & (gas_mass >= lower_mass))[0]
 
         # Selecting centrals only
         structure_type = properties.structure_type.structuretype.value
