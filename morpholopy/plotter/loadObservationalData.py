@@ -3,6 +3,7 @@ Code from Folkert Nobels to load observational SFR data.
 """
 
 import numpy as np
+import codecs
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
@@ -122,8 +123,10 @@ def read_obs_data(path="obs_data"):
     output = []
 
     # Load the data from Kennicutt 1998 (part 1, Normal spiral galaxies)
-    galaxy_name, D, sigma_HI, sigma_H2, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(
-        f"{path}/KS_relation_Kennicutt1998.txt", unpack=True)
+    file = f"{path}/KS_relation_Kennicutt1998.txt"
+    filecp = codecs.open(file, encoding='cp1252')
+    galaxy_name, D, sigma_HI, sigma_H2, sigma_gas, sigma_SFR, tdepl =\
+        np.genfromtxt(filecp, unpack=True, comments="#")
 
     output.append(
         ObservationalData(
@@ -133,8 +136,10 @@ def read_obs_data(path="obs_data"):
     )
 
     # Load the data from Kennicutt 1998 (part 2, circumnuclear starbursts)
-    D, sigma_H2, sigma_SFR, tdepl = np.genfromtxt(f"{path}/KS_relation_Kennicutt1998b.txt", unpack=True,
-                                                  usecols=(2, 3, 4, 5))
+    file = f"{path}/KS_relation_Kennicutt1998b.txt"
+    filecp = codecs.open(file, encoding='cp1252')
+    D, sigma_H2, sigma_SFR, tdepl = np.genfromtxt(filecp, unpack=True,
+                                                  comments = "#", usecols=(2, 3, 4, 5))
 
     output.append(
         ObservationalData(
@@ -144,8 +149,10 @@ def read_obs_data(path="obs_data"):
     )
 
     # Load the data from Freundlich et al. 2013 (high redshift z=1.2 galaxies)
-    Mgas, SFR, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(f"{path}/KS_relation_freundlich2013.txt", unpack=True,
-                                                           usecols=(2, 3, 4, 5, 6))
+    file = f"{path}/KS_relation_freundlich2013.txt"
+    filecp = codecs.open(file, encoding='cp1252')
+    Mgas, SFR, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(filecp, unpack=True,
+                                                           usecols=(2, 3, 4, 5, 6), comments = "#")
 
     output.append(
         ObservationalData(
@@ -155,8 +162,10 @@ def read_obs_data(path="obs_data"):
     )
 
     # Load the data from Leroy et al. (2008) and Frank et al. (2016)
+    file = f"{path}/surfdens_online.txt"
+    filecp = codecs.open(file, encoding='cp1252')
     sigma_HI, sigma_HI_err, sigma_H2, sigma_H2_err, sigma_SFR, sigma_SFR_err = np.genfromtxt(
-        f"{path}/surfdens_online.txt", unpack=True, usecols=(2, 3, 4, 5, 6, 7))
+        filecp, unpack=True, usecols=(2, 3, 4, 5, 6, 7), comments = "#")
 
     sigma_gas = sigma_H2 + sigma_HI
 
@@ -167,7 +176,9 @@ def read_obs_data(path="obs_data"):
         )
     )
 
-    sigma_H2, sigma_SFR = np.genfromtxt(f"{path}/KS_relation_genzel2010.txt", unpack=True, usecols=(11, 13))
+    file = f"{path}/KS_relation_genzel2010.txt"
+    filecp = codecs.open(file, encoding='cp1252')
+    sigma_H2, sigma_SFR = np.genfromtxt(filecp, unpack=True, usecols=(11, 13), comments = "#")
     sigma_gas = sigma_H2
 
     output.append(
@@ -296,8 +307,11 @@ def read_obs_data(path="obs_data"):
         )
     )
 
-    sigma_SFR, sigma_SFR_err, sigma_HI, sigma_HI_err, sigma_H2, sigma_H2_err, quality = np.genfromtxt(
-        f"{path}/data_schruba2011.txt", unpack=True, usecols=(3, 4, 5, 6, 7, 8, 10))
+    file = f"{path}/data_schruba2011.txt"
+    filecp = codecs.open(file, encoding='cp1252')
+    sigma_SFR, sigma_SFR_err, sigma_HI, \
+    sigma_HI_err, sigma_H2, sigma_H2_err, \
+    quality = np.genfromtxt(filecp, unpack=True, usecols=(3, 4, 5, 6, 7, 8, 10), comments="#")
 
     sigma_gas = sigma_HI + sigma_H2
 
