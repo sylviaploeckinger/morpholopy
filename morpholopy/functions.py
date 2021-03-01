@@ -32,7 +32,7 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     distancesDATA = np.linalg.norm(particlesDATA[:,:3],axis=1)
 
     # Restrict particles
-    extract = distancesDATA<30.
+    extract = distancesDATA<50.
 
     particlesDATA = particlesDATA[extract,:]
     distancesDATA = distancesDATA[extract]

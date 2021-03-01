@@ -53,7 +53,7 @@ def make_particle_data(siminfo,halo_id):
     gas_H2 = data.gas.species_fractions.H2[mask_gas].value * 2.
     gas_data[:, 8] = gas_HI * XH * gas_mass # Msun
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
-    gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value
+    gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value * 10227144.8879616 / 1e9 #Msun/yr
     gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * 1e3)**3) #Msun / kpc^3
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10

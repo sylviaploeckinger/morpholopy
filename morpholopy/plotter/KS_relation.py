@@ -10,24 +10,6 @@ from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 import scipy.stats as stat
 from .loadObservationalData import read_obs_data
 
-def scatter(x, y, m, res):
-
-    image = np.zeros((res, res))
-    maximal_array_index = res
-    inverse_cell_area = res * res
-
-    for x_pos, y_pos, mass in zip(x, y, m):
-        particle_cell_x = int(res * x_pos)
-        particle_cell_y = int(res * y_pos)
-
-        if not (
-                particle_cell_x < 0
-                or particle_cell_x >= maximal_array_index
-                or particle_cell_y < 0
-                or particle_cell_y >= maximal_array_index
-        ):
-            image[particle_cell_x, particle_cell_y] += mass * inverse_cell_area
-    return image
 
 def project_pixel_grid(data, mode, res, region, rotation_matrix):
 
@@ -36,9 +18,10 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
     x_range = x_max - x_min
     y_range = y_max - y_min
 
-    if mode == 0: m = data[:,9]
-    if mode == 1: m = data[:,9]+data[:,8]
-    if mode == 2: m = data[:,10]
+    if mode == 0: m = data[:,9] #H2
+    if mode == 1: m = data[:,9]+data[:,8] #H2+HI
+    if mode == 2: m = data[:,10] #SFR
+    if mode == 3: m = data[:,8] #HI
 
     # Rotate co-ordinates as required
     x, y, _ = np.matmul(rotation_matrix, data[:,:3].T)
@@ -85,9 +68,10 @@ def bin_surface(radial_bins):
 
 def project_gas_with_azimutal_average(data, mode, rotation_matrix):
 
-    if mode == 0: m = data[:,9]
-    if mode == 1: m = data[:,9]+data[:,8]
-    if mode == 2: m = data[:,10]
+    if mode == 0: m = data[:,9] #H2
+    if mode == 1: m = data[:,9]+data[:,8] #HI+H2
+    if mode == 2: m = data[:,10] #SFR
+    if mode == 3: m = data[:,8] #HI
 
     # Rotate co-ordinates as required
     x, y, _ = np.matmul(rotation_matrix, data[:,:3].T)
@@ -131,42 +115,33 @@ def KS_relation(data, ang_momentum, mode):
     SFR_surface_density = np.log10(map_SFR.flatten()) #Msun / yr / kpc^2
     tgas = surface_density - SFR_surface_density + 6.
 
-    surface_range = np.arange(-1, 7, .25)
+    return surface_density, SFR_surface_density, tgas
 
-    SFR_values = np.zeros(len(surface_range)-1)
-    SFR_values_err_down = np.zeros(len(surface_range)-1)
-    SFR_values_err_up = np.zeros(len(surface_range)-1)
-    tgas_values = np.zeros(len(surface_range) - 1)
-    tgas_values_err_down = np.zeros(len(surface_range) - 1)
-    tgas_values_err_up = np.zeros(len(surface_range) - 1)
+def median_relations(x, y):
+
+    xrange = np.arange(-1, 3, 0.2)
+
+    xvalues = np.ones(len(xrange) - 1) * (-10)
+    yvalues = np.zeros(len(xrange) - 1)
+    yvalues_err_down = np.zeros(len(xrange) - 1)
+    yvalues_err_up = np.zeros(len(xrange) - 1)
 
     perc = [16, 86]
 
-    for i in range(0, len(surface_range) - 2):
-        mask = (surface_density > surface_range[i]) & (surface_density < surface_range[i + 1])
-        surface = SFR_surface_density[mask]
-        if len(surface)>0:
-            SFR_values[i] = np.median(SFR_surface_density[mask])
-            tgas_values[i] = np.median(tgas[mask])
-        try:
-            SFR_values_err_down[i], SFR_values_err_up[i] = np.transpose(np.percentile(SFR_surface_density[mask], perc))
-            tgas_values_err_down[i], tgas_values_err_up[i] = np.transpose(np.percentile(tgas[mask], perc))
-        except:
-            SFR_values_err_down[i], SFR_values_err_up[i] = [0., 0.]
-            tgas_values_err_down[i], tgas_values_err_up[i] = [0., 0.]
+    for i in range(0, len(xrange) - 2):
+        mask = (x > xrange[i]) & (x < xrange[i + 1])
+        if len(x[mask]) > 2:
+            xvalues[i] = np.median(x[mask])
+            yvalues[i] = np.median(y[mask])
+            yvalues_err_down[i], yvalues_err_up[i] = np.transpose(np.percentile(y[mask], perc))
 
-    plot_surface_range = (surface_range[1:] + surface_range[:-1]) / 2.
+    mask = xvalues>-10
+    xvalues = xvalues[mask]
+    yvalues = yvalues[mask]
+    yvalues_err_down = yvalues_err_down[mask]
+    yvalues_err_up = yvalues_err_up[mask]
 
-    SFR_values_err_down = np.abs(SFR_values_err_down - SFR_values)
-    SFR_values_err_up = np.abs(SFR_values_err_up - SFR_values)
-    tgas_values_err_down = np.abs(tgas_values_err_down - tgas_values)
-    tgas_values_err_up = np.abs(tgas_values_err_up - tgas_values)
-
-    #return plot_surface_range, SFR_values, SFR_values_err_down, \
-    #       SFR_values_err_up, tgas_values, tgas_values_err_down, \
-    #       tgas_values_err_up
-
-    return surface_density, SFR_surface_density, tgas
+    return xvalues, yvalues, yvalues_err_down, yvalues_err_up
 
 
 def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
@@ -182,11 +157,10 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
 
     # Get the surface densities
-    #surface_density, SFR_surface_density, \
-    #SFR_surface_density_err_down, SFR_surface_density_err_up, \
-    #tgas, tgas_err_down, tgas_err_up = KS_relation(data, ang_momentum, mode)
-
     surface_density, SFR_surface_density, tgas = KS_relation(data, ang_momentum, mode)
+    # Get median lines
+    median_surface_density, median_SFR_surface_density, \
+    SFR_surface_density_err_down, SFR_surface_density_err_up = median_relations(surface_density, SFR_surface_density)
 
 
     # Plot parameters
@@ -199,8 +173,8 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.8,
-        "lines.markersize": 4,
-        "lines.linewidth": 2.0,
+        "lines.markersize": 2,
+        "lines.linewidth": 1.0,
     }
     rcParams.update(params)
 
@@ -214,8 +188,9 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
     plt.plot(surface_density, SFR_surface_density, 'o', color='tab:blue')
-    #plt.fill_between(surface_density, SFR_surface_density - SFR_surface_density_err_down,
-    #                 SFR_surface_density + SFR_surface_density_err_up, alpha=0.2)
+    plt.plot(median_surface_density, median_SFR_surface_density, '-', color='black')
+    plt.fill_between(median_surface_density, SFR_surface_density_err_down,
+                     SFR_surface_density_err_up, alpha=0.2)
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), color="red", label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$", linestyle="--")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
@@ -258,6 +233,8 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
         #     tgas_err_down, tgas_err_up]))
     plt.close()
 
+    median_surface_density, median_tgas, tgas_err_down, tgas_err_up = median_relations(surface_density, tgas)
+
     figure()
     ax = plt.subplot(1, 1, 1)
     title = r"Star formation rate = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
@@ -266,7 +243,8 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     ax.set_title(title)
 
     plt.plot(surface_density, tgas, 'o', color='tab:blue')
-    #plt.fill_between(surface_density, tgas-tgas_err_down,  tgas+tgas_err_up,alpha=0.2)
+    plt.plot(median_surface_density, median_tgas, '-', color='black')
+    plt.fill_between(median_surface_density, tgas_err_down,  tgas_err_up, alpha=0.2)
     plt.plot(np.log10(Sigma_g),np.log10(Sigma_g)- np.log10(Sigma_star)+6.,color="red",
              label="KS law (Kennicutt 98)",linestyle="--")
     plt.xlim(-1,3.0)
@@ -315,49 +293,34 @@ def surface_ratios(data, ang_momentum):
 
     # Calculate the SPH smoothed maps
     map_H2 = project_gas(data, 0, number_of_pixels, extent, face_on_rotation_matrix)
-    map_gas = project_gas(data, 1, number_of_pixels, extent, face_on_rotation_matrix)
+    map_HI = project_gas(data, 3, number_of_pixels, extent, face_on_rotation_matrix)
+    map_gas = map_H2 + map_HI
 
     # Bounds
     map_H2[map_H2 <= 0] = 1e-6
     map_gas[map_gas <= 0] = 1e-6
+    ratio = map_H2 / map_gas
 
-    surface_density = np.log10(map_gas.flatten()) #Msun / kpc^2
-    H2_surface_density = np.log10(map_H2.flatten()) #Msun / kpc^2
-    ratio_density = H2_surface_density - surface_density # no units
-    surface_density -= 6  #Msun / pc^2
-
-    surface_range = np.arange(-1, 7, .25)
-
-    Ratio_values = np.zeros(len(surface_range)-1)
-    Ratio_err_down = np.zeros(len(surface_range)-1)
-    Ratio_err_up = np.zeros(len(surface_range)-1)
-
-    perc = [16, 86]
-
-    for i in range(0, len(surface_range) - 2):
-        mask = (surface_density > surface_range[i]) & (surface_density < surface_range[i + 1])
-        surface = ratio_density[mask]
-        if len(surface)>0:
-            Ratio_values[i] = np.median(ratio_density[mask])
-        try:
-            Ratio_err_down[i], Ratio_err_up[i] = np.transpose(np.percentile(ratio_density[mask], perc))
-        except:
-            Ratio_err_down[i], Ratio_err_up[i] = [0., 0.]
-
-    plot_surface_range = (surface_range[1:] + surface_range[:-1]) / 2.
-    Ratio_err_down = np.abs(Ratio_err_down - Ratio_values)
-    Ratio_err_up = np.abs(Ratio_err_up - Ratio_values)
-
-    #return plot_surface_range, Ratio_values, Ratio_err_down, Ratio_err_up
+    surface_density = np.log10(map_gas.flatten()) #HI+H2 Msun / kpc^2
+    #H2_surface_density = np.log10(map_H2.flatten()) #Msun / kpc^2
+    #ratio_density = H2_surface_density - surface_density # no units
+    ratio_density = np.log10(ratio.flatten()) #no units
+    surface_density -= 6  #HI+H2 Msun / pc^2
     return surface_density, ratio_density
+
+def Krumholz_eq39(Sigma_neutral, f):
+    Zprime = 1.0
+    psi = 1.6  # fiducial from Krumholz
+    s = 1. / f * Sigma_neutral * Zprime / psi
+    RH2 = np.power((1. + np.power(s / 11., 3) * np.power((125. + s) / (96. + s), 3)), 1. / 3.) - 1.
+    return RH2
 
 def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path):
 
     # Get the surface densities
-    #Sigma_gas, Sigma_ratio, \
-    #Sigma_ratio_err_down, Sigma_ratio_err_up = surface_ratios(data, ang_momentum)
     Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum)
-
+    Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
+    Sigma_ratio_err_up = median_relations(Sigma_gas, Sigma_ratio)
 
     # Plot parameters
     params = {
@@ -369,8 +332,8 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.8,
-        "lines.markersize": 4,
-        "lines.linewidth": 2.0,
+        "lines.markersize": 2,
+        "lines.linewidth": 1.0,
     }
     rcParams.update(params)
 
@@ -385,14 +348,20 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     ax.set_title(title)
 
     plt.plot(Sigma_gas, Sigma_ratio, 'o', color='tab:blue')
-    #plt.fill_between(Sigma_gas, Sigma_ratio - Sigma_ratio_err_down,
-    #                 Sigma_ratio + Sigma_ratio_err_up, alpha=0.2)
+    plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', color='black')
+    plt.fill_between(Median_Sigma_gas, Sigma_ratio_err_down, Sigma_ratio_err_up, alpha=0.2)
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
     plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
 
+    # Krumholz 2009 lines
+    Sigma_neutral = np.arange(-1, 3, 0.2)
+    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.5)
+    FH2 = np.log10(1. / (1. + RH2))
+    plt.plot(Sigma_neutral, FH2, '--', color='tab:red', label="Krumholz+ (2009): f = 0.5")
+
     plt.xlim(-1.0, 3.0)
     plt.ylim(-7.0, 1.0)
-
+    plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
     plt.savefig(f"{output_path}/Surface_density_ratio_%i.png" % (index))
     plt.close()
 
@@ -466,13 +435,11 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
 def calculate_surface_densities(data, ang_momentum, galaxy_data, index):
 
     # If we have gas, calculate ..
-    if len(data)>0:
+    radius = galaxy_data.halfmass_radius_star[index]
 
-        radius = galaxy_data.halfmass_radius_star[index]
-
-        # Mode ==0 : "molecular_hydrogen_masses"
-        # Mode ==1 : "not_ionized_hydrogen_masses"
-        Sigma_H2, Sigma_SFR_H2 = calculate_integrated_quantities(data, ang_momentum, radius, 0)
-        Sigma_gas, Sigma_SFR = calculate_integrated_quantities(data, ang_momentum, radius, 1)
-        Sigma = np.array([Sigma_H2, Sigma_gas, Sigma_SFR])
-        galaxy_data.add_surface_density(Sigma, index)
+    # Mode ==0 : "molecular_hydrogen_masses"
+    # Mode ==1 : "not_ionized_hydrogen_masses"
+    Sigma_H2, Sigma_SFR_H2 = calculate_integrated_quantities(data, ang_momentum, radius, 0)
+    Sigma_gas, Sigma_SFR = calculate_integrated_quantities(data, ang_momentum, radius, 1)
+    Sigma = np.array([Sigma_H2, Sigma_gas, Sigma_SFR])
+    galaxy_data.add_surface_density(Sigma, index)

@@ -243,7 +243,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     cbar_ax = fig.add_axes([0.86, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
     cb = plt.colorbar(ims, ticks=[4, 6, 8, 10, 12], cax=cbar_ax)
-    cb.set_label(label=r'$\log_{10}$ $\rho$ [M$_{\odot}$/kpc$^{3}$]', labelpad=0.5)
+    cb.set_label(label=r'$\log_{10}$ $\Sigma$ [M$_{\odot}$/kpc$^{2}$]', labelpad=0.5)
 
 
     if parttype == 0: outfile = f"{output_path}/galaxy_gas_%i.png" % (index)
@@ -271,8 +271,8 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
 def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
-    plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
     plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)

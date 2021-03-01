@@ -65,7 +65,7 @@ if __name__ == '__main__':
             visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path)
 
-            make_KS_plots(gas_data, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+            make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
             title = '%i Galaxy ' % (i+1)
             id = abs(hash("galaxy and ks relation %i" %i))
