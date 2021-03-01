@@ -130,10 +130,10 @@ def get_normalized_image(image,vmin=None,vmax=None):
     if(vmin==None):
         #vmin = np.min(image[image>0])
         #image[image==0] = vmin
-        image[image<3] = 3
-    if(vmax==None):
+        image[image<4] = 4
+    #if(vmax==None):
         #vmax = np.max(image)
-        image[image>8] = 8
+        #image[image>8] = 8
     #image=np.clip(image,vmin,vmax)
     #image=(image-vmin)/(vmax-vmin)
     return image
@@ -242,7 +242,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
 
     cbar_ax = fig.add_axes([0.86, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ims, ticks=[3, 4, 5, 6, 7, 8], cax=cbar_ax, extend='both')
+    cb = plt.colorbar(ims, ticks=[4, 6, 8, 10, 12], cax=cbar_ax)
     cb.set_label(label=r'$\log_{10}$ $\rho$ [M$_{\odot}$/kpc$^{3}$]', labelpad=0.5)
 
 
