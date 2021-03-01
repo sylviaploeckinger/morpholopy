@@ -63,7 +63,7 @@ def make_particle_data(siminfo,halo_id):
     stars_data[:,3] = stars_mass #Msun
     stars_data[:,4:7] = data.stars.velocities[mask_stars].value #km/s
     stars_data[:,7] = data.stars.smoothing_lengths[mask_stars].value * siminfo.a * 1e3 #kpc
-    stars_data[:, 8] = stars_mass * (1.2348 / stars_data[:,7])**3 #Msun/kpc^3
+    stars_data[:, 8] = stars_mass * (1.2348 / stars_data[:,7] )**3 #Msun/kpc^3
     return gas_data, stars_data
 
 
