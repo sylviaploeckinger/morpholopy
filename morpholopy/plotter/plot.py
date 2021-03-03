@@ -39,7 +39,8 @@ def plot_momentum(stellar_mass,momentum,parttype,MorphologyPlotsInWeb,output_pat
     plt.ylabel(ylabel)
     plt.yscale('log')
     plt.xscale('log')
-    plt.axis([1e6,1e10,1e-1,1e3])
+    plt.xlim(1e6, 1e12)
+    plt.ylim(1e-1, 1e4)
     plt.savefig(f"{output_path}/momentum_parttype_%i.png"%parttype, dpi=200)
     plt.close()
 
@@ -86,6 +87,9 @@ def plot_kappa(stellar_mass,kappa,parttype,MorphologyPlotsInWeb,output_path):
     plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel(r"$\kappa_{\mathrm{co}}$")
+    plt.xlim(1e6, 1e12)
+    plt.ylim(0, 1)
+
     plt.savefig(f"{output_path}/Kappa_co_parttype_%i.png"%parttype, dpi=200)
     plt.close()
 
@@ -137,6 +141,8 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype,MorphologyPlotsInWeb,outp
     plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel("c/a")
+    plt.xlim(1e6, 1e12)
+    plt.ylim(0.0, 1.0)
 
     ########
     ax = plt.subplot(1,3,2)
@@ -147,6 +153,8 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype,MorphologyPlotsInWeb,outp
     plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel("c/b")
+    plt.xlim(1e6, 1e12)
+    plt.ylim(0.0, 1.0)
 
     ########
     ax = plt.subplot(1,3,3)
@@ -157,6 +165,8 @@ def plot_axis_ratios(stellar_mass,axis_ratios,parttype,MorphologyPlotsInWeb,outp
     plt.xscale('log')
     plt.xlabel("Stellar Mass [M$_{\odot}$]")
     plt.ylabel("b/a")
+    plt.xlim(1e6, 1e12)
+    plt.ylim(0.0, 1.0)
 
     plt.savefig(f"{output_path}/Axis_ratios_parttype_%i.png"%parttype, dpi=200)
     plt.close()
@@ -206,12 +216,12 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
     plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
-    plt.ylim(-6.0, 1.0)
+    plt.ylim(-6.0, 0.0)
 
     plt.legend()
     cbar_ax = fig.add_axes([0.87, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[6,7,8,9,10], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[6,7,8,9,10,11,12], cax=cbar_ax)
     cb.set_label(label='$\log_{10}$ M$_{*}$/M$_{\odot}$', labelpad=0.5)
     plt.savefig(f"{output_path}/surface_density_gas.png", dpi=200)
     plt.close()
@@ -236,11 +246,11 @@ def plot_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass, Morphol
     plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
-    plt.ylim(-6.0, 1.0)
+    plt.ylim(-6.0, 0.0)
     plt.legend()
     cbar_ax = fig.add_axes([0.87, 0.22, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[6,7,8,9,10], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[6,7,8,9,10,11,12], cax=cbar_ax)
     cb.set_label(label='$\log_{10}$ M$_{*}$/M$_{\odot}$', labelpad=0.5)
     plt.savefig(f"{output_path}/surface_density_H2.png", dpi=200)
     plt.close()

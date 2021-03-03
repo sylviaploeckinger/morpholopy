@@ -18,10 +18,10 @@ import unyt
 
 class SimInfo:
     def __init__(self,folder,snap):
-        self.snapshot = os.path.join(folder,"colibre_0%03i.hdf5"%snap)
-        self.subhalo_properties = os.path.join(folder,"halo_0%03i.properties.0"%snap)
-        self.catalog_groups = os.path.join(folder,"halo_0%03i.catalog_groups.0"%snap)
-        self.catalog_particles = os.path.join(folder, "halo_0%03i.catalog_particles.0" % snap)
+        self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
+        self.subhalo_properties = os.path.join(folder,"halo_%04i.properties.0"%snap)
+        self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
+        self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e7 * unyt.msun  # ! Option of lower limit for gas mass
+    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters
@@ -49,6 +49,8 @@ if __name__ == '__main__':
 
         # Read particle data
         gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])
+
+        if len(gas_data) ==0: continue
 
         # Calculate morphology estimators: kappa, axial ratios for stars ..
         stars_ang_momentum, stars_data = calculate_morphology(halo_data, stars_data, siminfo, i, 4)

@@ -89,7 +89,7 @@ def project_gas_with_azimutal_average(data, mode, rotation_matrix):
 
 def KS_relation(data, ang_momentum, mode):
 
-    size = 0.65 #kpc
+    size = 0.25 #kpc
     image_diameter = 60
     extent = [-30, 30]  #kpc
     number_of_pixels = int(image_diameter / size + 1)
@@ -130,7 +130,7 @@ def median_relations(x, y):
 
     for i in range(0, len(xrange) - 2):
         mask = (x > xrange[i]) & (x < xrange[i + 1])
-        if len(x[mask]) > 2:
+        if len(x[mask]) > 4:
             xvalues[i] = np.median(x[mask])
             yvalues[i] = np.median(y[mask])
             yvalues_err_down[i], yvalues_err_up[i] = np.transpose(np.percentile(y[mask], perc))
@@ -194,7 +194,7 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), color="red", label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$", linestyle="--")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
-    plt.ylim(-7.0, 3.0)
+    plt.ylim(-6.5, 1.0)
 
     if mode == 0:
         # load the observational data
@@ -248,7 +248,7 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     plt.plot(np.log10(Sigma_g),np.log10(Sigma_g)- np.log10(Sigma_star)+6.,color="red",
              label="KS law (Kennicutt 98)",linestyle="--")
     plt.xlim(-1,3.0)
-    plt.ylim(2, 14)
+    plt.ylim(7, 12)
 
     if mode == 0:
         # load the observational data
@@ -260,7 +260,7 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
                                  label=observation.description, color='tab:orange')
 
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-        plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
+        #plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_%i.png" % (index))
 
@@ -278,13 +278,13 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
                                  label=observation.description, color='tab:orange')
 
         plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-        plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
+        #plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = (\\Sigma_{HI} + \\Sigma_{H_2} )/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         plt.savefig(f"{output_path}/gas_depletion_timescale_best_%i.png" % (index))
 
 def surface_ratios(data, ang_momentum):
 
-    size = 0.65 #kpc
+    size = 0.25 #kpc
     image_diameter = 60
     extent = [-30, 30]  #kpc
     number_of_pixels = int(image_diameter / size + 1)
@@ -360,7 +360,7 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     plt.plot(Sigma_neutral, FH2, '--', color='tab:red', label="Krumholz+ (2009): f = 0.5")
 
     plt.xlim(-1.0, 3.0)
-    plt.ylim(-7.0, 1.0)
+    plt.ylim(-8.0, 0.5)
     plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
     plt.savefig(f"{output_path}/Surface_density_ratio_%i.png" % (index))
     plt.close()
@@ -414,12 +414,14 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
             title = "Depletion time (H2 mass)"
             id = abs(hash("galaxy depletion H2 %i" % (index)))
             outfile = "molecular_gas_depletion_timescale_%i.png" % (index)
+            caption = "Gas depletion times. The observational data-points correspond to"
+            caption += " Bigiel et al. (2008) inner, same as KS relation (H2 mass) figure."
         if mode == 1:
             title = "Depletion time (H2+HI mass)"
             id = abs(hash("galaxy depletion H2+HI %i" % (index)))
             outfile = "gas_depletion_timescale_best_%i.png" % (index)
-
-        caption = "Gas depletion times."
+            caption = "Gas depletion times. The observational data-points correspond to"
+            caption += " Bigiel et al. (2008, 2010), same as KS relation (H2+HI mass) figure."
         KSPlotsInWeb.load_plots(title, caption, outfile, id)
 
 

@@ -7,7 +7,9 @@ from numpy import matmul
 def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, PlotsInWeb, output_path):
 
     # Plot ranges
-    r_img = 5 * halo_data.halfmass_radius_star[index]
+    r_limit = 5 * halo_data.halfmass_radius_star[index]
+    r_img = 30.
+    if r_limit < r_img: r_img = r_limit
     xmin = -r_img
     ymin = -r_img
     xmax = r_img
@@ -157,7 +159,9 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     hsml_parts = parts_data[:, 7]
     mass = parts_data[:, 3]
 
-    r_img = 5 * halo_data.halfmass_radius_star[index]
+    r_limit = 5 * halo_data.halfmass_radius_star[index]
+    r_img = 30.
+    if r_limit < r_img: r_img = r_limit
     xmin = -r_img
     ymin = -r_img
     xmax = r_img
