@@ -4,7 +4,6 @@ Description here
 
 import os
 import h5py
-#import numpy as np
 
 from catalogue import HaloCatalogue
 from particles import calculate_morphology, make_particle_data
