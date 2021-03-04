@@ -5,3 +5,4 @@ velociraptor-python
 scipy
 matplotlib
 sphviewer
+swiftsimio
