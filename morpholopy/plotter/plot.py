@@ -314,7 +314,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
     x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
 
     plt.scatter(sigma_gas, sigma_SFR, c=metals, alpha=.9, s=10,
-                vmin=-2, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2)
+                vmin=-3, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2)
     plt.plot(x, y, '-', color='grey')
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
@@ -325,7 +325,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
 
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[-2,-1,0,1], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[-3,-2,-1,0,1], cax=cbar_ax)
     cb.set_label(label='Z$_{gas}$/Z$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.savefig(f"{output_path}/accumulative_surface_density_gas.png", dpi=200)
@@ -356,7 +356,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
     x, y, y_down, y_up = median_relations(sigma_gas, sigma_ratio)
 
     plt.scatter(sigma_gas, sigma_ratio, c=metals, alpha=.9, s=10,
-                vmin=-2, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2)
+                vmin=-3, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2)
     plt.plot(x, y, '-', color='grey')
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
@@ -366,7 +366,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
 
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[-2,-1,0,1], cax=cbar_ax)
+    cb = plt.colorbar(ticks=[-3,-2,-1,0,1], cax=cbar_ax)
     cb.set_label(label='Z$_{gas}$/Z$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.savefig(f"{output_path}/accumulative_surface_density_ratios.png", dpi=200)
@@ -428,10 +428,12 @@ def plot_morphology(galaxy_data,web,MorphologyPlotsInWeb,output_path):
     plot_surface_densities(galaxy_data.sigma_SFR,galaxy_data.sigma_gas,galaxy_data.sigma_H2,
                            galaxy_data.stellar_mass,MorphologyPlotsInWeb,output_path)
 
-    title = 'Surface densities'
-    id = abs(hash("Surface density"))
+    title = 'Integrated surface densities'
+    id = abs(hash("Integrated Surface density"))
     plots = MorphologyPlotsInWeb.plots_details
     add_web_section(web, title, id, plots)
+
+    MorphologyPlotsInWeb.reset_plots_list()
 
     # plot surface densities
     plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path)
