@@ -44,7 +44,7 @@ if __name__ == '__main__':
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters
-    for i in range(0,halo_data.num):
+    for i in range(halo_data.num):
 
         # Read particle data
         gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])

@@ -42,7 +42,7 @@ def make_particle_data(siminfo,halo_id):
 
     gas_mass = data.gas.masses[mask_gas].value * 1e10 #Msun
     gas_n_parts = len(gas_mass)
-    gas_data = np.zeros((gas_n_parts,12))
+    gas_data = np.zeros((gas_n_parts,13))
     gas_data[:,0:3] = data.gas.coordinates[mask_gas].value * siminfo.a * 1e3 #kpc
     gas_data[:, 3] = gas_mass # Msun
     gas_data[:,4:7] = data.gas.velocities[mask_gas].value #km/s
@@ -55,6 +55,7 @@ def make_particle_data(siminfo,halo_id):
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
     gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value * 10227144.8879616 / 1e9 #Msun/yr
     gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * 1e3)**3) #Msun / kpc^3
+    gas_data[:, 12] = data.gas.metal_mass_fractions[mask_gas].value/0.0134 # !assuming Solar metallicty
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10
     stars_n_parts = len(stars_mass)

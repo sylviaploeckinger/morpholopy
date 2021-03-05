@@ -14,6 +14,10 @@ class HaloCatalogue:
         half_mass_radius_gas = properties.radii.r_halfmass_gas
         half_mass_radius_gas.convert_to_units("kpc")
         sfr = properties.apertures.sfr_gas_30_kpc
+        halo_mass = properties.masses.mass_200crit
+        halo_mass.convert_to_units("msun")
+        metallicity_gas_sfr = properties.metallicity.zmet_gas_sf
+        metallicity_gas = properties.metallicity.zmet_gas
 
         # Selecting galaxies more massive than lower limit
         catalogue = np.where((stellar_mass >= lower_mass) & (gas_mass >= lower_mass))[0]
@@ -32,6 +36,9 @@ class HaloCatalogue:
         self.halfmass_radius_star = half_mass_radius_star[catalogue]
         self.halfmass_radius_gas = half_mass_radius_gas[catalogue]
         self.star_formation_rate = sfr[catalogue]
+        self.halo_mass = np.log10(halo_mass[catalogue])
+        self.metallicity_gas_sfr = metallicity_gas_sfr[catalogue]
+        self.metallicity_gas = metallicity_gas[catalogue]
 
         self.kappa_co = [ None for i in range(self.num) ]
         self.momentum = [ None for i in range(self.num) ]
@@ -48,6 +55,11 @@ class HaloCatalogue:
         self.sigma_H2 = [ None for i in range(self.num) ]
         self.sigma_gas = [ None for i in range(self.num) ]
         self.sigma_SFR = [ None for i in range(self.num) ]
+
+        self.surface_density =  None
+        self.SFR_density =  None
+        self.ratio_densities = None
+        self.metallicity = None
 
 
         # Subhalo data :

@@ -275,8 +275,8 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
 def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
-    plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
     plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)

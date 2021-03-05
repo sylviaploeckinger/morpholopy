@@ -46,6 +46,43 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
             image[particle_cell_x, particle_cell_y] += mass * inverse_cell_area
     return image
 
+
+def integrate_metallicity(data, res, region, rotation_matrix):
+
+    x_min, x_max = region
+    y_min, y_max = region
+    x_range = x_max - x_min
+    y_range = y_max - y_min
+
+    m = data[:, 12]
+
+    # Rotate co-ordinates as required
+    x, y, _ = np.matmul(rotation_matrix, data[:, :3].T)
+
+    x = (x - x_min) / x_range
+    y = (y - y_min) / y_range
+
+    image = np.zeros((res, res))
+    num_parts = np.zeros((res, res))
+    maximal_array_index = res
+
+    for x_pos, y_pos, mass in zip(x, y, m):
+        particle_cell_x = int(res * x_pos)
+        particle_cell_y = int(res * y_pos)
+
+        if not (
+                particle_cell_x < 0
+                or particle_cell_x >= maximal_array_index
+                or particle_cell_y < 0
+                or particle_cell_y >= maximal_array_index
+        ):
+            image[particle_cell_x, particle_cell_y] += mass
+            num_parts[particle_cell_x, particle_cell_y] += 1
+
+    num_parts[num_parts==0] = 1 #lower value to avoid error
+    image /= num_parts # Mean metallicity
+    return image
+
 def project_gas(data, mode, resolution, region, rotation_matrix):
 
 
@@ -103,6 +140,7 @@ def KS_relation(data, ang_momentum, mode):
     partsDATA = data[star_formation_rate_mask,:].copy()
     map_SFR = project_gas(partsDATA, 2, number_of_pixels, extent, face_on_rotation_matrix)
 
+    map_metals = integrate_metallicity(data, number_of_pixels, extent, face_on_rotation_matrix)
     #map_mass = project_gas_with_azimutal_average(data, mode, face_on_rotation_matrix)
     #map_SFR = project_gas_with_azimutal_average(partsDATA, 2, face_on_rotation_matrix)
 
@@ -115,11 +153,11 @@ def KS_relation(data, ang_momentum, mode):
     SFR_surface_density = np.log10(map_SFR.flatten()) #Msun / yr / kpc^2
     tgas = surface_density - SFR_surface_density + 6.
 
-    return surface_density, SFR_surface_density, tgas
+    return surface_density, SFR_surface_density, tgas, map_metals
 
 def median_relations(x, y):
 
-    xrange = np.arange(-1, 3, 0.2)
+    xrange = np.arange(-1, 3, 0.1)
 
     xvalues = np.ones(len(xrange) - 1) * (-10)
     yvalues = np.zeros(len(xrange) - 1)
@@ -157,11 +195,16 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
 
     # Get the surface densities
-    surface_density, SFR_surface_density, tgas = KS_relation(data, ang_momentum, mode)
+    surface_density, SFR_surface_density, tgas, metals = KS_relation(data, ang_momentum, mode)
     # Get median lines
     median_surface_density, median_SFR_surface_density, \
     SFR_surface_density_err_down, SFR_surface_density_err_up = median_relations(surface_density, SFR_surface_density)
 
+    # Let's append data points to haloes for final plot at the end
+    if mode ==1:
+        galaxy_data.surface_density = np.append(galaxy_data.surface_density, surface_density)
+        galaxy_data.SFR_density = np.append(galaxy_data.SFR_density, SFR_surface_density)
+        galaxy_data.metallicity = np.append(galaxy_data.metallicity, metals)
 
     # Plot parameters
     params = {
@@ -183,9 +226,17 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
     sfr_galaxy = galaxy_data.star_formation_rate[index]
     mass_galaxy = galaxy_data.stellar_mass[index]
     gas_mass_galaxy = galaxy_data.gas_mass[index]
-    title = r"Star formation rate = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    mass_halo = galaxy_data.halo_mass[index]
+    galaxy_metallicity_gas_sfr = galaxy_data.metallicity_gas_sfr[index]
+    galaxy_metallicity_gas = galaxy_data.metallicity_gas[index]
+
+    title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
+    title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{gas}$ = %0.1f," % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+
     ax.set_title(title)
     plt.plot(surface_density, SFR_surface_density, 'o', color='tab:blue')
     plt.plot(median_surface_density, median_SFR_surface_density, '-', color='black')
@@ -202,11 +253,12 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
             if observation.gas_surface_density is not None:
                 if (observation.description == "Bigiel et al. (2008) inner"):
                     data = observation.bin_data_KS_molecular(np.arange(-1, 3, .25), 0.4)
-                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",ms=6,
                                  label=observation.description, color='tab:orange')
 
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
+        ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
         plt.savefig(f"{output_path}/KS_molecular_relation_%i.png" % (index))
         #np.savetxt(f"{output_path}/KS_molecular_relation_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
@@ -218,15 +270,16 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
             if observation.gas_surface_density is not None:
                 if (observation.description == "Bigiel et al. (2008) inner"):
                     data = observation.bin_data_KS(np.arange(-1, 3, .25), 0.4)
-                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",ms=6,
                                  label=observation.description, color='tab:green')
                 elif (observation.description == "Bigiel et al. (2010) outer"):
                     data2 = observation.bin_data_KS(np.arange(-1, 3, .25), 0.4)
-                    plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o",
+                    plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o",ms=6,
                                  label=observation.description, color='tab:orange')
 
         plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
+        ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
         plt.savefig(f"{output_path}/KS_relation_best_%i.png" % (index))
         #np.savetxt(f"{output_path}/KS_relation_best_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
@@ -237,7 +290,17 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
 
     figure()
     ax = plt.subplot(1, 1, 1)
-    title = r"Star formation rate = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    sfr_galaxy = galaxy_data.star_formation_rate[index]
+    mass_galaxy = galaxy_data.stellar_mass[index]
+    gas_mass_galaxy = galaxy_data.gas_mass[index]
+    mass_halo = galaxy_data.halo_mass[index]
+    galaxy_metallicity_gas_sfr = galaxy_data.metallicity_gas_sfr[index]
+    galaxy_metallicity_gas = galaxy_data.metallicity_gas[index]
+
+    title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
+    title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{gas}$ = %0.1f," % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
@@ -256,12 +319,13 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
             if observation.gas_surface_density is not None:
                 if (observation.description == "Bigiel et al. (2008) inner"):
                     data = observation.bin_data_gas_depletion_molecular(np.arange(-1, 3, .25), 0.4)
-                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",ms=6,
                                  label=observation.description, color='tab:orange')
 
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         #plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
+        ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
         plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_%i.png" % (index))
 
     elif mode == 1:
@@ -270,16 +334,17 @@ def KS_plots(data, ang_momentum, mode, galaxy_data, index, output_path):
             if observation.gas_surface_density is not None:
                 if (observation.description == "Bigiel et al. (2008) inner"):
                     data = observation.bin_data_gas_depletion(np.arange(-1, 3, .25), 0.4)
-                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",
+                    plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o",ms=6,
                                  label=observation.description, color='tab:green')
                 elif (observation.description == "Bigiel et al. (2010) outer"):
                     data2 = observation.bin_data_gas_depletion(np.arange(-1, 3, .25), 0.4)
-                    plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o",
+                    plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o",ms=6,
                                  label=observation.description, color='tab:orange')
 
         plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         #plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = (\\Sigma_{HI} + \\Sigma_{H_2} )/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
+        ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
         plt.savefig(f"{output_path}/gas_depletion_timescale_best_%i.png" % (index))
 
 def surface_ratios(data, ang_momentum):
@@ -322,6 +387,8 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
     Sigma_ratio_err_up = median_relations(Sigma_gas, Sigma_ratio)
 
+    galaxy_data.ratio_densities = np.append(galaxy_data.ratio_densities, Sigma_ratio)
+
     # Plot parameters
     params = {
         "font.size": 12,
@@ -339,10 +406,18 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
 
     figure()
     ax = plt.subplot(1, 1, 1)
+
     sfr_galaxy = galaxy_data.star_formation_rate[index]
     mass_galaxy = galaxy_data.stellar_mass[index]
     gas_mass_galaxy = galaxy_data.gas_mass[index]
-    title = r"Star formation rate = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    mass_halo = galaxy_data.halo_mass[index]
+    galaxy_metallicity_gas_sfr = galaxy_data.metallicity_gas_sfr[index]
+    galaxy_metallicity_gas = galaxy_data.metallicity_gas[index]
+
+    title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
+    title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{gas}$ = %0.1f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
     title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
@@ -362,6 +437,7 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     plt.xlim(-1.0, 3.0)
     plt.ylim(-8.0, 0.5)
     plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.savefig(f"{output_path}/Surface_density_ratio_%i.png" % (index))
     plt.close()
 
