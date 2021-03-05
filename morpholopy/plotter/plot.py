@@ -438,7 +438,7 @@ def plot_morphology(galaxy_data,web,MorphologyPlotsInWeb,output_path):
     # plot surface densities
     plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path)
 
-    title = 'Accumulative surface densities'
+    title = 'Combined surface densities'
     id = abs(hash("Surface density"))
     plots = MorphologyPlotsInWeb.plots_details
     add_web_section(web, title, id, plots)
