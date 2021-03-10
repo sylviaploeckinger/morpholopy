@@ -237,7 +237,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     ax.set_title(title)
 
     qv = QuickView(pos_edge_on, mass=mass, hsml=hsml_parts, logscale=True, plot=False,
-                   r='infinity', p=90, t=0, extent=[xmin, xmax, ymin, ymax],
+                   r='infinity', p=0, t=0, extent=[xmin, xmax, ymin, ymax],
                    x=0, y=0, z=0)
     img = qv.get_image()
     ext = qv.get_extent()
