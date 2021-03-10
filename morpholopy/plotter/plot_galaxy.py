@@ -21,7 +21,7 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     cross_product = cross(original_direction, normed_vector)
     mod_cross_product = norm(cross_product)
     cross_product /= mod_cross_product
-    theta = arccos(dot_product)
+    theta = acos(dot_product)
 
     q0 = cos(theta/2)
     q1 = sin(theta/2) * cross_product[0]
@@ -44,6 +44,11 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     u = matmul(Q, i)
     v = matmul(Q, j)
     w = matmul(Q, k)
+
+    vector[0] = dot(normed_vector, u)
+    vector[1] = dot(normed_vector, v)
+    vector[2] = dot(normed_vector, w)
+    print(normed_vector, w, vector)
 
     pos_face_on = pos_parts.copy()
     pos_face_on[:,0] = dot(pos_parts, u)
@@ -336,7 +341,7 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
     plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
