@@ -66,7 +66,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     pos_parts = partsDATA[:, 0:3].copy()
     check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
-    secondary_axis = ["z","z","y"]
+    secondary_axis = ["y","z","x"]
 
     pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
     pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
@@ -203,7 +203,7 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     pos_parts = parts_data[:, 0:3].copy()
     check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
-    secondary_axis = ["z","z","y"]
+    secondary_axis = ["y","z","x"]
 
     pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
     pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
@@ -336,7 +336,7 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
     plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
     plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
