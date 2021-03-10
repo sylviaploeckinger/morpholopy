@@ -48,7 +48,7 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     vector[0] = dot(normed_vector, u)
     vector[1] = dot(normed_vector, v)
     vector[2] = dot(normed_vector, w)
-    print(normed_vector, u, v, w, vector)
+    #print(normed_vector, u, v, w, vector)
 
     pos_face_on = pos_parts.copy()
     pos_face_on[:,0] = dot(pos_parts, u)
@@ -72,12 +72,17 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
     secondary_axis = ["y","z","x"]
+    plotxaxis = {"x": 1, "y": 0, "z": 0}
+    plotyaxis = {"x": 2, "y": 2, "z": 1}
+    print("main axis",main_axis[check_axis[0]],
+          plotxaxis[main_axis[check_axis[0]]],
+    plotyaxis[main_axis[check_axis[0]]])
 
-    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
-    #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
+    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
 
-    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis="z")
-    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis="y")
+    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis="z")
+    #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis="y")
 
     #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
     #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
@@ -125,7 +130,10 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
 
-    plt.scatter(pos_face_on[:, 0], pos_face_on[:, 1], c=density, alpha=1, s=10,
+    #plt.scatter(pos_face_on[:, plotxaxis[main_axis[check_axis[0]]]],
+    #            pos_face_on[:, plotyaxis[main_axis[check_axis[0]]]],
+    plt.scatter(pos_face_on[:, 0],pos_face_on[:, 2],
+                c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
     ax.autoscale(False)
 
@@ -159,7 +167,11 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     plt.ylabel('z [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    plt.scatter(pos_edge_on[:, 0], pos_edge_on[:, 1], c=density, alpha=1, s=10,
+
+    #plt.scatter(pos_edge_on[:, plotxaxis[secondary_axis[check_axis[0]]]],
+    #            pos_edge_on[:, plotyaxis[secondary_axis[check_axis[0]]]],
+    plt.scatter(pos_face_on[:, 0], pos_face_on[:, 1],
+                c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
 
     ax.autoscale(False)
@@ -345,7 +357,7 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
     plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
