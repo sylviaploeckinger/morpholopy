@@ -75,24 +75,24 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     print("Ang. momentum", ang_momentum)
 
     pos_parts = partsDATA[:, 0:3].copy()
-    check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
-    main_axis = ["x","y","z"]
-    secondary_axis = ["z","x","y"]
-    print("main axis",main_axis[check_axis[0]])
+    #check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
+    #main_axis = ["x","y","z"]
+    #secondary_axis = ["z","x","y"]
+    #print("main axis",main_axis[check_axis[0]])
 
-    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
-    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
+    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
 
     #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis="z")
     #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis="y")
 
-    #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
-    #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
+    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis="z")
+    edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis="y")
 
-    #pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
-    #pos_face_on = pos_face_on.T
-    #pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
-    #pos_edge_on = pos_edge_on.T
+    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = pos_face_on.T
+    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = pos_edge_on.T
 
 
     if parttype == 0: density = np.log10(partsDATA[:,11])
@@ -224,25 +224,25 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     if parttype == 0: cmap = plt.cm.viridis
 
     pos_parts = parts_data[:, 0:3].copy()
-    check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
-    main_axis = ["x","y","z"]
-    secondary_axis = ["y","z","x"]
+    #check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
+    #main_axis = ["x","y","z"]
+    #secondary_axis = ["y","z","x"]
 
     #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
     #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
-    pos_face_on = rotation_matrix(ang_momentum, pos_parts, axis="z")
-    pos_edge_on = rotation_matrix(ang_momentum, pos_parts, axis="y")
+    #pos_face_on = rotation_matrix(ang_momentum, pos_parts, axis="z")
+    #pos_edge_on = rotation_matrix(ang_momentum, pos_parts, axis="y")
     #pos_edge_on = pos_face_on.copy()
     #pos_edge_on[:,1] = pos_face_on[:,2]
     #pos_edge_on[:,2] = pos_face_on[:,1]
 
-    #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
-    #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
+    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis="z")
+    edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis="y")
 
-    #pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
-    #pos_face_on = pos_face_on.T
-    #pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
-    #pos_edge_on = pos_edge_on.T
+    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = pos_face_on.T
+    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = pos_edge_on.T
 
     hsml_parts = parts_data[:, 7]
     mass = parts_data[:, 3]
@@ -364,7 +364,7 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
     plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
