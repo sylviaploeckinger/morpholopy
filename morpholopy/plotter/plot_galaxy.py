@@ -47,9 +47,19 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     w = matmul(Q, k)
 
     pos_face_on = pos_parts.copy()
-    pos_face_on[:,0] = dot(pos_parts, u)
-    pos_face_on[:,1] = dot(pos_parts, v)
-    pos_face_on[:,2] = dot(pos_parts, w)
+
+    if switch[axis]==2:
+        pos_face_on[:,0] = dot(pos_parts, u)
+        pos_face_on[:,1] = dot(pos_parts, v)
+        pos_face_on[:,2] = dot(pos_parts, w)
+    if switch[axis]==1:
+        pos_face_on[:,0] = dot(pos_parts, u)
+        pos_face_on[:,1] = dot(pos_parts, w)
+        pos_face_on[:,2] = dot(pos_parts, v)
+    if switch[axis] == 0:
+        pos_face_on[:, 0] = dot(pos_parts, w)
+        pos_face_on[:, 1] = dot(pos_parts, v)
+        pos_face_on[:, 2] = dot(pos_parts, u)
 
     return pos_face_on
 
@@ -130,7 +140,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
     #plt.scatter(pos_face_on[:, plotxaxis[main_axis[check_axis[0]]]],
     #            pos_face_on[:, plotyaxis[main_axis[check_axis[0]]]],
-    plt.scatter(pos_face_on[:, 0],pos_face_on[:, 2],
+    plt.scatter(pos_face_on[:, 0],pos_face_on[:, 1],
                 c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
     ax.autoscale(False)
@@ -168,7 +178,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
     #plt.scatter(pos_edge_on[:, plotxaxis[secondary_axis[check_axis[0]]]],
     #            pos_edge_on[:, plotyaxis[secondary_axis[check_axis[0]]]],
-    plt.scatter(pos_face_on[:, 0], pos_face_on[:, 1],
+    plt.scatter(pos_edge_on[:, 0], pos_edge_on[:, 1],
                 c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
 
@@ -355,7 +365,7 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
     plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
