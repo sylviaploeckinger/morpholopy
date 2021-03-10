@@ -71,11 +71,11 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     #secondary_axis = ["y","z","x"]
     print("main axis",main_axis[check_axis[0]])
 
-    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
     #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
 
-    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis="z")
-    #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis="y")
+    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis="z")
+    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis="y")
 
     #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
     #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
@@ -93,7 +93,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     arg_sort = np.argsort(density)
     density = density[arg_sort]
     pos_face_on = pos_face_on[arg_sort,:]
-    #pos_edge_on = pos_edge_on[arg_sort,:]
+    pos_edge_on = pos_edge_on[arg_sort,:]
 
     # Plot parameters
     params = {
@@ -163,7 +163,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
     #plt.scatter(pos_edge_on[:, plotxaxis[secondary_axis[check_axis[0]]]],
     #            pos_edge_on[:, plotyaxis[secondary_axis[check_axis[0]]]],
-    plt.scatter(pos_face_on[:, 0], pos_face_on[:, 2],
+    plt.scatter(pos_edge_on[:, 0], pos_edge_on[:, 1],
                 c=density, alpha=1, s=10,
                 vmin=6, vmax=10, cmap='magma', edgecolors='none')
 
@@ -217,13 +217,15 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     pos_parts = parts_data[:, 0:3].copy()
     check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
-    #secondary_axis = ["y","z","x"]
+    secondary_axis = ["y","z","x"]
 
-    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
     #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
-    pos_edge_on = pos_face_on.copy()
-    pos_edge_on[:,1] = pos_face_on[:,2]
-    pos_edge_on[:,2] = pos_face_on[:,1]
+    pos_face_on = rotation_matrix(ang_momentum, pos_parts, axis="z")
+    pos_edge_on = rotation_matrix(ang_momentum, pos_parts, axis="y")
+    #pos_edge_on = pos_face_on.copy()
+    #pos_edge_on[:,1] = pos_face_on[:,2]
+    #pos_edge_on[:,2] = pos_face_on[:,1]
 
     #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
     #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
