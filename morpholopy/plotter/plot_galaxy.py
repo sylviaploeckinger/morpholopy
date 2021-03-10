@@ -321,8 +321,99 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
 
     GalPlotsInWeb.load_plots(title, caption, outfile, id)
 
+def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_data, index, GalPlotsInWeb, output_path):
+    pos_parts = parts_data[:, 0:3].copy()
 
-def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
+    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum)
+    edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis="y")
+
+    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = pos_face_on.T
+    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = pos_edge_on.T
+
+    hsml_parts = parts_data[:, 7]
+    mass = parts_data[:, 3]
+
+    r_limit = 5 * halo_data.halfmass_radius_star[index]
+    r_img = 30.
+    if r_limit < r_img: r_img = r_limit
+    xmin = -r_img
+    ymin = -r_img
+    xmax = r_img
+    ymax = r_img
+
+    # Plot parameters
+    params = {
+        "font.size": 11,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (7.5, 4),
+        "figure.subplot.left": 0.1,
+        "figure.subplot.right": 0.85,
+        "figure.subplot.bottom": 0.15,
+        "figure.subplot.top": 0.8,
+        "figure.subplot.wspace": 0.3,
+        "figure.subplot.hspace": 0.3,
+        "lines.markersize": 0.5,
+        "lines.linewidth": 0.2,
+    }
+    rcParams.update(params)
+    fig = plt.figure()
+    ax = plt.subplot(1, 2, 1)
+    
+    ###### plot one side ########################
+    qv = QuickView(pos_face_on, mass=luminosity, hsml=hsml_parts, logscale=True, plot=False,
+                   r='infinity', p=0, t=0, extent=[xmin, xmax, ymin, ymax],
+                   x=0, y=0, z=0)
+    img = qv.get_image()
+    ext = qv.get_extent()
+    ax.tick_params(labelleft=True, labelbottom=True, length=0)
+    plt.xlabel('x [kpc]')
+    plt.ylabel('y [kpc]')
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+    print()
+    img = get_normalized_image(img, vmin=img.max()-2.3)
+    ax.imshow(img, cmap='magma', extent=ext, vmin=img.max()-2.3)
+    ax.autoscale(False)
+
+    ###### plot another side ########################
+    ax = plt.subplot(1, 2, 2)
+    qv = QuickView(pos_edge_on, mass=luminosity, hsml=hsml_parts, logscale=True, plot=False,
+                   r='infinity', p=90, t=0, extent=[xmin, xmax, ymin, ymax],
+                   x=0, y=0, z=0)
+    img = qv.get_image()
+    ext = qv.get_extent()
+    ax.tick_params(labelleft=True, labelbottom=True, length=0)
+    plt.xlabel('x [kpc]')
+    plt.ylabel('z [kpc]')
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+    img = get_normalized_image(img,vmin=img.max()-2.3)
+    ims = ax.imshow(img, cmap='magma', vmin=img.max()-2.3, extent=ext)
+    ax.autoscale(False)
+
+    cbar_ax = fig.add_axes([0.86, 0.22, 0.018, 0.5])
+    cbar_ax.tick_params(labelsize=15)
+    cb = plt.colorbar(ims, ticks=[4, 6, 8, 10, 12], cax=cbar_ax)
+    cb.set_label(label=r'$\log_{10}$ $\Sigma$ [Jy/kpc$^{2}$]', labelpad=0.5)
+
+    outfile = f"{output_path}/galaxy_%s_map_%i.png" % (filtname, index)
+    fig.savefig(outfile, dpi=150)
+    plt.close("all")
+
+
+    title = f"Rest frame {filtname}-band light "
+    caption = "Projection %s-band emission within 5 times %0.1f kpc" % (filtname, halo_data.halfmass_radius_star[index])
+    caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
+    id = abs(hash("%s-band emission galaxy %i" % (filtname, index)))
+    outfile = "galaxy_%s_map_%i.png" % (filtname, index)
+
+    GalPlotsInWeb.load_plots(title, caption, outfile, id)
+
+    
+def visualize_galaxy(stars_data, gas_data, star_absmag, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path):
 
     plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
@@ -330,3 +421,8 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
     plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+
+    for filt in ['u', 'r', 'K']:
+        print(filt)
+        lums = pow(10., -0.4*star_absmag[filt])*3631
+        render_luminosity_map(stars_data, lums, filt, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
