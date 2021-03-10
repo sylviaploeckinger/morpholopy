@@ -4,7 +4,8 @@ from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from numpy import matmul
 
 def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
-    normed_vector = vector / norm(vector)
+    normed_vector = vector.copy()
+    normed_vector /= norm(vector)
 
     # Directional vector describing the axis we wish to look 'down'
     original_direction = array([0.0, 0.0, 0.0], dtype=float64)
@@ -44,11 +45,6 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     u = matmul(Q, i)
     v = matmul(Q, j)
     w = matmul(Q, k)
-
-    vector[0] = dot(normed_vector, u)
-    vector[1] = dot(normed_vector, v)
-    vector[2] = dot(normed_vector, w)
-    #print(normed_vector, u, v, w, vector)
 
     pos_face_on = pos_parts.copy()
     pos_face_on[:,0] = dot(pos_parts, u)
