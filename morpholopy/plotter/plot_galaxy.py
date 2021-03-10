@@ -68,6 +68,8 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     xmax = r_img
     ymax = r_img
 
+    print("Ang. momentum", ang_momentum)
+
     pos_parts = partsDATA[:, 0:3].copy()
     check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
