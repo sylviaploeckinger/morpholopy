@@ -40,7 +40,7 @@ if __name__ == '__main__':
     KSPlotsInWeb = PlotsInPipeline()
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e7 * unyt.msun  # ! Option of lower limit for gas mass
+    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo,lower_mass)
 
     # Loop over the sample to calculate morphological parameters
@@ -53,9 +53,11 @@ if __name__ == '__main__':
 
         # Calculate morphology estimators: kappa, axial ratios for stars ..
         stars_ang_momentum, stars_data = calculate_morphology(halo_data, stars_data, siminfo, i, 4)
+        print('stars momentum', stars_ang_momentum, i)
 
         # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
         gas_ang_momentum, gas_data = calculate_morphology(halo_data, gas_data, siminfo, i, 0)
+        print('gas momentum', gas_ang_momentum, i)
 
         # Calculate surface densities for HI+H2 gas ..
         calculate_surface_densities(gas_data, gas_ang_momentum, halo_data, i)
