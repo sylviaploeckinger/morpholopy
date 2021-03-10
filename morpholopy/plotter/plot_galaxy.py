@@ -3,6 +3,54 @@ from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from numpy import matmul
 
+def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
+    normed_vector = vector / norm(vector)
+
+    # Directional vector describing the axis we wish to look 'down'
+    original_direction = array([0.0, 0.0, 0.0], dtype=float64)
+    switch = {"x": 0, "y": 1, "z": 2}
+
+    try:
+        original_direction[switch[axis]] = 1.0
+    except KeyError:
+        raise ValueError(
+            f"Parameter axis must be one of x, y, or z. You supplied {axis}."
+        )
+
+    dot_product = dot(original_direction, normed_vector)
+    cross_product = cross(original_direction, normed_vector)
+    mod_cross_product = norm(cross_product)
+    cross_product /= mod_cross_product
+    theta = arccos(dot_product)
+
+    q0 = cos(theta/2)
+    q1 = sin(theta/2) * cross_product[0]
+    q2 = sin(theta/2) * cross_product[1]
+    q3 = sin(theta/2) * cross_product[2]
+
+    # Skew symmetric matrix for cross product
+    Q = array(
+        [
+            [q0**2+q1**2-q2**2-q3**2, 2*(q1*q2-q0*q3), 2*(q1*q3+q0*q2)],
+            [2*(q2*q1+q0*q3), q0**2-q1**2+q2**2-q3**2, 2*(q3*q2-q0*q1)],
+            [2*(q1*q3-q0*q2), 2*(q3*q2+q0*q1), q0**2-q1**2-q2**2+q3**2],
+        ]
+    )
+
+    i = np.array([1,0,0])
+    j = np.array([0,1,0])
+    k = np.array([0,0,1])
+
+    u = matmul(Q, i)
+    v = matmul(Q, j)
+    w = matmul(Q, k)
+
+    pos_face_on = pos_parts.copy()
+    pos_face_on[:,0] = dot(pos_parts, u)
+    pos_face_on[:,1] = dot(pos_parts, v)
+    pos_face_on[:,2] = dot(pos_parts, w)
+
+    return pos_face_on
 
 def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, PlotsInWeb, output_path):
 
@@ -16,17 +64,20 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     ymax = r_img
 
     pos_parts = partsDATA[:, 0:3].copy()
-    check_axis = np.where(ang_momentum == np.max(ang_momentum))[0]
+    check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
     secondary_axis = ["z","z","y"]
 
-    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
-    edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
+    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
+    #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
+    #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
 
-    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
-    pos_face_on = pos_face_on.T
-    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
-    pos_edge_on = pos_edge_on.T
+    #pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    #pos_face_on = pos_face_on.T
+    #pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    #pos_edge_on = pos_edge_on.T
+
 
     if parttype == 0: density = np.log10(partsDATA[:,11])
     if parttype == 4: density = np.log10(partsDATA[:, 8])
@@ -150,17 +201,20 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     if parttype == 0: cmap = plt.cm.viridis
 
     pos_parts = parts_data[:, 0:3].copy()
-    check_axis = np.where(ang_momentum == np.max(ang_momentum))[0]
+    check_axis = np.where(np.abs(ang_momentum) == np.max(np.abs(ang_momentum)))[0]
     main_axis = ["x","y","z"]
     secondary_axis = ["z","z","y"]
 
-    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
-    edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
+    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
 
-    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
-    pos_face_on = pos_face_on.T
-    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
-    pos_edge_on = pos_edge_on.T
+    #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
+    #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
+
+    #pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    #pos_face_on = pos_face_on.T
+    #pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    #pos_edge_on = pos_edge_on.T
 
     hsml_parts = parts_data[:, 7]
     mass = parts_data[:, 3]
@@ -285,4 +339,4 @@ def visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
     plot_galaxy(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy_parts(gas_data, 0, gas_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
