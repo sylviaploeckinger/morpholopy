@@ -47,20 +47,9 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     w = matmul(Q, k)
 
     pos_face_on = pos_parts.copy()
-
-    if switch[axis]==2:
-        pos_face_on[:,0] = dot(pos_parts, u)
-        pos_face_on[:,1] = dot(pos_parts, v)
-        pos_face_on[:,2] = dot(pos_parts, w)
-    if switch[axis]==1:
-        pos_face_on[:,0] = dot(pos_parts, u)
-        pos_face_on[:,1] = dot(pos_parts, w)
-        pos_face_on[:,2] = dot(pos_parts, v)
-    if switch[axis] == 0:
-        pos_face_on[:, 0] = dot(pos_parts, w)
-        pos_face_on[:, 1] = dot(pos_parts, v)
-        pos_face_on[:, 2] = dot(pos_parts, u)
-
+    pos_face_on[:, 0] = dot(pos_parts, u)
+    pos_face_on[:, 1] = dot(pos_parts, v)
+    pos_face_on[:, 2] = dot(pos_parts, w)
     return pos_face_on
 
 def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, PlotsInWeb, output_path):
