@@ -21,7 +21,7 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     cross_product = cross(original_direction, normed_vector)
     mod_cross_product = norm(cross_product)
     cross_product /= mod_cross_product
-    theta = acos(dot_product)
+    theta = arccos(dot_product)
 
     q0 = cos(theta/2)
     q1 = sin(theta/2) * cross_product[0]
@@ -48,7 +48,7 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     vector[0] = dot(normed_vector, u)
     vector[1] = dot(normed_vector, v)
     vector[2] = dot(normed_vector, w)
-    print(normed_vector, w, vector)
+    print(normed_vector, u, v, w, vector)
 
     pos_face_on = pos_parts.copy()
     pos_face_on[:,0] = dot(pos_parts, u)
@@ -73,8 +73,12 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     main_axis = ["x","y","z"]
     secondary_axis = ["y","z","x"]
 
-    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
-    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
+    #pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis=main_axis[check_axis[0]])
+    #pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis=secondary_axis[check_axis[0]])
+
+    pos_face_on = rotation_matrix(ang_momentum,pos_parts,axis="z")
+    pos_edge_on = rotation_matrix(ang_momentum,pos_parts,axis="y")
+
     #face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=main_axis[check_axis[0]])
     #edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum,axis=secondary_axis[check_axis[0]])
 
