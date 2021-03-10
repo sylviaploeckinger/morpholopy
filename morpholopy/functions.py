@@ -46,6 +46,10 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     smomentums = np.cross(particlesDATA[:,:3],particlesDATA[:,4:7])
     momentum = np.sum(particlesDATA[:,3][:,np.newaxis]*smomentums,axis=0)
 
+    extract = distancesDATA < 5.
+    smomentum_inner_5kpc = np.cross(particlesDATA[extract, :3], particlesDATA[extract, 4:7])
+    momentum_inner_5kpc = np.sum(particlesDATA[extract,3][:,np.newaxis]*smomentum_inner_5kpc,axis=0)
+
     # Compute specific angular momentum
     sa_momentum = momentum / Mstar
     sa_momentum = np.linalg.norm(sa_momentum)
@@ -64,9 +68,10 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     
     # Apply rotation so that momentum vector corresponds to z-axis
     momentum /= np.linalg.norm(momentum)
+    momentum_inner_5kpc /= np.linalg.norm(momentum_inner_5kpc)
 
     # Return
-    return kappa_co, sa_momentum, momentum, particlesDATA
+    return kappa_co, sa_momentum, momentum_inner_5kpc, particlesDATA
 
 
 def AsymFrac(rs, ms, level=1):
