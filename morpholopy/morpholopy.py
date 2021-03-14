@@ -4,12 +4,14 @@ Description here
 
 import os
 import h5py
+import glob
 
 from catalogue import HaloCatalogue
-from particles import calculate_morphology, make_particle_data
+from particles import calculate_morphology, make_particle_data, calculate_luminosities
 from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline
 from plotter.plot import plot_morphology
 from plotter.plot_galaxy import visualize_galaxy
+from luminosities import MakeGrid
 
 from plotter.KS_relation import make_KS_plots, calculate_surface_densities
 import unyt
@@ -39,6 +41,13 @@ if __name__ == '__main__':
     MorphologyPlotsInWeb = PlotsInPipeline()
     KSPlotsInWeb = PlotsInPipeline()
 
+    #Loading photometry grids for interpolation
+    system = 'GAMA' # hard-coded for now
+    pgrids  = {}
+    for pht in glob.glob(f'./photometry/{system}/*'):  
+        pgrids[pht[-1]] = MakeGrid(pht)
+
+    
     # Loading halo catalogue and selecting galaxies more massive than lower limit
     lower_mass = 1e7 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo,lower_mass)
@@ -57,13 +66,14 @@ if __name__ == '__main__':
         # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
         gas_ang_momentum, gas_data = calculate_morphology(halo_data, gas_data, siminfo, i, 0)
 
+        star_abmags = calculate_luminosities(halo_data, stars_data, siminfo, i, 4, pgrids)
         # Calculate surface densities for HI+H2 gas ..
         calculate_surface_densities(gas_data, gas_ang_momentum, halo_data, i)
 
         # Make plots for individual galaxies, perhaps.. only first 10
         if i < 10:
 
-            visualize_galaxy(stars_data, gas_data, stars_ang_momentum, gas_ang_momentum,
+            visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path)
 
             make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
