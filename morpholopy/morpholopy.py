@@ -26,7 +26,7 @@ class SimInfo:
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
-
+        self.baryon_maxsoft = snapshot_file["/GravityScheme"].attrs['Maximal physical baryon softening length  [internal units]'] * 1e3 #kpc
 
 if __name__ == '__main__':
     from utils import *

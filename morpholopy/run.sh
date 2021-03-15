@@ -2,9 +2,9 @@
 
 # Runs MorpholoPy using the following variables:
 
-folder="/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L012N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY_BOOST01_1SDT_ESN3e51"
-output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/XMAS2020_L012N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY_BOOST01_1SDT_ESN3e51/output_0623"
-snap="0623"
+#folder="/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L012N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY_BOOST01_1SDT_ESN3e51"
+#output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/XMAS2020_L012N376_FKIN03_NOEOS_VKICK050SLOPE00NORM00_FIXEDDELAY_BOOST01_1SDT_ESN3e51/output_0623"
+#snap="0623"
 
 #folder="/snap7/scratch/dp004/dc-chai1/my_cosmological_box/XMAS2020_L006N376_FKIN00_NOEOS_VKICK000SLOPE00NORM00"
 #output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/XMAS2020_L006N376_FKIN00_NOEOS_VKICK000SLOPE00NORM00/output_2729"
@@ -54,9 +54,9 @@ snap="0623"
 #output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/29_SNE_densdep_2_4_L006N0188/output_023"
 #snap="23"
 
-#folder="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data"
-#output="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/plots"
-#snap="34"
+folder="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data"
+output="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/plots"
+snap="34"
 
 python morpholopy.py -d=$folder -n=$snap -o=$output
 
