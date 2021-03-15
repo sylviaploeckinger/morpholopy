@@ -14,9 +14,9 @@
 #output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/AGN5_L006188_00_UVB_dust1_CR0_G0_shield1/output_2729"
 #snap="2729"
 
-#folder="/cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188"
-#output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/01_reference_L006N0188/output_013"
-#snap="13"
+folder="/cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188"
+output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/01_reference_L006N0188/output_023"
+snap="23"
 
 #folder="/cosma7/data/dp004/dc-chai1/HAWK/15_alphavir_0p5_L006N0188"
 #output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/15_alphavir_0p5_L006N0188/output_023"
@@ -54,9 +54,9 @@
 #output="/cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/29_SNE_densdep_2_4_L006N0188/output_023"
 #snap="23"
 
-folder="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data"
-output="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/plots"
-snap="34"
+#folder="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data"
+#output="/Users/camila/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/plots"
+#snap="34"
 
 python morpholopy.py -d=$folder -n=$snap -o=$output
 
