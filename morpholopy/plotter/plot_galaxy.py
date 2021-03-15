@@ -373,7 +373,6 @@ def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_d
     plt.ylabel('y [kpc]')
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    print()
     img = get_normalized_image(img, vmin=img.max()-2.3)
     ax.imshow(img, cmap='magma', extent=ext, vmin=img.max()-2.3)
     ax.autoscale(False)
@@ -423,6 +422,5 @@ def visualize_galaxy(stars_data, gas_data, star_absmag, stars_ang_momentum, gas_
     plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
     for filt in ['u', 'r', 'K']:
-        #print(filt)
         lums = pow(10., -0.4*star_absmag[filt])*3631
         render_luminosity_map(stars_data, lums, filt, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
