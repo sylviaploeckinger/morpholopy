@@ -160,9 +160,13 @@ def KS_relation(data, ang_momentum, mode, method, size):
         map_mass = project_gas_with_azimuthal_average(partsDATA, mode, face_on_rotation_matrix, size)
         map_metals = project_metals_with_azimuthal_average(partsDATA, face_on_rotation_matrix, size)
 
-        star_formation_rate_mask = partsDATA[:, 10] > 0.0
+        star_formation_rate_mask = np.where(partsDATA[:, 10] > 0.0)[0]
         partsDATA = partsDATA[star_formation_rate_mask, :]
-        map_SFR = project_gas_with_azimuthal_average(partsDATA, 2, face_on_rotation_matrix, size)
+
+        if len(star_formation_rate_mask) > 0:
+            map_SFR = project_gas_with_azimuthal_average(partsDATA, 2, face_on_rotation_matrix, size)
+        else :
+            map_SFR = np.zeros(len(map_mass))
 
     # Bounds
     map_SFR[map_SFR <= 0] = 1e-6
