@@ -333,7 +333,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
 
     caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
     caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
-               "using the grid method."
+               " using the grid method."
     filename = "accumulative_surface_density_gas.png"
     id = abs(hash("accumulative_surface_density_gas"))
 
@@ -375,7 +375,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
 
     caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
     caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
-               "using the grid method."
+               " using the grid method."
     filename = "accumulative_surface_density_ratios.png"
     id = abs(hash("accumulative_surface_density_ratios"))
 
