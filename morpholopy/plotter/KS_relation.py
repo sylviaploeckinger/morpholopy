@@ -130,8 +130,12 @@ def project_gas_with_azimuthal_average(data, mode, rotation_matrix, bin_size):
 
     # Define radial bins [log scale, kpc units]
     radial_bins = np.arange(0, 30, bin_size)
-    SumMode, _, _ = stat.binned_statistic(x=r, values=m, statistic="sum", bins=radial_bins, )
-    surface_density = (SumMode / bin_surface(radial_bins))  # Msun/kpc^2
+    if len(r)>0:
+        SumMode, _, _ = stat.binned_statistic(x=r, values=m, statistic="sum", bins=radial_bins, )
+        surface_density = (SumMode / bin_surface(radial_bins))  # Msun/kpc^2
+    else:
+    # No data, let's return zero array..
+        surface_density = np.zeros(len(radial_bins))
 
     return surface_density
 
@@ -376,7 +380,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
     # Plotting KS relations with size
     method = 'radii'
-    size = 0.25  # kpc
+    size = 0.1  # kpc
 
     # Get the surface densities
     surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
@@ -536,7 +540,7 @@ def surface_ratios(data, ang_momentum, method):
         map_HI = project_gas(data, 3, number_of_pixels, extent, face_on_rotation_matrix)
 
     else:
-        size = 0.25 # kpc
+        size = 0.1 # kpc
         # Calculate the maps using azimuthally-average shells
         map_H2 = project_gas_with_azimuthal_average(data, 0, face_on_rotation_matrix, size)
         map_HI = project_gas_with_azimuthal_average(data, 3, face_on_rotation_matrix, size)
