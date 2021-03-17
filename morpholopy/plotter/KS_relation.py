@@ -261,10 +261,10 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
     title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
     title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
-    title += " Z$_{gas}$ = %0.1f," % (galaxy_metallicity_gas)
+    title += "\n Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{\mathrm{gas}}$ = %0.3f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
 
     ax.set_title(title)
     plt.plot(surface_density, SFR_surface_density, 'o', color='tab:blue')
@@ -288,7 +288,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/KS_molecular_relation_grid_%i.png" % (index))
+        plt.savefig(f"{output_path}/KS_molecular_relation_grid_%i.png" % (index),dpi=200)
         #np.savetxt(f"{output_path}/KS_molecular_relation_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
         #     tgas_err_down, tgas_err_up]))
@@ -309,7 +309,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/KS_relation_best_grid_%i.png" % (index))
+        plt.savefig(f"{output_path}/KS_relation_best_grid_%i.png" % (index),dpi=200)
         #np.savetxt(f"{output_path}/KS_relation_best_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
         #     tgas_err_down, tgas_err_up]))
@@ -328,10 +328,10 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
     title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
     title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
-    title += " Z$_{gas}$ = %0.1f," % (galaxy_metallicity_gas)
+    title += "\n Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{\mathrm{gas}}$ = %0.3f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
 
     plt.plot(surface_density, tgas, 'o', color='tab:blue')
@@ -355,7 +355,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         #plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_grid_%i.png" % (index))
+        plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_grid_%i.png" % (index),dpi=200)
 
     elif mode == 1:
         # load the observational data
@@ -374,13 +374,13 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         #plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = (\\Sigma_{HI} + \\Sigma_{H_2} )/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/gas_depletion_timescale_best_grid_%i.png" % (index))
+        plt.savefig(f"{output_path}/gas_depletion_timescale_best_grid_%i.png" % (index),dpi=200)
 
     ###### Making KS plots with azimuthally averaged method #################
 
     # Plotting KS relations with size
     method = 'radii'
-    size = 0.1  # kpc
+    size = 0.8  # kpc
 
     # Get the surface densities
     surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
@@ -407,10 +407,10 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
     title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
     title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
-    title += " Z$_{gas}$ = %0.1f," % (galaxy_metallicity_gas)
+    title += "\n Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{\mathrm{gas}}$ = %0.3f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
 
     ax.set_title(title)
     plt.plot(surface_density, SFR_surface_density, 'o', color='tab:blue')
@@ -435,7 +435,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/KS_molecular_relation_radii_%i.png" % (index))
+        plt.savefig(f"{output_path}/KS_molecular_relation_radii_%i.png" % (index),dpi=200)
         # np.savetxt(f"{output_path}/KS_molecular_relation_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
         #     tgas_err_down, tgas_err_up]))
@@ -456,7 +456,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
         plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/KS_relation_best_radii_%i.png" % (index))
+        plt.savefig(f"{output_path}/KS_relation_best_radii_%i.png" % (index),dpi=200)
         # np.savetxt(f"{output_path}/KS_relation_best_file_{snapshot_number:04d}.txt", np.transpose(
         #    [surface_density, SFR_surface_density, SFR_surface_density_err_down, SFR_surface_density_err_up, tgas,
         #     tgas_err_down, tgas_err_up]))
@@ -475,10 +475,10 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
     title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
     title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
-    title += " Z$_{gas}$ = %0.1f," % (galaxy_metallicity_gas)
+    title += "\n Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{\mathrm{gas}}$ = %0.3f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
 
     plt.plot(surface_density, tgas, 'o', color='tab:blue')
@@ -502,7 +502,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         # plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_radii_%i.png" % (index))
+        plt.savefig(f"{output_path}/molecular_gas_depletion_timescale_radii_%i.png" % (index),dpi=200)
 
     elif mode == 1:
         # load the observational data
@@ -521,7 +521,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
         # plt.legend(labelspacing=0.2,handlelength=2,handletextpad=0.4,frameon=False)
         plt.ylabel("log $\\rm t_{gas} = (\\Sigma_{HI} + \\Sigma_{H_2} )/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{output_path}/gas_depletion_timescale_best_radii_%i.png" % (index))
+        plt.savefig(f"{output_path}/gas_depletion_timescale_best_radii_%i.png" % (index),dpi=200)
 
 
 
@@ -540,7 +540,7 @@ def surface_ratios(data, ang_momentum, method):
         map_HI = project_gas(data, 3, number_of_pixels, extent, face_on_rotation_matrix)
 
     else:
-        size = 0.1 # kpc
+        size = 0.8 # kpc
         # Calculate the maps using azimuthally-average shells
         map_H2 = project_gas_with_azimuthal_average(data, 0, face_on_rotation_matrix, size)
         map_HI = project_gas_with_azimuthal_average(data, 3, face_on_rotation_matrix, size)
@@ -565,6 +565,14 @@ def Krumholz_eq39(Sigma_neutral, f):
     return RH2
 
 def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path):
+
+    # Load data from Schruba +2021
+    SchrubaData = np.loadtxt("./plotter/obs_data/Schruba2011_data.txt", usecols=(4,5))
+    nonan = np.logical_and(np.isnan(SchrubaData[:, 0]) == False, np.isnan(SchrubaData[:, 1]) == False)
+    Schruba_H1 = SchrubaData[nonan,0] #HI surface density [Msol / pc-2]
+    Schruba_H2 = SchrubaData[nonan,1] #H2 surface density [Msol / pc-2]
+    x_Schruba = np.log10(Schruba_H1+Schruba_H2)
+    y_Schruba = np.log10(Schruba_H2 / (Schruba_H1+Schruba_H2))
 
     # Get the surface densities
     method = 'grid'
@@ -601,11 +609,21 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
 
     title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
     title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
-    title += " Z$_{gas}$ = %0.1f" % (galaxy_metallicity_gas)
+    title += "\n Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{\mathrm{gas}}$ = %0.3f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
+
+    # Krumholz 2009 lines
+    Sigma_neutral = np.arange(-1, 3, 0.2)
+    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.5)
+    FH2 = np.log10(1. / (1. + RH2))
+    plt.plot(Sigma_neutral, FH2, '--', color='tab:red', label="Krumholz+ (2009): f = 0.5")
+    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.1)
+    FH2 = np.log10(1. / (1. + RH2))
+    plt.plot(Sigma_neutral, FH2, ':', color='tab:red', label="Krumholz+ (2009): f = 0.1")
+    plt.plot(x_Schruba, y_Schruba, 'o', color='tab:orange', label="Schruba+ (2011)")
 
     plt.plot(Sigma_gas, Sigma_ratio, 'o', color='tab:blue')
     plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', color='black')
@@ -613,19 +631,15 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
     plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
 
-    # Krumholz 2009 lines
-    Sigma_neutral = np.arange(-1, 3, 0.2)
-    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.5)
-    FH2 = np.log10(1. / (1. + RH2))
-    plt.plot(Sigma_neutral, FH2, '--', color='tab:red', label="Krumholz+ (2009): f = 0.5")
-
     plt.xlim(-1.0, 3.0)
     plt.ylim(-8.0, 0.5)
-    plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
+    plt.legend(loc='lower right',labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.savefig(f"{output_path}/Surface_density_ratio_grid_%i.png" % (index))
+    plt.savefig(f"{output_path}/Surface_density_ratio_grid_%i.png" % (index),dpi=200)
     plt.close()
 
+
+    ########################################################################
     # Get the surface densities
     method = 'radii'
     Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum, method)
@@ -646,11 +660,21 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
 
     title = r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
     title += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-    title += "\n Z$_{SFR>0}$ = %0.1f," % (galaxy_metallicity_gas_sfr)
-    title += " Z$_{gas}$ = %0.1f" % (galaxy_metallicity_gas)
+    title += "\n Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+    title += " Z$_{\mathrm{gas}}$ = %0.3f" % (galaxy_metallicity_gas)
     title += "\n $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-    title += " $\&$ $\log_{10}$ M$_{gas}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
+    title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
+
+    # Krumholz 2009 lines
+    Sigma_neutral = np.arange(-1, 3, 0.2)
+    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.5)
+    FH2 = np.log10(1. / (1. + RH2))
+    plt.plot(Sigma_neutral, FH2, '--', color='tab:red', label="Krumholz+ (2009): f = 0.5")
+    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.1)
+    FH2 = np.log10(1. / (1. + RH2))
+    plt.plot(Sigma_neutral, FH2, ':', color='tab:red', label="Krumholz+ (2009): f = 0.1")
+    plt.plot(x_Schruba, y_Schruba, 'o', color='tab:orange', label="Schruba+ (2011)")
 
     plt.plot(Sigma_gas, Sigma_ratio, 'o', color='tab:blue')
     plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', color='black')
@@ -658,17 +682,11 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
     plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
 
-    # Krumholz 2009 lines
-    Sigma_neutral = np.arange(-1, 3, 0.2)
-    RH2 = 1. / Krumholz_eq39(10**Sigma_neutral, 0.5)
-    FH2 = np.log10(1. / (1. + RH2))
-    plt.plot(Sigma_neutral, FH2, '--', color='tab:red', label="Krumholz+ (2009): f = 0.5")
-
     plt.xlim(-1.0, 3.0)
     plt.ylim(-8.0, 0.5)
-    plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
+    plt.legend(loc='lower right',labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.savefig(f"{output_path}/Surface_density_ratio_radii_%i.png" % (index))
+    plt.savefig(f"{output_path}/Surface_density_ratio_radii_%i.png" % (index),dpi=200)
     plt.close()
 
 def calculate_integrated_quantities(data, ang_momentum, radius, mode):
@@ -707,11 +725,11 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
         if mode == 0:
             outfile = "KS_molecular_relation_grid_%i.png" % (index)
             title = "KS relation (data: H2 mass, metod: grid)"
-            id = abs(hash("galaxy KS relation H2 %i" % (index)))
+            id = abs(hash("galaxy KS relation H2 grid %i" % (index)))
         if mode == 1:
             outfile = "KS_relation_best_grid_%i.png" % (index)
             title = "KS relation (data: H2+HI mass, method: grid)"
-            id = abs(hash("galaxy KS relation H2+HI %i" % (index)))
+            id = abs(hash("galaxy KS relation H2+HI grid %i" % (index)))
 
         caption = "KS relation. Surface densities were calculated using a grid with pixel size of 250 pc."
         caption += " Each blue dot shows the total SFR and H2 mass in the pixel divided by the pixel area."
@@ -721,21 +739,21 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
         if mode == 0:
             outfile = "KS_molecular_relation_radii_%i.png" % (index)
             title = "KS relation (data: H2 mass, method: Azimuthal average)"
-            id = abs(hash("galaxy KS relation H2 %i" % (index)))
+            id = abs(hash("galaxy KS relation H2 radii %i" % (index)))
         if mode == 1:
             outfile = "KS_relation_best_radii_%i.png" % (index)
             title = "KS relation (data: H2+HI mass, method: Azimuthal average)"
-            id = abs(hash("galaxy KS relation H2+HI %i" % (index)))
+            id = abs(hash("galaxy KS relation H2+HI radii %i" % (index)))
 
         caption = "KS relation. Surface densities were calculated by azimuthally averaging radial concentric shells"
-        caption += " of 100 pc of width. The shells are centered in the minimum of the dark matter potential."
+        caption += " of 800 pc of width. The shells are centered in the minimum of the dark matter potential."
         caption += " Each blue dot shows the total SFR and H2 mass in the shell divided by the shell area."
         caption += " Black solid line indicates the median relation and shaded area the 84-16th percentiles."
         KSPlotsInWeb.load_plots(title, caption, outfile, id)
 
         if mode == 0:
             title = "Depletion time (data: H2 mass, method: grid)"
-            id = abs(hash("galaxy depletion H2 %i" % (index)))
+            id = abs(hash("galaxy depletion H2 grid %i" % (index)))
             outfile = "molecular_gas_depletion_timescale_grid_%i.png" % (index)
             caption = "Gas depletion times. The surface densities were calculated using a grid with pixel size of 250 pc."
             caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
@@ -743,7 +761,7 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
 
         if mode == 1:
             title = "Depletion time (data: H2+HI mass, method: grid)"
-            id = abs(hash("galaxy depletion H2+HI %i" % (index)))
+            id = abs(hash("galaxy depletion H2+HI grid %i" % (index)))
             outfile = "gas_depletion_timescale_best_grid_%i.png" % (index)
             caption = "Gas depletion times. The surface densities were calculated using a grid with pixel size of 250 pc."
             caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
@@ -752,19 +770,19 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
 
         if mode == 0:
             title = "Depletion time (data: H2 mass, method: Azimuthal average)"
-            id = abs(hash("galaxy depletion H2 %i" % (index)))
+            id = abs(hash("galaxy depletion H2 radii %i" % (index)))
             outfile = "molecular_gas_depletion_timescale_radii_%i.png" % (index)
             caption = "Gas depletion times. The surface densities were calculated by azimuthally averaging radial concentric shells"
-            caption += " of 100 pc of width. The shells were centered in the minimum of the dark matter potential."
+            caption += " of 800 pc of width. The shells were centered in the minimum of the dark matter potential."
             caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
             caption += "and the observational data-points correspond to Bigiel et al. (2008) inner, same as in KS relation (H2 mass) figure."
 
         if mode == 1:
             title = "Depletion time (data: H2+HI mass, method: Azimuthal average)"
-            id = abs(hash("galaxy depletion H2+HI %i" % (index)))
+            id = abs(hash("galaxy depletion H2+HI radii %i" % (index)))
             outfile = "gas_depletion_timescale_best_radii_%i.png" % (index)
             caption = "Gas depletion times. The surface densities were calculated by azimuthally averaging radial concentric shells"
-            caption += " of 100 pc of width. The shells were centered in the minimum of the dark matter potential."
+            caption += " of 800 pc of width. The shells were centered in the minimum of the dark matter potential."
             caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
             caption += "and the observational data-points correspond to Bigiel et al. (2008, 2010) inner, same as in KS relation (H2+HI mass) figure."
         KSPlotsInWeb.load_plots(title, caption, outfile, id)
@@ -773,7 +791,7 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
     make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path)
 
     title = "Surface density ratios (method: grid)"
-    id = abs(hash("density ratio H2+HI %i" % (index)))
+    id = abs(hash("density ratio H2+HI grid %i" % (index)))
     outfile = "Surface_density_ratio_grid_%i.png" % (index)
     caption = "Surface density ratios. The y-axis shows the ratio between surface densities calculated using a grid"
     caption += " with pixel size of 250 pc. Red dashed line corresponds to Krumholz+ (2009) semi-analytic model, the"
@@ -781,12 +799,12 @@ def make_KS_plots(data, ang_momentum, galaxy_data, index, KSPlotsInWeb, output_p
     KSPlotsInWeb.load_plots(title, caption, outfile, id)
 
     title = "Surface density ratios (method: Azimuthal average)"
-    id = abs(hash("density ratio H2+HI %i" % (index)))
+    id = abs(hash("density ratio H2+HI radii %i" % (index)))
     outfile = "Surface_density_ratio_radii_%i.png" % (index)
     caption = "Surface density ratios. The y-axis shows the ratio between surface densities calculated " \
-              "by azimuthally averaging radial concentric shells of 100 pc of width. The shells were centered " \
+              "by azimuthally averaging radial concentric shells of 800 pc of width. The shells were centered " \
               "in the minimum of the dark matter potential."
-    caption += " The red dashed line corresponds to Krumholz+ (2009) semi-analytic model, the"
+    caption += " The red dashed and dotted lines correspond to Krumholz+ (2009) semi-analytic model,"
     caption += " black solid line indicates the median relation and the shaded area the 84-16th percentiles, "
     KSPlotsInWeb.load_plots(title, caption, outfile, id)
 
