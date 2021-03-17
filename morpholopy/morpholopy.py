@@ -4,7 +4,7 @@ Description here
 
 import os
 import h5py
-#import glob
+import glob
 
 from catalogue import HaloCatalogue
 from particles import calculate_morphology, make_particle_data, calculate_luminosities
