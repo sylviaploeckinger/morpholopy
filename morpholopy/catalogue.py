@@ -61,6 +61,10 @@ class HaloCatalogue:
         self.ratio_densities = None
         self.metallicity = None
 
+        self.radii_surface_density = None
+        self.radii_surface_ratio = None
+        self.radii_nbins = None
+
 
         # Subhalo data :
         self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3

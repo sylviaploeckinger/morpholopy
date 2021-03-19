@@ -215,7 +215,7 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
     def KS(sigma_g, n, A):
         return A * sigma_g ** n
 
-    Sigma_g = np.logspace(-1, 3, 1000)
+    Sigma_g = np.logspace(-1, 4, 1000)
     Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
 
     # Plotting KS relations with size
@@ -380,21 +380,6 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
     # Plotting KS relations with size
     method = 'radii'
-    size = 0.8  # kpc
-
-    # Get the surface densities
-    surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
-
-    # Get median lines
-    median_surface_density, median_SFR_surface_density, \
-    SFR_surface_density_err_down, SFR_surface_density_err_up = median_relations(surface_density,
-                                                                                SFR_surface_density)
-
-    # Let's append data points to haloes for final plot at the end
-    #if mode == 1:
-    #    galaxy_data.surface_density = np.append(galaxy_data.surface_density, surface_density)
-    #    galaxy_data.SFR_density = np.append(galaxy_data.SFR_density, SFR_surface_density)
-    #    galaxy_data.metallicity = np.append(galaxy_data.metallicity, metals)
 
     figure()
     ax = plt.subplot(1, 1, 1)
@@ -413,14 +398,25 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
     title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
 
     ax.set_title(title)
-    plt.plot(surface_density, SFR_surface_density, 'o', color='tab:blue')
+
+    size = 0.25  # kpc
+    surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
+    plt.plot(surface_density, SFR_surface_density, 'o', ms=4, color='tab:blue',alpha=0.2,label='Bin size=250 pc')
+
+    size = 0.8  # kpc
+    surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
+    median_surface_density, median_SFR_surface_density, \
+    SFR_surface_density_err_down, SFR_surface_density_err_up = median_relations(surface_density, SFR_surface_density)
+    plt.plot(surface_density, SFR_surface_density, 'o', ms=4, color='tab:blue',label='Bin size=800 pc')
     plt.plot(median_surface_density, median_SFR_surface_density, '-', color='black')
     plt.fill_between(median_surface_density, SFR_surface_density_err_down,
                      SFR_surface_density_err_up, alpha=0.2)
+
+
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), color="red", label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
              linestyle="--")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
-    plt.xlim(-1.0, 3.0)
+    plt.xlim(-1.0, 4.0)
     plt.ylim(-6.5, 1.0)
 
     if mode == 0:
@@ -481,9 +477,16 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
     title += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f" % (gas_mass_galaxy)
     ax.set_title(title)
 
-    plt.plot(surface_density, tgas, 'o', color='tab:blue')
+    size = 0.25  # kpc
+    surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
+    plt.plot(surface_density, tgas, 'o', ms=4, color='tab:blue',alpha=0.2)
+
+    size = 0.8  # kpc
+    surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
+    plt.plot(surface_density, tgas, 'o', ms=4, color='tab:blue')
     plt.plot(median_surface_density, median_tgas, '-', color='black')
     plt.fill_between(median_surface_density, tgas_err_down, tgas_err_up, alpha=0.2)
+
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_g) - np.log10(Sigma_star) + 6., color="red",
              label="KS law (Kennicutt 98)", linestyle="--")
     plt.xlim(-1, 3.0)
@@ -525,12 +528,11 @@ def KS_plots(particles_data, ang_momentum, mode, galaxy_data, index, output_path
 
 
 
-def surface_ratios(data, ang_momentum, method):
+def surface_ratios(data, ang_momentum, method, size):
 
     face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum)
 
     if method == 'grid':
-        size = 0.25 # kpc
         image_diameter = 60
         extent = [-30, 30]  #kpc
         number_of_pixels = int(image_diameter / size + 1)
@@ -540,7 +542,6 @@ def surface_ratios(data, ang_momentum, method):
         map_HI = project_gas(data, 3, number_of_pixels, extent, face_on_rotation_matrix)
 
     else:
-        size = 0.8 # kpc
         # Calculate the maps using azimuthally-average shells
         map_H2 = project_gas_with_azimuthal_average(data, 0, face_on_rotation_matrix, size)
         map_HI = project_gas_with_azimuthal_average(data, 3, face_on_rotation_matrix, size)
@@ -567,16 +568,22 @@ def Krumholz_eq39(Sigma_neutral, f):
 def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_path):
 
     # Load data from Schruba +2021
-    SchrubaData = np.loadtxt("./plotter/obs_data/Schruba2011_data.txt", usecols=(4,5))
+    SchrubaData = np.loadtxt("./plotter/obs_data/Schruba2011_data.txt", usecols=(4,5,6))
     nonan = np.logical_and(np.isnan(SchrubaData[:, 0]) == False, np.isnan(SchrubaData[:, 1]) == False)
     Schruba_H1 = SchrubaData[nonan,0] #HI surface density [Msol / pc-2]
     Schruba_H2 = SchrubaData[nonan,1] #H2 surface density [Msol / pc-2]
+    flags = SchrubaData[nonan,2]
+    select_flags = np.logical_or(flags==1,flags==0) # Disregarding upper limits
+    Schruba_H1 = Schruba_H1[select_flags]
+    Schruba_H2 = Schruba_H2[select_flags]
+
     x_Schruba = np.log10(Schruba_H1+Schruba_H2)
     y_Schruba = np.log10(Schruba_H2 / (Schruba_H1+Schruba_H2))
 
     # Get the surface densities
     method = 'grid'
-    Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum, method)
+    binsize = 0.25 #kpc
+    Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum, method, binsize)
     Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
     Sigma_ratio_err_up = median_relations(Sigma_gas, Sigma_ratio)
 
@@ -642,11 +649,6 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     ########################################################################
     # Get the surface densities
     method = 'radii'
-    Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum, method)
-    Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
-    Sigma_ratio_err_up = median_relations(Sigma_gas, Sigma_ratio)
-
-    #galaxy_data.ratio_densities = np.append(galaxy_data.ratio_densities, Sigma_ratio)
 
     figure()
     ax = plt.subplot(1, 1, 1)
@@ -676,9 +678,30 @@ def make_surface_density_ratios(data, ang_momentum, galaxy_data, index, output_p
     plt.plot(Sigma_neutral, FH2, ':', color='tab:red', label="Krumholz+ (2009): f = 0.1")
     plt.plot(x_Schruba, y_Schruba, 'o', color='tab:orange', label="Schruba+ (2011)")
 
-    plt.plot(Sigma_gas, Sigma_ratio, 'o', color='tab:blue')
+    binsize = 0.25 #kpc
+    Sigma_gas_250pc, Sigma_ratio_250pc = surface_ratios(data, ang_momentum, method, binsize)
+    plt.plot(Sigma_gas_250pc, Sigma_ratio_250pc, 'o', ms=4, color='tab:blue',alpha=0.2,label='bin size=250 pc')
+
+    binsize = 0.8 #kpc
+    Sigma_gas_800pc, Sigma_ratio_800pc = surface_ratios(data, ang_momentum, method, binsize)
+    Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
+    Sigma_ratio_err_up = median_relations(Sigma_gas_800pc, Sigma_ratio_800pc)
+    plt.plot(Sigma_gas_800pc, Sigma_ratio_800pc, 'o', ms=4, color='tab:blue',label='bin size=800 pc')
     plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', color='black')
     plt.fill_between(Median_Sigma_gas, Sigma_ratio_err_down, Sigma_ratio_err_up, alpha=0.2)
+
+    Sigma_gas = Sigma_gas_800pc
+    #Sigma_gas = np.append(Sigma_gas,Sigma_gas_800pc)
+    Sigma_ratio = Sigma_ratio_800pc
+    #Sigma_ratio = np.append(Sigma_ratio,Sigma_ratio_800pc)
+    galaxy_data.radii_surface_density = np.append(galaxy_data.radii_surface_density, Sigma_gas)
+    galaxy_data.radii_surface_ratio = np.append(galaxy_data.radii_surface_ratio, Sigma_ratio)
+
+    #Median_Sigma_gas, Median_Sigma_ratio, _, _ = median_relations(Sigma_gas, Sigma_ratio)
+    #galaxy_data.radii_surface_density = np.append(galaxy_data.radii_surface_density, Median_Sigma_gas)
+    #galaxy_data.radii_surface_ratio = np.append(galaxy_data.radii_surface_ratio, Median_Sigma_ratio)
+    #galaxy_data.radii_nbins = np.append(galaxy_data.radii_nbins, len(Median_Sigma_gas))
+
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
     plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
 

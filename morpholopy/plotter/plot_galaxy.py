@@ -82,6 +82,9 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     pos_face_on = pos_face_on[arg_sort,:]
     pos_edge_on = pos_edge_on[arg_sort,:]
 
+    denmin = np.min(density)
+    denmax = np.max(density)
+
     # Plot parameters
     params = {
         "font.size": 11,
@@ -112,7 +115,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
     plt.scatter(pos_face_on[:, 0],pos_face_on[:, 1],
                 c=density, alpha=1, s=10,
-                vmin=6, vmax=10, cmap='magma', edgecolors='none')
+                vmin=denmin, vmax=denmax, cmap='magma', edgecolors='none')
     ax.autoscale(False)
 
     ax = plt.subplot(1, 2, 2)
@@ -148,7 +151,7 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
 
     plt.scatter(pos_edge_on[:, 0], pos_edge_on[:, 1],
                 c=density, alpha=1, s=10,
-                vmin=6, vmax=10, cmap='magma', edgecolors='none')
+                vmin=denmin, vmax=denmax, cmap='magma', edgecolors='none')
 
     ax.autoscale(False)
 

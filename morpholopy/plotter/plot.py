@@ -310,7 +310,6 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
     sigma_gas = sigma_gas[arg_sort[::-1]]
     sigma_SFR = sigma_SFR[arg_sort[::-1]]
 
-
     x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
 
     plt.scatter(sigma_gas, sigma_SFR, c=metals, alpha=.9, s=10,
@@ -326,7 +325,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
     cb = plt.colorbar(ticks=[-3,-2,-1,0,1], cax=cbar_ax)
-    cb.set_label(label='Z$_{gas}$/Z$_{\odot}$', labelpad=0.5)
+    cb.set_label(label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.savefig(f"{output_path}/accumulative_surface_density_gas.png", dpi=200)
     plt.close()
@@ -356,9 +355,23 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
 
     x, y, y_down, y_up = median_relations(sigma_gas, sigma_ratio)
 
-    plt.scatter(sigma_gas, sigma_ratio, c=metals, alpha=.9, s=10,
+    plt.scatter(sigma_gas, sigma_ratio, c=metals, alpha=.9, s=5,
                 vmin=-3, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2)
     plt.plot(x, y, '-', color='grey')
+
+    sigma_gas = galaxy_data.radii_surface_density[1:]
+    sigma_ratio = galaxy_data.radii_surface_ratio[1:]
+    plt.plot(sigma_gas, sigma_ratio, 'o',ms=4,alpha=0.5, color='tab:blue')
+
+    #
+    #counter = 1
+    #for j in range(1,len(galaxy_data.radii_nbins)):
+    #    galaxy_surface_density = galaxy_data.radii_surface_density[counter:counter+galaxy_data.radii_nbins[j]]
+    #    galaxy_surface_ratio = galaxy_data.radii_surface_ratio[counter:counter+galaxy_data.radii_nbins[j]]
+    #    counter += galaxy_data.radii_nbins[j]
+    #    value = np.log10(galaxy_data.metallicity_gas[j-1]/0.0134)
+    #    color = plt.cm.CMRmap_r(0.25*value+0.75)
+    #    plt.plot(galaxy_surface_density, galaxy_surface_ratio, '-', color=color)
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
@@ -368,7 +381,7 @@ def plot_accumulative_densities(galaxy_data, MorphologyPlotsInWeb, output_path):
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
     cb = plt.colorbar(ticks=[-3,-2,-1,0,1], cax=cbar_ax)
-    cb.set_label(label='Z$_{gas}$/Z$_{\odot}$', labelpad=0.5)
+    cb.set_label(label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.savefig(f"{output_path}/accumulative_surface_density_ratios.png", dpi=200)
     plt.close()
