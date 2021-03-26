@@ -22,6 +22,13 @@ class PlotsInPipeline:
     def reset_plots_list(self):
         self.plots_details = []
 
+def add_metadata_to_web(web, siminfo):
+    data = load(siminfo.snapshot)
+
+    TEMPLATE_FILE = "description.html"
+    description_template = web.environment.get_template(TEMPLATE_FILE)
+    web.variables["runs"].append(dict(description=description_template.render(data=data), ))
+    return
 
 def make_web(siminfo):
     data = load(siminfo.snapshot)

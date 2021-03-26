@@ -8,7 +8,7 @@ import glob
 
 from catalogue import HaloCatalogue
 from particles import calculate_morphology, make_particle_data, calculate_luminosities
-from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline
+from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline, add_metadata_to_web
 from plotter.plot import plot_morphology
 from plotter.plot_galaxy import visualize_galaxy
 from luminosities import MakeGrid
@@ -18,7 +18,10 @@ import unyt
 
 
 class SimInfo:
-    def __init__(self,folder,snap):
+    def __init__(self, folder, snap, output_path, comparison, name):
+        self.comparison = comparison
+        self.name = name
+        self.output_path = output_path
         self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
         self.subhalo_properties = os.path.join(folder,"halo_%04i.properties.0"%snap)
         self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
@@ -28,29 +31,23 @@ class SimInfo:
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
         self.baryon_maxsoft = snapshot_file["/GravityScheme"].attrs['Maximal physical baryon softening length  [internal units]'] * 1e3 #kpc
 
-if __name__ == '__main__':
-    from utils import *
 
-    output_path = args.output
-    siminfo = SimInfo(args.directory, args.number)
+def morpholopy(siminfo, web):
 
     # Loading simulation data in website table
-    web = make_web(siminfo)
-    PartPlotsInWeb = PlotsInPipeline()
     GalPlotsInWeb = PlotsInPipeline()
     MorphologyPlotsInWeb = PlotsInPipeline()
     KSPlotsInWeb = PlotsInPipeline()
 
-    #Loading photometry grids for interpolation
-    system = 'GAMA' # hard-coded for now
-    pgrids  = {}
-    for pht in glob.glob(f'./photometry/{system}/*'):  
+    # Loading photometry grids for interpolation
+    system = 'GAMA'  # hard-coded for now
+    pgrids = {}
+    for pht in glob.glob(f'./photometry/{system}/*'):
         pgrids[pht[-1]] = MakeGrid(pht)
 
-    
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e8 * unyt.msun  # ! Option of lower limit for gas mass
-    halo_data = HaloCatalogue(siminfo,lower_mass)
+    lower_mass = 1e7 * unyt.msun  # ! Option of lower limit for gas mass
+    halo_data = HaloCatalogue(siminfo, lower_mass)
 
     # Loop over the sample to calculate morphological parameters
     for i in range(halo_data.num):
@@ -58,7 +55,7 @@ if __name__ == '__main__':
         # Read particle data
         gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])
 
-        if len(gas_data) ==0: continue
+        if len(gas_data) == 0: continue
 
         # Calculate morphology estimators: kappa, axial ratios for stars ..
         stars_ang_momentum, stars_data = calculate_morphology(halo_data, stars_data, siminfo, i, 4)
@@ -72,23 +69,58 @@ if __name__ == '__main__':
 
         # Make plots for individual galaxies, perhaps.. only first 10
         if i < 10:
-
             visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, GalPlotsInWeb, output_path)
 
             make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
-            title = '%i Galaxy ' % (i+1)
-            id = abs(hash("galaxy and ks relation %i" %i))
+            title = '%i Galaxy ' % (i + 1)
+            id = abs(hash("galaxy and ks relation %i" % i))
             plots = GalPlotsInWeb.plots_details
-            add_web_section(web,title,id,plots)
+            add_web_section(web, title, id, plots)
             GalPlotsInWeb.reset_plots_list()
 
-
     # Finish plotting and output webpage
-    plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path )
+    plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path)
     render_web(web, output_path)
 
 
+if __name__ == '__main__':
+    from utils import *
 
+    # Load MorpholoPy production details
+    output_path = args.output
+    number_of_inputs = len(args.snapshot)
+    directory_list = args.directory
+    snapshot_list = args.snapshot
+    
+    name_list = (
+        args.run_names
+        if args.run_names is not None
+        else [None] * number_of_inputs
+    )
+
+    # Are we comparing?
+    if number_of_inputs > 1:
+        comparison = True
+    else: comparison = False
+
+    # Loop over simulation list
+    for sims in range(number_of_inputs):
+
+        directory = directory_list[sims]
+        snap_number = int(snapshot_list[sims])
+        sim_name = name_list[sims]
+        siminfo = SimInfo(directory, snap_number,
+                          output_path, comparison, sim_name)
+
+        # Make initial website
+        if sims == 0: web = make_web(siminfo)
+        if sims > 0: add_metadata_to_web(web, siminfo)
+
+        # Run morpholoPy
+        morpholopy(siminfo, web)
+
+    # Finish and output html file
+    render_web(web, siminfo.output_path)
 
