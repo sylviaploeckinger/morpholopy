@@ -30,7 +30,7 @@ parser.add_argument(
     "--snapshot",
     help="Snapshot number to visualise. Required.",
     type=str,
-    required=False,
+    required=True,
     nargs="*",
 )
 

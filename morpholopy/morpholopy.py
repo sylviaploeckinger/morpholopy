@@ -12,6 +12,8 @@ from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline,
 from plotter.plot import plot_morphology
 from plotter.plot_galaxy import visualize_galaxy
 from luminosities import MakeGrid
+from plotter.loadplots import loadGalaxyPlots
+from plotter.comparison import make_comparison_plots
 
 from plotter.KS_relation import make_KS_plots, calculate_surface_densities
 import unyt
@@ -35,8 +37,8 @@ class SimInfo:
 def compare_morpholopy(siminfo, web):
 
     # Loading simulation data in website table
-    GalPlotsInWeb = PlotsInPipeline()
-    MorphologyPlotsInWeb = PlotsInPipeline()
+    #GalPlotsInWeb = PlotsInPipeline()
+    #MorphologyPlotsInWeb = PlotsInPipeline()
 
     # Loading photometry grids for interpolation
     system = 'GAMA'  # hard-coded for now
@@ -45,7 +47,7 @@ def compare_morpholopy(siminfo, web):
         pgrids[pht[-1]] = MakeGrid(pht)
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e7 * unyt.msun  # ! Option of lower limit for gas mass
+    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo, lower_mass)
 
     # Loop over the sample to calculate morphological parameters
@@ -70,19 +72,15 @@ def compare_morpholopy(siminfo, web):
 
         # Make plots for individual galaxies, perhaps.. only first 10
         if i < 10:
-            visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum, gas_ang_momentum,
-                             halo_data, i, GalPlotsInWeb, output_path)
+            visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum,
+                             gas_ang_momentum, halo_data, i, siminfo)
 
-            make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+            make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, siminfo)
 
-            title = '%i Galaxy ' % (i + 1)
-            id = abs(hash("galaxy and ks relation %i" % i))
-            plots = GalPlotsInWeb.plots_details
-            add_web_section(web, title, id, plots)
-            GalPlotsInWeb.reset_plots_list()
+
 
     # Finish plotting and output webpage
-    plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path)
+    #plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path)
     return web
 
 def morpholopy(siminfo):
@@ -161,37 +159,38 @@ if __name__ == '__main__':
     # Are we comparing?
     if number_of_inputs > 1: comparison = True
 
-    if (comparison):
-
-        # Loop over simulation list
-        for sims in range(number_of_inputs):
-
-            directory = directory_list[sims]
-            snap_number = int(snapshot_list[sims])
-            sim_name = name_list[sims]
-            siminfo = SimInfo(directory, snap_number,
-                              output_path, comparison, sim_name)
-
-            # Make initial website
-            if sims == 0: web = make_web(siminfo)
-            if sims > 0: add_metadata_to_web(web, siminfo)
-
-            # Run morpholoPy
-            web = compare_morpholopy(siminfo, web)
-
-        # Finish and output html file
-        render_web(web, siminfo.output_path)
-
-    else :
-
-        # Make nice morpholopy outputs for a single sim
-        directory = directory_list
-        snap_number = int(snapshot_list)
-        sim_name = name_list
+    # Loop over simulation list
+    for sims in range(number_of_inputs):
+        directory = directory_list[sims]
+        snap_number = int(snapshot_list[sims])
+        sim_name = name_list[sims]
         siminfo = SimInfo(directory, snap_number,
                           output_path, comparison, sim_name)
 
+        # Make initial website
+        if sims == 0: web = make_web(siminfo)
+        if sims > 0: add_metadata_to_web(web, siminfo)
+
         # Run morpholoPy
-        morpholopy(siminfo)
+        web = compare_morpholopy(siminfo, web)
+
+    if (comparison): make_comparison_plots(siminfo, name_list)
+
+    # After making individual plots finish up the website
+    # Load galaxy plots
+    loadGalaxyPlots(web, name_list)
+
+    # Finish and output html file
+    render_web(web, siminfo.output_path)
+
+        # Make nice morpholopy outputs for a single sim
+#        directory = directory_list
+#        snap_number = int(snapshot_list)
+#        sim_name = name_list
+#        siminfo = SimInfo(directory, snap_number,
+#                          output_path, comparison, sim_name)
+
+        # Run morpholoPy
+#        morpholopy(siminfo)
 
 

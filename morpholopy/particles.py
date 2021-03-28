@@ -3,7 +3,7 @@ import h5py
 from functions import calculate_kappa_co, AxialRatios
 #from velociraptor.swift.swift import to_swiftsimio_dataset
 from swiftsimio import load
-#from astropy.cosmology import WMAP9 as cosmo
+from astropy.cosmology import WMAP9 as cosmo
 import luminosities as lum
 
 def make_masks(siminfo,halo):

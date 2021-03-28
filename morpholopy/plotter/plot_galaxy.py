@@ -1,5 +1,5 @@
 from pylab import *
-from sphviewer.tools import QuickView
+#from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from numpy import matmul
 
@@ -52,7 +52,7 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     pos_face_on[:, 2] = dot(pos_parts, w)
     return pos_face_on
 
-def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, PlotsInWeb, output_path):
+def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, siminfo):
 
     # Plot ranges
     r_limit = 5 * halo_data.halfmass_radius_star[index]
@@ -71,7 +71,6 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     pos_face_on = pos_face_on.T
     pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
     pos_edge_on = pos_edge_on.T
-
 
     if parttype == 0: density = np.log10(partsDATA[:,11])
     if parttype == 4: density = np.log10(partsDATA[:, 8])
@@ -125,22 +124,26 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
         ac = halo_data.axis_ca[index]
         cb = halo_data.axis_cb[index]
         ba = halo_data.axis_ba[index]
+        radius = halo_data.halfmass_radius_star[index]
         title = r" $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
         title += " - $\log_{10}$ $M_{*}/M_{\odot} = $%0.2f" % (mass)
         title += " \n c/a = %0.2f," % (ac)
         title += " c/b = %0.2f," % (cb)
         title += " b/a = %0.2f" % (ba)
+        title += "\n Stellar half mass radius %0.2f kpc" % (radius)
     if parttype ==0:
         kappa = halo_data.gas_kappa_co[index]
         mass = halo_data.gas_mass[index]
         ac = halo_data.gas_axis_ca[index]
         cb = halo_data.gas_axis_cb[index]
         ba = halo_data.gas_axis_ba[index]
+        radius = halo_data.halfmass_radius_star[index]
         title = r" $\kappa_{\mathrm{co}} = $%0.2f" % (kappa)
         title += " - $\log_{10}$ $M_{gas}/M_{\odot} = $%0.2f" % (mass)
         title += " \n c/a = %0.2f," % (ac)
         title += " c/b = %0.2f," % (cb)
         title += " b/a = %0.2f" % (ba)
+        title += "\n Stellar half mass radius %0.2f kpc" % (radius)
     ax.set_title(title)
 
     ax.tick_params(labelleft=True, labelbottom=True, length=0)
@@ -160,26 +163,26 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, Plots
     cb = plt.colorbar(ticks=[4, 6, 8, 10], cax=cbar_ax)
     cb.set_label(label=r'$\log_{10}$ $\rho$ [M$_{\odot}$/kpc$^{3}$]', labelpad=0.5)
 
-    if parttype ==4: outfile = f"{output_path}/galaxy_sparts_%i.png" % (index)
-    if parttype ==0: outfile = f"{output_path}/galaxy_parts_%i.png" % (index)
+    if parttype ==4: outfile = f"{siminfo.output_path}/galaxy_sparts_%i_"%(index)+siminfo.name+".png"
+    if parttype ==0: outfile = f"{siminfo.output_path}/galaxy_parts_%i_"%(index)+siminfo.name+".png"
     fig.savefig(outfile, dpi=150)
     plt.close("all")
 
-    if parttype ==4:
-        title = "Star particles"
-        caption = "Projection of stars within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
-        caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-        id = abs(hash("galaxy stars parts %i" % (index)))
-        outfile = "galaxy_sparts_%i.png" % (index)
+    #if parttype ==4:
+    #    title = "Star particles"
+    #    caption = "Projection of stars within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
+    #    caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
+    #    id = abs(hash("galaxy stars parts %i" % (index)))
+    #    outfile = "galaxy_sparts_%i.png" % (index)
 
-    if parttype ==0:
-        title = "Gas particles"
-        caption = "Projection of gas within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
-        caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-        id = abs(hash("galaxy gas parts %i" % (index)))
-        outfile = "galaxy_parts_%i.png" % (index)
+    #if parttype ==0:
+    #    title = "Gas particles"
+    #    caption = "Projection of gas within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
+    #    caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
+    #    id = abs(hash("galaxy gas parts %i" % (index)))
+    #    outfile = "galaxy_parts_%i.png" % (index)
 
-    PlotsInWeb.load_plots(title, caption, outfile, id)
+    #PlotsInWeb.load_plots(title, caption, outfile, id)
 
 
 def get_normalized_image(image,vmin=None,vmax=None):
@@ -416,14 +419,14 @@ def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_d
 
     
 def visualize_galaxy(stars_data, gas_data, star_absmag, stars_ang_momentum, gas_ang_momentum,
-                             halo_data, i, GalPlotsInWeb, output_path):
+                             halo_data, i, siminfo):
 
-    plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
 
-    plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, siminfo)
+    plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, siminfo)
 
-    for filt in ['u', 'r', 'K']:
-        lums = pow(10., -0.4*star_absmag[filt])*3631
-        render_luminosity_map(stars_data, lums, filt, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    #for filt in ['u', 'r', 'K']:
+    #    lums = pow(10., -0.4*star_absmag[filt])*3631
+    #    render_luminosity_map(stars_data, lums, filt, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
