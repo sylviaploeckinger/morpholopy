@@ -3,7 +3,7 @@ import h5py
 from functions import calculate_kappa_co, AxialRatios
 #from velociraptor.swift.swift import to_swiftsimio_dataset
 from swiftsimio import load
-from astropy.cosmology import WMAP9 as cosmo
+#from astropy.cosmology import WMAP9 as cosmo
 import luminosities as lum
 
 def make_masks(siminfo,halo):
@@ -31,12 +31,6 @@ def make_particle_data(siminfo,halo_id):
     # Create particle data :
     # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz
     # | (7) hsml ]
-
-    #particles, unbound_particles = groups.extract_halo(halo_id=int(halo_id))
-    #data, mask = to_swiftsimio_dataset(particles,
-    #    siminfo.snapshot,
-    #    generate_extra_mask=True
-    #)
 
     mask_gas, mask_stars = make_masks(siminfo,halo_id)
     data = load(siminfo.snapshot)
@@ -70,7 +64,6 @@ def make_particle_data(siminfo,halo_id):
     stars_data[:,0:3] = data.stars.coordinates[mask_stars].value * siminfo.a * 1e3 #kpc
     stars_data[:,3] = stars_mass #Msun
     stars_data[:,4:7] = data.stars.velocities[mask_stars].value #km/s
-    #stars_data[:,7] = data.stars.smoothing_lengths[mask_stars].value * siminfo.a * 1e3 #kpc
     stars_data[:, 7] = 0.5 * siminfo.baryon_maxsoft * np.ones(stars_mass.size)
     stars_data[:, 8] = stars_mass * (1.2348 / stars_data[:,7] )**3 #Msun/kpc^3
     stars_data[:,9] = stars_age
