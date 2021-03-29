@@ -6,16 +6,16 @@ import os
 import h5py
 import glob
 
-from catalogue import HaloCatalogue
+from catalogue import HaloCatalogue, output_galaxy_data
 from particles import calculate_morphology, make_particle_data, calculate_luminosities
 from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline, add_metadata_to_web
-from plotter.plot import plot_morphology
 from plotter.plot_galaxy import visualize_galaxy
 from luminosities import MakeGrid
 from plotter.loadplots import loadGalaxyPlots
-from plotter.comparison import make_comparison_plots
-
+from plotter.KS_comparison import make_comparison_plots
+from plotter.plot_morphology import plot_morphology, output_morphology
 from plotter.KS_relation import make_KS_plots, calculate_surface_densities
+from plotter.plot_surface_densities import plot_surface_densities
 import unyt
 
 
@@ -35,10 +35,6 @@ class SimInfo:
 
 
 def compare_morpholopy(siminfo, web):
-
-    # Loading simulation data in website table
-    #GalPlotsInWeb = PlotsInPipeline()
-    #MorphologyPlotsInWeb = PlotsInPipeline()
 
     # Loading photometry grids for interpolation
     system = 'GAMA'  # hard-coded for now
@@ -80,7 +76,9 @@ def compare_morpholopy(siminfo, web):
 
 
     # Finish plotting and output webpage
-    #plot_morphology(halo_data, web, MorphologyPlotsInWeb, output_path)
+    output_morphology(halo_data, siminfo)
+    plot_surface_densities(halo_data, siminfo)
+    output_galaxy_data(halo_data,siminfo)
     return web
 
 def morpholopy(siminfo):
@@ -174,23 +172,16 @@ if __name__ == '__main__':
         # Run morpholoPy
         web = compare_morpholopy(siminfo, web)
 
-    if (comparison): make_comparison_plots(siminfo, name_list)
+    if (comparison):
+        make_comparison_plots(siminfo, name_list)
+        plot_morphology(siminfo, name_list)
 
     # After making individual plots finish up the website
     # Load galaxy plots
-    loadGalaxyPlots(web, name_list)
+    loadGalaxyPlots(web, name_list, siminfo.output_path)
 
     # Finish and output html file
     render_web(web, siminfo.output_path)
 
-        # Make nice morpholopy outputs for a single sim
-#        directory = directory_list
-#        snap_number = int(snapshot_list)
-#        sim_name = name_list
-#        siminfo = SimInfo(directory, snap_number,
-#                          output_path, comparison, sim_name)
-
-        # Run morpholoPy
-#        morpholopy(siminfo)
 
 

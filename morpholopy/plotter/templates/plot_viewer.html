@@ -28,6 +28,7 @@
 {% for section in sections %}
 <div class="section" id="{{ section.id }}">
     <h1>{{ section.title }}</h1>
+    <p>{{ section.caption }}</p>
     <div class="plot-container">
         {% for plot in section.plots %}
         <div class="plot">

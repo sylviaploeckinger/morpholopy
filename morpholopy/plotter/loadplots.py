@@ -1,11 +1,11 @@
-
+import numpy as np
 from plotter.html import add_web_section, PlotsInPipeline
 
-def loadGalaxyPlots(web,name_list):
+def loadGalaxyPlots(web,name_list,output_path):
 
     PlotsInWeb = PlotsInPipeline()
 
-    for index in range(10):
+    for index in range(5):
 
         for name in name_list:
             title = "Star particles ("+name+")"
@@ -112,7 +112,141 @@ def loadGalaxyPlots(web,name_list):
         PlotsInWeb.load_plots(title, caption, outfile, id)
 
         title = '%i Galaxy ' % (index + 1)
+        caption = " "
+        for name in name_list:
+            data = np.loadtxt(f"{output_path}/galaxy_data_"+name+".txt")
+            sfr_galaxy = data[:,0]
+            mass_galaxy = data[:,1]
+            gas_mass_galaxy = data[:,2]
+            mass_halo = data[:,3]
+            galaxy_metallicity_gas_sfr = data[:,4]
+            galaxy_metallicity_gas = data[:,5]
+
+            caption += "<strong>Simulation: "+name+"</strong>. Galaxy details: "
+            caption += r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo[index])
+            caption += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy[index])
+            caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr[index])
+            caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas[index])
+            caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy[index])
+            caption += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p>" % (gas_mass_galaxy[index])
+
         id = abs(hash("galaxy and ks relation %i" % index))
         plots = PlotsInWeb.plots_details
-        add_web_section(web, title, id, plots)
+        add_web_section(web, title, caption, id, plots)
         PlotsInWeb.reset_plots_list()
+
+
+    title = "Specific angular momentum / Stars"
+    caption = "Ratio between the total angular momentum of stars within 30 kpc of "
+    caption += "aperture divided by the total mass in stars."
+    filename = "momentum_parttype_%i.png" %4
+    id = abs(hash("momentum %i" %4))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Specific angular momentum / HI+H2 gas"
+    caption = "Ratio between the total angular momentum of gas within 30 kpc of "
+    caption += "aperture divided by the total mass in gas."
+    filename = "momentum_parttype_%i.png" %0
+    id = abs(hash("momentum %i" %0))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = 'Specific angular momentum'
+    id = abs(hash("angular momentum"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    title = "Kappa corotation / Stars"
+    caption = "Kappa corotation is defined as the fraction of kinetic energy in a galaxy "
+    caption += "that is in ordered rotation. Note that the rotating contribution is calculated "
+    caption += "only for prograde rotation."
+    filename = "Kappa_co_parttype_%i.png" %4
+    id = abs(hash("kappa co %i" %4))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Kappa corotation / HI+H2 gas"
+    caption = "Kappa corotation is defined as the fraction of kinetic energy in a galaxy "
+    caption += "that is in ordered rotation. Note that the rotating contribution is calculated "
+    caption += "only for prograde rotation."
+    filename = "Kappa_co_parttype_%i.png" %0
+    id = abs(hash("kappa co %i" %0))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = 'Kappa corotation'
+    id = abs(hash("Kappa corotation"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    title = "Axis ratios / Stars"
+    caption = "Axial ratios of galaxies more massive than 1e6 Msun in stellar mass. "
+    caption += "a, b and c (a >= b >= c) represent the lengths of the primary axes. "
+    caption += "Ratios have been calculated following eqs. (1) and (2) from Trayford+2018."
+    filename = "Axis_ratios_parttype_%i.png" %4
+    id = abs(hash("galaxy axis %i" %4))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Axis ratios / HI+H2 gas"
+    caption = "Axial ratios of galaxies more massive than 1e6 Msun in stellar mass. "
+    caption += "a, b and c (a >= b >= c) represent the lengths of the primary axes. "
+    caption += "Ratios have been calculated following eqs. (1) and (2) from Trayford+2018."
+    filename = "Axis_ratios_parttype_%i.png" %0
+    id = abs(hash("galaxy axis %i" %0))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = 'Axis ratios'
+    id = abs(hash("axis ratios"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for name in name_list:
+        title = "Integrated surface densities (" + name + ")"
+        caption = "Integrated surface densities of H2+HI gas and star-forming gas for each individual galaxy. "
+        caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
+        filename = "surface_density_H2.png"
+        id = abs(hash("surface_density_H2"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Integrated surface densities (" + name + ")"
+        caption = "Integrated surface densities of H2 gas and star-forming gas for each individual galaxy. "
+        caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
+        filename = "surface_density_gas.png"
+        id = abs(hash("surface_density_gas"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = 'Integrated surface densities'
+    id = abs(hash("Integrated Surface density"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for name in name_list:
+        title = "Combined spatially resolved surface density ratios (" + name + ")"
+        caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
+        caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
+                   " using the grid method."
+        filename = "combined_surface_density_ratios.png"
+        id = abs(hash("combined_surface_density_ratios"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Combined spatially resolved surface density (" + name + ")"
+        caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
+        caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
+                   " using the grid method."
+        filename = "combined_surface_density_gas.png"
+        id = abs(hash("combined_surface_density_gas"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = 'Combined surface densities'
+    id = abs(hash("Surface density"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()

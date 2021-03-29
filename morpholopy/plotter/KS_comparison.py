@@ -45,8 +45,8 @@ def KS_relation_plots(siminfo,index,name_list):
                     if observation.gas_surface_density is not None:
                         if (observation.description == "Bigiel et al. (2008) inner"):
                             data = observation.bin_data_KS(np.arange(-1, 3, .25), 0.4)
-                            plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o", ms=6,
-                                         label=observation.description, color='tab:green')
+                            plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="v", ms=6,
+                                         label=observation.description, color='darkred')
                         elif (observation.description == "Bigiel et al. (2010) outer"):
                             data2 = observation.bin_data_KS(np.arange(-1, 3, .25), 0.4)
                             plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o", ms=6,
@@ -58,8 +58,8 @@ def KS_relation_plots(siminfo,index,name_list):
                     if observation.gas_surface_density is not None:
                         if (observation.description == "Bigiel et al. (2008) inner"):
                             data = observation.bin_data_KS_molecular(np.arange(-1, 3, .25), 0.4)
-                            plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o", ms=6,
-                                         label=observation.description, color='tab:green')
+                            plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="<", ms=6,
+                                         label=observation.description, color='darkred')
                 plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
 
             color = ['tab:blue','tab:orange']
@@ -139,8 +139,8 @@ def depletion_time_plots(siminfo,index,name_list):
                     if observation.gas_surface_density is not None:
                         if (observation.description == "Bigiel et al. (2008) inner"):
                             data = observation.bin_data_gas_depletion(np.arange(-1, 3, .25), 0.4)
-                            plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o", ms=6,
-                                         label=observation.description, color='tab:green')
+                            plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt=">", ms=6,
+                                         label=observation.description, color='darkred')
                         elif (observation.description == "Bigiel et al. (2010) outer"):
                             data2 = observation.bin_data_gas_depletion(np.arange(-1, 3, .25), 0.4)
                             plt.errorbar(data2[0], data2[1], yerr=[data2[2], data2[3]], fmt="o", ms=6,
@@ -152,7 +152,7 @@ def depletion_time_plots(siminfo,index,name_list):
                         if (observation.description == "Bigiel et al. (2008) inner"):
                             data = observation.bin_data_gas_depletion_molecular(np.arange(-1, 3, .25), 0.4)
                             plt.errorbar(data[0], data[1], yerr=[data[2], data[3]], fmt="o", ms=6,
-                                         label=observation.description, color='tab:green')
+                                         label=observation.description, color='darkred')
                 plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
 
             color = ['tab:blue','tab:orange']
@@ -264,6 +264,9 @@ def surface_ratios_plots(siminfo, index, name_list):
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
         plt.savefig(f"{siminfo.output_path}/Surface_density_ratio_"+method+"_%i_"%(index)+name_list[0]+".png", dpi=200)
         plt.close()
+
+
+
 
 def make_comparison_plots(siminfo, name_list):
 
