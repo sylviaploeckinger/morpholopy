@@ -171,7 +171,7 @@ def depletion_time_plots(siminfo,index,name_list):
                 SFR_surface_density_err_down, SFR_surface_density_err_up = \
                     median_relations(surface_density, SFR_surface_density)
 
-                plt.plot(surface_density, SFR_surface_density, 'o', color=color[i])
+                plt.plot(surface_density, SFR_surface_density, 'o', color=color[i], alpha=0.6)
                 plt.plot(median_surface_density, median_SFR_surface_density, '-',
                          color=color[i],label=name)
                 plt.fill_between(median_surface_density, SFR_surface_density_err_down,
@@ -245,7 +245,7 @@ def surface_ratios_plots(siminfo, index, name_list):
                 Sigma_ratio = data[:,1]
                 Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
                 Sigma_ratio_err_up = median_relations(Sigma_gas, Sigma_ratio)
-                plt.plot(Sigma_gas, Sigma_ratio, 'o', color=color[i])
+                plt.plot(Sigma_gas, Sigma_ratio, 'o', color=color[i], alpha=0.6)
                 plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', color=color[i],label=name)
                 plt.fill_between(Median_Sigma_gas, Sigma_ratio_err_down, Sigma_ratio_err_up, alpha=0.2, color=color[i])
             if method == 'radii':
