@@ -19,8 +19,8 @@ The morpholopy package requires:
 How to use it
 ---------------
 
-Specify in the file run.sh the folder where your simulation is stored (folder=), the simulation
-snapshot (e.g. snap=34) and the folder (output=) where plots will be stored.
+Specify in the file run.sh the folder where your simulation is stored (-d), the simulation
+snapshot (e.g. -s) and the folder (-o) where plots will be stored.
 
 Then type `bash run.sh` or `bash runcomparison.sh` or alternatively run it as
 
