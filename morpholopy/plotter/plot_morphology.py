@@ -2,18 +2,33 @@ from pylab import *
 import numpy as np
 
 def output_momentum(stellar_mass,momentum,parttype,siminfo):
+    index = [i for i, v in enumerate(momentum) if v is not None]
+    x = [stellar_mass[i] for i in index]
+    y = [momentum[i] for i in index]
     np.savetxt(f"{siminfo.output_path}/momentum_parttype_%i_"%(parttype)+siminfo.name+".txt",
-               np.transpose([stellar_mass, momentum]))
+               np.transpose([x, y]))
 
 
 def output_kappa(stellar_mass,kappa,parttype,siminfo):
+    index = [i for i, v in enumerate(kappa) if v is not None]
+    x = [stellar_mass[i] for i in index]
+    y = [kappa[i] for i in index]
     np.savetxt(f"{siminfo.output_path}/Kappa_co_parttype_%i_"%(parttype)+siminfo.name+".txt",
-               np.transpose([stellar_mass, kappa]))
+               np.transpose([x, y]))
 
 
 def output_axis_ratios(stellar_mass,axis_ratios,parttype,siminfo):
+    y = axis_ratios[:,0]
+    y1 = axis_ratios[:,1]
+    y2 = axis_ratios[:,2]
+    index = [i for i, v in enumerate(y) if v is not None]
+    x = [stellar_mass[i] for i in index]
+    y0 = [y[i] for i in index]
+    y1 = [y[i] for i in index]
+    y2 = [y[i] for i in index]
+
     np.savetxt(f"{siminfo.output_path}/Axis_ratios_parttype_%i_"%(parttype)+siminfo.name+".txt",
-               np.transpose([stellar_mass, axis_ratios[:,0], axis_ratios[:,1], axis_ratios[:,2]]))
+               np.transpose([x, y0, y1, y2]))
 
 
 def output_accumulative_densities(galaxy_data, siminfo):

@@ -1,5 +1,5 @@
 from pylab import *
-#from sphviewer.tools import QuickView
+from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from numpy import matmul
 
@@ -168,22 +168,6 @@ def plot_galaxy_parts(partsDATA, parttype, ang_momentum, halo_data, index, simin
     fig.savefig(outfile, dpi=150)
     plt.close("all")
 
-    #if parttype ==4:
-    #    title = "Star particles"
-    #    caption = "Projection of stars within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
-    #    caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-    #    id = abs(hash("galaxy stars parts %i" % (index)))
-    #    outfile = "galaxy_sparts_%i.png" % (index)
-
-    #if parttype ==0:
-    #    title = "Gas particles"
-    #    caption = "Projection of gas within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
-    #    caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-    #    id = abs(hash("galaxy gas parts %i" % (index)))
-    #    outfile = "galaxy_parts_%i.png" % (index)
-
-    #PlotsInWeb.load_plots(title, caption, outfile, id)
-
 
 def get_normalized_image(image,vmin=None,vmax=None):
     if(vmin==None):
@@ -197,7 +181,7 @@ def get_normalized_image(image,vmin=None,vmax=None):
     #image=(image-vmin)/(vmax-vmin)
     return image
 
-def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsInWeb, output_path):
+def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, siminfo):
     # partsDATA contains particles data and is structured as follow
     # [ (:3)Position[Mpc]: (0)X | (1)Y | (2)Z ]
     if parttype == 4: cmap = plt.cm.magma
@@ -306,28 +290,13 @@ def plot_galaxy(parts_data, parttype, ang_momentum, halo_data, index, GalPlotsIn
     cb.set_label(label=r'$\log_{10}$ $\Sigma$ [M$_{\odot}$/kpc$^{2}$]', labelpad=0.5)
 
 
-    if parttype == 0: outfile = f"{output_path}/galaxy_gas_%i.png" % (index)
-    if parttype == 4: outfile = f"{output_path}/galaxy_stars_%i.png" % (index)
+    if parttype == 0: outfile = f"{siminfo.output_path}/galaxy_gas_%i_"%(index)+siminfo.name+".png"
+    if parttype == 4: outfile = f"{siminfo.output_path}/galaxy_stars_%i_"%(index)+siminfo.name+".png"
     fig.savefig(outfile, dpi=150)
     plt.close("all")
 
-    if parttype == 0:
-        title = "Gas component"
-        caption = "Projection of gas within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
-        caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-        id = abs(hash("galaxy gas %i" % (index)))
-        outfile = "galaxy_gas_%i.png" % (index)
 
-    if parttype == 4:
-        title = "Stellar component"
-        caption = "Projection of stars within 5 times %0.1f kpc" % (halo_data.halfmass_radius_star[index])
-        caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-        id = abs(hash("stars galaxy %i" % (index)))
-        outfile = "galaxy_stars_%i.png" % (index)
-
-    GalPlotsInWeb.load_plots(title, caption, outfile, id)
-
-def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_data, index, GalPlotsInWeb, output_path):
+def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_data, index, siminfo):
     pos_parts = parts_data[:, 0:3].copy()
 
     face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum)
@@ -404,29 +373,20 @@ def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_d
     cb = plt.colorbar(ims, ticks=[4, 6, 8, 10, 12], cax=cbar_ax)
     cb.set_label(label=r'$\log_{10}$ $\Sigma$ [Jy/kpc$^{2}$]', labelpad=0.5)
 
-    outfile = f"{output_path}/galaxy_%s_map_%i.png" % (filtname, index)
+    outfile = f"{siminfo.output_path}/galaxy_%s_map_%i_" % (filtname, index) +siminfo.name+".png"
     fig.savefig(outfile, dpi=150)
     plt.close("all")
-
-
-    title = f"Rest frame {filtname}-band light "
-    caption = "Projection %s-band emission within 5 times %0.1f kpc" % (filtname, halo_data.halfmass_radius_star[index])
-    caption += " (the galaxy's  stellar half mass radius). Face-on (left) and edge-on (right)."
-    id = abs(hash("%s-band emission galaxy %i" % (filtname, index)))
-    outfile = "galaxy_%s_map_%i.png" % (filtname, index)
-
-    GalPlotsInWeb.load_plots(title, caption, outfile, id)
 
     
 def visualize_galaxy(stars_data, gas_data, star_absmag, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, siminfo):
 
-    #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
-    #plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, siminfo)
+    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, siminfo)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, siminfo)
     plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, siminfo)
 
-    #for filt in ['u', 'r', 'K']:
-    #    lums = pow(10., -0.4*star_absmag[filt])*3631
-    #    render_luminosity_map(stars_data, lums, filt, stars_ang_momentum, halo_data, i, GalPlotsInWeb, output_path)
+    for filt in ['u', 'r', 'K']:
+        lums = pow(10., -0.4*star_absmag[filt])*3631
+        render_luminosity_map(stars_data, lums, filt, stars_ang_momentum, halo_data, i, siminfo)

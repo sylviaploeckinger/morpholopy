@@ -46,7 +46,7 @@ def plot_combined_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass
     cb = plt.colorbar(ticks=[6,7,8,9,10,11,12], cax=cbar_ax)
     cb.set_label(label='$\log_{10}$ M$_{*}$/M$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.savefig(f"{siminfo.output_path}/surface_density_gas.png", dpi=200)
+    plt.savefig(f"{siminfo.output_path}/surface_density_gas_"+siminfo.name+".png", dpi=200)
     plt.close()
 
     #######
@@ -69,7 +69,7 @@ def plot_combined_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass
     cb = plt.colorbar(ticks=[6,7,8,9,10,11,12], cax=cbar_ax)
     cb.set_label(label='$\log_{10}$ M$_{*}$/M$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.savefig(f"{siminfo.output_path}/surface_density_H2.png", dpi=200)
+    plt.savefig(f"{siminfo.output_path}/surface_density_H2_"+siminfo.name+".png", dpi=200)
     plt.close()
 
 
@@ -130,7 +130,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     cb = plt.colorbar(ticks=[-3,-2,-1,0,1], cax=cbar_ax)
     cb.set_label(label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.savefig(f"{siminfo.output_path}/combined_surface_density_gas.png", dpi=200)
+    plt.savefig(f"{siminfo.output_path}/combined_surface_density_gas_"+siminfo.name+".png", dpi=200)
     plt.close()
 
     #######
@@ -169,7 +169,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     cb = plt.colorbar(ticks=[-3,-2,-1,0,1], cax=cbar_ax)
     cb.set_label(label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$', labelpad=0.5)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.savefig(f"{siminfo.output_path}/combined_surface_density_ratios.png", dpi=200)
+    plt.savefig(f"{siminfo.output_path}/combined_surface_density_ratios_"+siminfo.name+".png", dpi=200)
     plt.close()
 
 

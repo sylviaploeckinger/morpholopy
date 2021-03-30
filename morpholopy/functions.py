@@ -58,9 +58,13 @@ def calculate_kappa_co(halo_data, partsDATA, siminfo, halo_index):
     smomentumz = np.sum(momentum*smomentums/np.linalg.norm(momentum),axis=1)
     cyldistances = distancesDATA**2-np.sum(momentum*particlesDATA[:,:3]/np.linalg.norm(momentum),axis=1)**2
     cyldistances = np.sqrt(np.abs(cyldistances))
-    cylmin = np.min(cyldistances[cyldistances>0])
-    cyldistances[cyldistances==0] = cylmin
-    vrots = smomentumz / cyldistances
+
+    if len(cyldistances)>0:
+        cylmin = np.min(cyldistances[cyldistances>0])
+        cyldistances[cyldistances==0] = cylmin
+        vrots = smomentumz / cyldistances
+    else:
+        vrots = smomentumz
 
     # Compute kappa_co
     Mvrot2 = np.sum((particlesDATA[:,3]*vrots**2)[vrots>0])

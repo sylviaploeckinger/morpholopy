@@ -20,7 +20,9 @@ class HaloCatalogue:
         metallicity_gas = properties.metallicity.zmet_gas
 
         # Selecting galaxies more massive than lower limit
-        catalogue = np.where((stellar_mass >= lower_mass) & (gas_mass >= lower_mass))[0]
+        catalogue = np.where(gas_mass >= lower_mass)[0]
+        select = np.where(stellar_mass[catalogue] >= lower_mass)[0]
+        catalogue = catalogue[select]
 
         # Selecting centrals only
         structure_type = properties.structure_type.structuretype.value

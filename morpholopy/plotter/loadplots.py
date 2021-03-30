@@ -5,13 +5,29 @@ def loadGalaxyPlots(web,name_list,output_path):
 
     PlotsInWeb = PlotsInPipeline()
 
-    for index in range(5):
+    for index in range(10):
+
+        for name in name_list:
+            title = "Gas component ("+name+")"
+            caption = "Projection of gas within 5 times the galaxy's  stellar " \
+                      "half mass radius. Face-on (left) and edge-on (right)."
+            id = abs(hash("galaxy gas %i " %(index) + name))
+            outfile = "galaxy_gas_%i_"%(index)+name+".png"
+            PlotsInWeb.load_plots(title, caption, outfile, id)
+
+        for name in name_list:
+            title = "Stellar component ("+name+")"
+            caption = "Projection of stars within 5 times the galaxy's  stellar " \
+                      "half mass radius. Face-on (left) and edge-on (right)."
+            id = abs(hash("stars galaxy %i " %(index) + name))
+            outfile = "galaxy_stars_%i_"%(index)+name+".png"
+            PlotsInWeb.load_plots(title, caption, outfile, id)
 
         for name in name_list:
             title = "Star particles ("+name+")"
             caption = "Projection of stars within 5 times the galaxy's stellar"
             caption += " half mass radius. Face-on (left) and edge-on (right)."
-            id = abs(hash("galaxy stars parts %i" % (index)))
+            id = abs(hash("galaxy stars parts %i " % (index) + name))
             outfile = "galaxy_sparts_%i_"%(index)+name+".png"
             PlotsInWeb.load_plots(title, caption, outfile, id)
 
@@ -19,15 +35,22 @@ def loadGalaxyPlots(web,name_list,output_path):
             title = "Gas particles ("+name+")"
             caption = "Projection of gas within 5 times the galaxy's stellar"
             caption += " half mass radius. Face-on (left) and edge-on (right)."
-            id = abs(hash("galaxy gas parts %i" % (index)))
+            id = abs(hash("galaxy gas parts %i " % (index) + name))
             outfile = "galaxy_parts_%i_"%(index)+name+".png"
             PlotsInWeb.load_plots(title, caption, outfile, id)
 
-        name = name_list[0]
+        for name in name_list:
+            for filtname in ['u', 'r', 'K']:
+                title = f"Rest frame {filtname}-band light "
+                caption = "Projection %s-band emission within 5 times " % (filtname)
+                caption += "the galaxy's stellar half mass radius. Face-on (left) and edge-on (right)."
+                id = abs(hash("%s-band emission galaxy %i" % (filtname, index)+name))
+                outfile = "galaxy_%s_map_%i_" % (filtname, index) + name+".png"
+                PlotsInWeb.load_plots(title, caption, outfile, id)
 
         title = "KS relation (data: H2 mass, method: grid)"
         id = abs(hash("galaxy KS relation H2 grid %i" % (index)))
-        outfile = "KS_molecular_relation_grid_%i_"%(index)+name+".png"
+        outfile = "KS_molecular_relation_grid_%i.png"%(index)
         caption = "KS relation. Surface densities were calculated using a grid with pixel size of 250 pc."
         caption += " Each blue dot shows the total SFR and H2 mass in the pixel divided by the pixel area."
         caption += " Black solid line indicates the median relation and shaded area the 84-16th percentiles."
@@ -35,7 +58,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "KS relation (data: H2+HI mass, method: grid)"
         id = abs(hash("galaxy KS relation H2+HI grid %i" % (index)))
-        outfile = "KS_relation_best_grid_%i_"%(index)+name+".png"
+        outfile = "KS_relation_best_grid_%i.png"%(index)
         caption = "KS relation. Surface densities were calculated using a grid with pixel size of 250 pc."
         caption += " Each blue dot shows the total SFR and H2 mass in the pixel divided by the pixel area."
         caption += " Black solid line indicates the median relation and shaded area the 84-16th percentiles."
@@ -43,7 +66,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "KS relation (data: H2 mass, method: Azimuthal average)"
         id = abs(hash("galaxy KS relation H2 radii %i" % (index)))
-        outfile = "KS_molecular_relation_radii_%i_"%(index)+name+".png"
+        outfile = "KS_molecular_relation_radii_%i.png"%(index)
         caption = "KS relation. Surface densities were calculated by azimuthally averaging radial concentric shells"
         caption += " of 800 pc of width. The shells are centered in the minimum of the dark matter potential."
         caption += " Each blue dot shows the total SFR and H2 mass in the shell divided by the shell area."
@@ -52,7 +75,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "KS relation (data: H2+HI mass, method: Azimuthal average)"
         id = abs(hash("galaxy KS relation H2+HI radii %i" % (index)))
-        outfile = "KS_relation_best_radii_%i_"%(index)+name+".png"
+        outfile = "KS_relation_best_radii_%i.png"%(index)
         caption = "KS relation. Surface densities were calculated by azimuthally averaging radial concentric shells"
         caption += " of 800 pc of width. The shells are centered in the minimum of the dark matter potential."
         caption += " Each blue dot shows the total SFR and H2 mass in the shell divided by the shell area."
@@ -61,7 +84,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "Depletion time (data: H2 mass, method: grid)"
         id = abs(hash("galaxy depletion H2 grid %i" % (index)))
-        outfile = "molecular_gas_depletion_timescale_grid_%i_"%(index)+name+".png"
+        outfile = "molecular_gas_depletion_timescale_grid_%i.png"%(index)
         caption = "Gas depletion times. The surface densities were calculated using a grid with pixel size of 250 pc."
         caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
         caption += "and the observational data-points correspond to Bigiel et al. (2008) inner, same as in KS relation (H2 mass) figure."
@@ -69,7 +92,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "Depletion time (data: H2+HI mass, method: grid)"
         id = abs(hash("galaxy depletion H2+HI grid %i" % (index)))
-        outfile = "gas_depletion_timescale_best_grid_%i_"%(index)+name+".png"
+        outfile = "gas_depletion_timescale_best_grid_%i.png"%(index)
         caption = "Gas depletion times. The surface densities were calculated using a grid with pixel size of 250 pc."
         caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
         caption += "and the observational data-points correspond to Bigiel et al. (2008, 2010) inner, same as in KS relation (H2+HI mass) figure."
@@ -77,7 +100,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "Depletion time (data: H2 mass, method: Azimuthal average)"
         id = abs(hash("galaxy depletion H2 radii %i" % (index)))
-        outfile = "molecular_gas_depletion_timescale_radii_%i_"%(index)+name+".png"
+        outfile = "molecular_gas_depletion_timescale_radii_%i.png"%(index)
         caption = "Gas depletion times. The surface densities were calculated by azimuthally averaging radial concentric shells"
         caption += " of 800 pc of width. The shells were centered in the minimum of the dark matter potential."
         caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
@@ -86,7 +109,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "Depletion time (data: H2+HI mass, method: Azimuthal average)"
         id = abs(hash("galaxy depletion H2+HI radii %i" % (index)))
-        outfile = "gas_depletion_timescale_best_radii_%i_"%(index)+name+".png"
+        outfile = "gas_depletion_timescale_best_radii_%i.png"%(index)
         caption = "Gas depletion times. The surface densities were calculated by azimuthally averaging radial concentric shells"
         caption += " of 800 pc of width. The shells were centered in the minimum of the dark matter potential."
         caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
@@ -95,7 +118,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "Surface density ratios (method: grid)"
         id = abs(hash("density ratio H2+HI grid %i" % (index)))
-        outfile = "Surface_density_ratio_grid_%i_"%(index)+name+".png"
+        outfile = "Surface_density_ratio_grid_%i.png"%(index)
         caption = "Surface density ratios. The y-axis shows the ratio between surface densities calculated using a grid"
         caption += " with pixel size of 250 pc. Red dashed line corresponds to Krumholz+ (2009) semi-analytic model, the"
         caption += " black solid line indicates the median relation and the shaded area the 84-16th percentiles, "
@@ -103,7 +126,7 @@ def loadGalaxyPlots(web,name_list,output_path):
 
         title = "Surface density ratios (method: Azimuthal average)"
         id = abs(hash("density ratio H2+HI radii %i" % (index)))
-        outfile = "Surface_density_ratio_radii_%i_"%(index)+name+".png"
+        outfile = "Surface_density_ratio_radii_%i.png"%(index)
         caption = "Surface density ratios. The y-axis shows the ratio between surface densities calculated"
         caption += " by azimuthally averaging radial concentric shells of 800 pc of width. The shells were centered"
         caption += " in the minimum of the dark matter potential."
@@ -128,7 +151,7 @@ def loadGalaxyPlots(web,name_list,output_path):
             caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr[index])
             caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas[index])
             caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy[index])
-            caption += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p>" % (gas_mass_galaxy[index])
+            caption += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style=\"font-size:18px;\">" % (gas_mass_galaxy[index])
 
         id = abs(hash("galaxy and ks relation %i" % index))
         plots = PlotsInWeb.plots_details
@@ -207,7 +230,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         title = "Integrated surface densities (" + name + ")"
         caption = "Integrated surface densities of H2+HI gas and star-forming gas for each individual galaxy. "
         caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
-        filename = "surface_density_H2.png"
+        filename = "surface_density_H2_"+name+".png"
         id = abs(hash("surface_density_H2"))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
@@ -215,7 +238,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         title = "Integrated surface densities (" + name + ")"
         caption = "Integrated surface densities of H2 gas and star-forming gas for each individual galaxy. "
         caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
-        filename = "surface_density_gas.png"
+        filename = "surface_density_gas_"+name+".png"
         id = abs(hash("surface_density_gas"))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
@@ -231,7 +254,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
         caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
                    " using the grid method."
-        filename = "combined_surface_density_ratios.png"
+        filename = "combined_surface_density_ratios_"+name+".png"
         id = abs(hash("combined_surface_density_ratios"))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
@@ -240,7 +263,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
         caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
                    " using the grid method."
-        filename = "combined_surface_density_gas.png"
+        filename = "combined_surface_density_gas_"+name+".png"
         id = abs(hash("combined_surface_density_gas"))
         PlotsInWeb.load_plots(title, caption, filename, id)
 

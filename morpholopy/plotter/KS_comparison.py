@@ -91,10 +91,10 @@ def KS_relation_plots(siminfo,index,name_list):
             plt.xlim(-1.0, 3.0)
             plt.ylim(-6.5, 1.0)
             if mode == 0:
-                plt.savefig(f"{siminfo.output_path}/KS_relation_best_"+method+"_%i_"%(index)+name_list[0]+".png", dpi=200)
+                plt.savefig(f"{siminfo.output_path}/KS_relation_best_"+method+"_%i.png"%(index), dpi=200)
                 plt.close()
             elif mode == 1:
-                plt.savefig(f"{siminfo.output_path}/KS_molecular_relation_"+method+"_%i_"%(index)+name_list[0]+".png", dpi=200)
+                plt.savefig(f"{siminfo.output_path}/KS_molecular_relation_"+method+"_%i.png"%(index), dpi=200)
                 plt.close()
 
 
@@ -184,10 +184,10 @@ def depletion_time_plots(siminfo,index,name_list):
             plt.xlim(-1, 3.0)
             plt.ylim(7, 12)
             if mode == 0:
-                plt.savefig(f"{siminfo.output_path}/gas_depletion_timescale_best_" + method + "_%i_" % (index) + name_list[0] + ".png", dpi=200)
+                plt.savefig(f"{siminfo.output_path}/gas_depletion_timescale_best_" + method + "_%i.png"%(index), dpi=200)
                 plt.close()
             elif mode == 1:
-                plt.savefig(f"{siminfo.output_path}/molecular_gas_depletion_timescale_"+method+"_%i_"%(index)+name_list[0]+".png", dpi=200)
+                plt.savefig(f"{siminfo.output_path}/molecular_gas_depletion_timescale_"+method+"_%i.png"%(index), dpi=200)
                 plt.close()
 
 def surface_ratios_plots(siminfo, index, name_list):
@@ -262,7 +262,7 @@ def surface_ratios_plots(siminfo, index, name_list):
         plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")
         plt.legend(loc='lower right', labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
         ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-        plt.savefig(f"{siminfo.output_path}/Surface_density_ratio_"+method+"_%i_"%(index)+name_list[0]+".png", dpi=200)
+        plt.savefig(f"{siminfo.output_path}/Surface_density_ratio_"+method+"_%i.png"%(index), dpi=200)
         plt.close()
 
 
@@ -270,7 +270,7 @@ def surface_ratios_plots(siminfo, index, name_list):
 
 def make_comparison_plots(siminfo, name_list):
 
-    for index in range(3):
+    for index in range(10):
 
         KS_relation_plots(siminfo, index, name_list)
         depletion_time_plots(siminfo, index, name_list)
