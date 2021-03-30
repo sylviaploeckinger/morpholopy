@@ -20,7 +20,9 @@ class HaloCatalogue:
         metallicity_gas = properties.metallicity.zmet_gas
 
         # Selecting galaxies more massive than lower limit
-        catalogue = np.where((stellar_mass >= lower_mass) & (gas_mass >= lower_mass))[0]
+        catalogue = np.where(gas_mass >= lower_mass)[0]
+        select = np.where(stellar_mass[catalogue] >= lower_mass)[0]
+        catalogue = catalogue[select]
 
         # Selecting centrals only
         structure_type = properties.structure_type.structuretype.value
@@ -93,3 +95,18 @@ class HaloCatalogue:
         self.sigma_H2[index] = data[0]
         self.sigma_gas[index] = data[1]
         self.sigma_SFR[index] = data[2]
+
+
+
+def output_galaxy_data(galaxy_data,siminfo):
+
+    sfr_galaxy = galaxy_data.star_formation_rate
+    mass_galaxy = galaxy_data.stellar_mass
+    gas_mass_galaxy = galaxy_data.gas_mass
+    mass_halo = galaxy_data.halo_mass
+    galaxy_metallicity_gas_sfr = galaxy_data.metallicity_gas_sfr
+    galaxy_metallicity_gas = galaxy_data.metallicity_gas
+
+    np.savetxt(f"{siminfo.output_path}/galaxy_data_"+siminfo.name+".txt",
+               np.transpose([sfr_galaxy, mass_galaxy, gas_mass_galaxy,
+                             mass_halo, galaxy_metallicity_gas_sfr, galaxy_metallicity_gas]))
