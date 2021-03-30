@@ -22,9 +22,15 @@ How to use it
 Specify in the file run.sh the folder where your simulation is stored (folder=), the simulation
 snapshot (e.g. snap=34) and the folder (output=) where plots will be stored.
 
-Then type 
+Then type `bash run.sh` or `bash runcomparison.sh` or alternatively run it as
+
+```bash
+python morpholopy.py \
+  -d /cosma7/data/Simulation1 /cosma7/data/Simulation2 ... \ # These are directories where sims outputs are
+  -s 23 23 ... \ # Snapshot numbers from the different sims
+  -n name_one name_two ... \ # Names for different sims (for legend)
+  -o output_directory
 ```
-bash run.sh
-```
+
 
 
