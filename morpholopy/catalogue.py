@@ -80,13 +80,19 @@ class HaloCatalogue:
 
 
         # Subhalo data :
-        self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3
-        self.yminpot = properties.positions.ycminpot[catalogue].value * 1e3
-        self.zminpot = properties.positions.zcminpot[catalogue].value * 1e3
+        self.xminpot = properties["Xcminpot"][catalogue] * siminfo.a * 1e3 #kpc
+        self.yminpot = properties["Ycminpot"][catalogue] * siminfo.a * 1e3 #kpc
+        self.zminpot = properties["Zcminpot"][catalogue] * siminfo.a * 1e3 #kpc
+        #self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3
+        #self.yminpot = properties.positions.ycminpot[catalogue].value * 1e3
+        #self.zminpot = properties.positions.zcminpot[catalogue].value * 1e3
 
-        self.vxminpot = properties.velocities.vxcminpot[catalogue].value
-        self.vyminpot = properties.velocities.vycminpot[catalogue].value
-        self.vzminpot = properties.velocities.vzcminpot[catalogue].value
+        self.vxminpot = properties["VXcminpot"][catalogue] #km/s
+        self.vyminpot = properties["VYcminpot"][catalogue] #km/s
+        self.vzminpot = properties["VZcminpot"][catalogue] #km/s
+        #self.vxminpot = properties.velocities.vxcminpot[catalogue].value
+        #self.vyminpot = properties.velocities.vycminpot[catalogue].value
+        #self.vzminpot = properties.velocities.vzcminpot[catalogue].value
 
     def add_stellar_morphology(self,data,index):
         self.kappa_co[index] = data[0]
