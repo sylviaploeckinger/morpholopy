@@ -13,10 +13,10 @@ class HaloCatalogue:
         gas_mass = properties["Aperture_mass_gas_30_kpc"][:] * 1e10 #msun
         #gas_mass = properties.masses.m_gas_30kpc
         #gas_mass.convert_to_units("msun")
-        half_mass_radius_star = properties["R_HalfMass_star"][:] * siminfo.a * 1e3 #kpc
+        half_mass_radius_star = properties["R_HalfMass_star"][:] * 1e3 #kpc
         #half_mass_radius_star = properties.radii.r_halfmass_star
         #half_mass_radius_star.convert_to_units("kpc")
-        half_mass_radius_gas = properties["R_HalfMass_gas"][:] * siminfo.a * 1e3 #kpc
+        half_mass_radius_gas = properties["R_HalfMass_gas"][:] * 1e3 #kpc
         #half_mass_radius_gas = properties.radii.r_halfmass_gas
         #half_mass_radius_gas.convert_to_units("kpc")
         sfr = properties["Aperture_SFR_gas_30_kpc"][:] * 10227144.8879616 / 1e9 #Msun/yr

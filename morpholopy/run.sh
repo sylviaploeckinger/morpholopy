@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Runs MorpholoPy using the following variables:
-python morpholopy.py \
+python -i morpholopy.py \
 -d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 \
 -s 19 \
 -n Reference \
