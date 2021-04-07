@@ -80,9 +80,9 @@ class HaloCatalogue:
 
 
         # Subhalo data :
-        self.xminpot = properties["Xcminpot"][catalogue] * siminfo.a * 1e3 #kpc
-        self.yminpot = properties["Ycminpot"][catalogue] * siminfo.a * 1e3 #kpc
-        self.zminpot = properties["Zcminpot"][catalogue] * siminfo.a * 1e3 #kpc
+        self.xminpot = properties["Xcminpot"][catalogue] * 1e3 #kpc
+        self.yminpot = properties["Ycminpot"][catalogue] * 1e3 #kpc
+        self.zminpot = properties["Zcminpot"][catalogue] * 1e3 #kpc
         #self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3
         #self.yminpot = properties.positions.ycminpot[catalogue].value * 1e3
         #self.zminpot = properties.positions.zcminpot[catalogue].value * 1e3
