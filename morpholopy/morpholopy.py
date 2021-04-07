@@ -42,7 +42,7 @@ def morpholopy(siminfo, web):
         pgrids[pht[-1]] = MakeGrid(pht)
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 5e6 * unyt.msun  # ! Option of lower limit for gas mass
+    lower_mass = 1e6 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo, lower_mass)
 
     # Loop over the sample to calculate morphological parameters
