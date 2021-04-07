@@ -24,9 +24,9 @@ class HaloCatalogue:
         halo_mass = properties["Mass_200crit"][:] * 1e10 #msun
         #halo_mass = properties.masses.mass_200crit
         #halo_mass.convert_to_units("msun")
-        metallicity_gas_sfr = properties["Zmet_gas_sf_30_kpc"][:]
+        metallicity_gas_sfr = properties["Aperture_Zmet_gas_sf_30_kpc"][:]
         #metallicity_gas_sfr = properties.metallicity.zmet_gas_sf
-        metallicity_gas = properties["Zmet_gas_30_kpc"][:]
+        metallicity_gas = properties["Aperture_Zmet_gas_30_kpc"][:]
         #metallicity_gas = properties.metallicity.zmet_gas
 
         # Selecting galaxies more massive than lower limit
