@@ -1,23 +1,33 @@
 import numpy as np
-from velociraptor import load as load_catalogue
+import h5py
+#from velociraptor import load as load_catalogue
 
 class HaloCatalogue:
     def __init__(self,siminfo, lower_mass):
 
-        properties = load_catalogue(siminfo.subhalo_properties)
-        stellar_mass = properties.masses.m_star_30kpc
-        stellar_mass.convert_to_units("msun")
-        gas_mass = properties.masses.m_gas_30kpc
-        gas_mass.convert_to_units("msun")
-        half_mass_radius_star = properties.radii.r_halfmass_star
-        half_mass_radius_star.convert_to_units("kpc")
-        half_mass_radius_gas = properties.radii.r_halfmass_gas
-        half_mass_radius_gas.convert_to_units("kpc")
-        sfr = properties.apertures.sfr_gas_30_kpc
-        halo_mass = properties.masses.mass_200crit
-        halo_mass.convert_to_units("msun")
-        metallicity_gas_sfr = properties.metallicity.zmet_gas_sf
-        metallicity_gas = properties.metallicity.zmet_gas
+        properties = h5py.File(siminfo.subhalo_properties, "r")
+        #properties = load_catalogue(siminfo.subhalo_properties)
+        stellar_mass = properties["Aperture_mass_star_30_kpc"][:] * 1e10 #msun
+        #stellar_mass = properties.masses.m_star_30kpc
+        #stellar_mass.convert_to_units("msun")
+        gas_mass = properties["Aperture_mass_gas_30_kpc"][:] * 1e10 #msun
+        #gas_mass = properties.masses.m_gas_30kpc
+        #gas_mass.convert_to_units("msun")
+        half_mass_radius_star = properties["R_HalfMass_star"][:] * siminfo.a * 1e3 #kpc
+        #half_mass_radius_star = properties.radii.r_halfmass_star
+        #half_mass_radius_star.convert_to_units("kpc")
+        half_mass_radius_gas = properties["R_HalfMass_gas"][:] * siminfo.a * 1e3 #kpc
+        #half_mass_radius_gas = properties.radii.r_halfmass_gas
+        #half_mass_radius_gas.convert_to_units("kpc")
+        sfr = properties["Aperture_SFR_gas_30_kpc"][:] * 10227144.8879616 / 1e9 #Msun/yr
+        #sfr = properties.apertures.sfr_gas_30_kpc
+        halo_mass = properties["Mass_200crit"][:] * 1e10 #msun
+        #halo_mass = properties.masses.mass_200crit
+        #halo_mass.convert_to_units("msun")
+        metallicity_gas_sfr = properties["Zmet_gas_sf_30_kpc"][:]
+        #metallicity_gas_sfr = properties.metallicity.zmet_gas_sf
+        metallicity_gas = properties["Zmet_gas_30_kpc"][:]
+        #metallicity_gas = properties.metallicity.zmet_gas
 
         # Selecting galaxies more massive than lower limit
         catalogue = np.where(gas_mass >= lower_mass)[0]
@@ -25,7 +35,8 @@ class HaloCatalogue:
         catalogue = catalogue[select]
 
         # Selecting centrals only
-        structure_type = properties.structure_type.structuretype.value
+        structure_type = properties["Structuretype"][:]
+        #structure_type = properties.structure_type.structuretype.value
         centrals = np.where(structure_type[catalogue] == 10)[0]
         catalogue = catalogue[centrals]
 
