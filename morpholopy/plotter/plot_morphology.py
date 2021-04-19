@@ -24,8 +24,8 @@ def output_axis_ratios(stellar_mass,axis_ratios,parttype,siminfo):
     index = [i for i, v in enumerate(y) if v is not None]
     x = [stellar_mass[i] for i in index]
     y0 = [y[i] for i in index]
-    y1 = [y[i] for i in index]
-    y2 = [y[i] for i in index]
+    y1 = [y1[i] for i in index]
+    y2 = [y2[i] for i in index]
 
     np.savetxt(f"{siminfo.output_path}/Axis_ratios_parttype_%i_"%(parttype)+siminfo.name+".txt",
                np.transpose([x, y0, y1, y2]))
