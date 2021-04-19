@@ -49,7 +49,7 @@ def output_accumulative_densities(galaxy_data, siminfo):
 def output_morphology(galaxy_data,siminfo):
 
     output_momentum(10**galaxy_data.stellar_mass, galaxy_data.momentum, 4, siminfo)
-    output_momentum(10**galaxy_data.stellar_mass, galaxy_data.momentum, 0, siminfo)
+    output_momentum(10**galaxy_data.stellar_mass, galaxy_data.gas_momentum, 0, siminfo)
 
     # plot kappa for stars and gas :
     output_kappa(10**galaxy_data.stellar_mass,galaxy_data.kappa_co,4,siminfo)
