@@ -231,7 +231,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption = "Integrated surface densities of H2+HI gas and star-forming gas for each individual galaxy. "
         caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
         filename = "surface_density_H2_"+name+".png"
-        id = abs(hash("surface_density_H2"))
+        id = abs(hash("surface_density_H2_"+name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     for name in name_list:
@@ -239,7 +239,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption = "Integrated surface densities of H2 gas and star-forming gas for each individual galaxy. "
         caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
         filename = "surface_density_gas_"+name+".png"
-        id = abs(hash("surface_density_gas"))
+        id = abs(hash("surface_density_gas_"+name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = 'Integrated surface densities'
@@ -255,7 +255,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
                    " using the grid method."
         filename = "combined_surface_density_ratios_"+name+".png"
-        id = abs(hash("combined_surface_density_ratios"))
+        id = abs(hash("combined_surface_density_ratios_"+name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     for name in name_list:
@@ -264,7 +264,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
                    " using the grid method."
         filename = "combined_surface_density_gas_"+name+".png"
-        id = abs(hash("combined_surface_density_gas"))
+        id = abs(hash("combined_surface_density_gas_"+name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = 'Combined surface densities'

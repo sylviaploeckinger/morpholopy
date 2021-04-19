@@ -24,9 +24,25 @@ class SimInfo:
         self.name = name
         self.output_path = output_path
         self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
-        self.subhalo_properties = os.path.join(folder,"halo_%04i.properties.0"%snap)
-        self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
-        self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
+
+        properties = "halo_%04i.properties.0"%snap
+        if os.path.exists(properties):
+            self.subhalo_properties = os.path.join(folder,"halo_%04i.properties.0"%snap)
+        else:
+            self.subhalo_properties = os.path.join(folder,"halo_%04i.properties"%snap)
+
+        catalog = "halo_%04i.catalog_groups.0"%snap
+        if os.path.exists(catalog):
+            self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
+        else :
+            self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups"%snap)
+
+        catalog_particles = "halo_%04i.catalog_particles.0" % snap
+        if os.path.exists(catalog_particles):
+            self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
+        else :
+            self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles" % snap)
+
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
