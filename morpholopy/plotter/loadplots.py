@@ -266,7 +266,7 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption += " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated" \
                    " using the grid method with a pixel size of 250pc. Coloured lines show in the median relations" \
                    " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line" \
-                   " shows the median relation for all pixels, whereas the dashed black line shows the relation" \
+                   " shows the median relation for all pixels, whereas the black solid line shows the relation" \
                    " only for pixels that have SFR surface density >0."
         filename = "combined_surface_density_gas_"+name+".png"
         id = abs(hash("combined_surface_density_gas_"+name))

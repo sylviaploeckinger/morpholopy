@@ -123,7 +123,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     select = np.where((metals > -1.2) & (metals < -0.8))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
     plt.plot(x, y, '-', lw=1.5, color='white')
-    plt.plot(x, y, '-', lw=1, color='red', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
+    plt.plot(x, y, '-', lw=1, color='lightcoral', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
 
     select = np.where((metals > -0.2) & (metals < 0.2))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
@@ -141,8 +141,8 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
 
     select = np.where(sigma_SFR > -5.5)[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, '-', lw=1.5, color='white')
-    plt.plot(x, y, '--', lw=1, color='black')
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='black')
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
@@ -179,7 +179,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     select = np.where((metals>-1.2) & (metals<-0.8))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])
     plt.plot(x, y, '-', lw=2, color='white')
-    plt.plot(x, y, '-', lw=1.5, color='red',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
+    plt.plot(x, y, '-', lw=1.5, color='lightcoral',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
 
     select = np.where((metals>-0.2) & (metals<0.2))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])

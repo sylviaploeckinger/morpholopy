@@ -95,10 +95,8 @@ def KS_relation_plots(siminfo,index,name_list):
 
 
                 i += 1
-            if mode == 0:
-                plt.legend(loc=[0,0.6],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
-            if mode == 1:
-                plt.legend(loc=[0,0.7],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
+
+            plt.legend(loc='upper left',labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
             ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
             plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
             plt.xlim(-1.0, 3.0)
