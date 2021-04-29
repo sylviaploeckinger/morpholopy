@@ -79,9 +79,6 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     def KS(sigma_g, n, A):
         return A * sigma_g ** n
 
-    Sigma_g = np.logspace(-2, 3, 1000)
-    Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-
     # Plot parameters
     params = {
         "font.size": 12,
@@ -101,7 +98,13 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
+    Sigma_g = np.logspace(-2, 3, 1000)
+    Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
     plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), '--',color='grey',label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$")
+    Sigma_g = np.logspace(-1, 4, 1000)
+    Sigma_star = KS(Sigma_g, 1.06, 2.511e-4)
+    plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), lw=1, color="green", label=r"2.51e-4 $\times$ $\Sigma_{g}^{1.06}$ (Pessa+ 2021)",
+             linestyle="-")
 
     sigma_gas = galaxy_data.surface_density[1:]
     sigma_SFR = galaxy_data.SFR_density[1:]
@@ -113,17 +116,39 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     sigma_gas = sigma_gas[arg_sort[::-1]]
     sigma_SFR = sigma_SFR[arg_sort[::-1]]
 
-    x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
 
     plt.scatter(sigma_gas, sigma_SFR, c=metals, alpha=.9, s=10,
                 vmin=-3, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2)
-    plt.plot(x, y, '-', color='grey')
+
+    select = np.where((metals > -1.2) & (metals < -0.8))[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+    plt.plot(x, y, '-', lw=1.5, color='white')
+    plt.plot(x, y, '-', lw=1, color='red', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
+
+    select = np.where((metals > -0.2) & (metals < 0.2))[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+    plt.plot(x, y, '-', lw=1.5, color='white')
+    plt.plot(x, y, '-', lw=1, color='mediumpurple', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0')
+
+    select = np.where(metals > 0.6)[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+    plt.plot(x, y, '-', lw=1.5, color='white')
+    plt.plot(x, y, '-', lw=1, color='lightblue', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1')
+
+    x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
+    plt.plot(x, y, '-', lw=1.5, color='white')
+    plt.plot(x, y, '-', lw=1, color='grey',label='All')
+
+    select = np.where(sigma_SFR > -5.5)[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+    plt.plot(x, y, '-', lw=1.5, color='white')
+    plt.plot(x, y, '--', lw=1, color='black')
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
     plt.xlim(-1.0, 3.0)
     plt.ylim(-6.0, 0.0)
-    plt.legend()
+    plt.legend(loc=[0.0,0.5],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
 
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
@@ -148,11 +173,27 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     sigma_gas = sigma_gas[arg_sort[::-1]]
     sigma_ratio = sigma_ratio[arg_sort[::-1]]
 
-    x, y, y_down, y_up = median_relations(sigma_gas, sigma_ratio)
-
     plt.scatter(sigma_gas, sigma_ratio, c=metals, alpha=.9, s=5,
                 vmin=-3, vmax=1, cmap='CMRmap_r', edgecolors='none', zorder=2,label='method:grid')
-    plt.plot(x, y, '-', color='grey')
+
+    select = np.where((metals>-1.2) & (metals<-0.8))[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='red',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
+
+    select = np.where((metals>-0.2) & (metals<0.2))[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='mediumpurple',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0')
+
+    select = np.where(metals>0.6)[0]
+    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='lightblue',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1')
+
+    x, y, y_down, y_up = median_relations(sigma_gas, sigma_ratio)
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='grey',label='All')
 
     sigma_gas = galaxy_data.radii_surface_density[1:]
     sigma_ratio = galaxy_data.radii_surface_ratio[1:]
@@ -162,7 +203,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
     plt.xlim(-1.0, 3.0)
     plt.ylim(-8.0, 0.5)
-    plt.legend(loc='upper left',labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
+    plt.legend(loc=[0.65,0.0],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
 
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)

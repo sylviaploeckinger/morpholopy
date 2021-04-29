@@ -1,6 +1,13 @@
 #!/bin/bash
 
 # Runs MorpholoPy using the following variables:
+python morpholopy.py \
+-d ~/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/Testing_Sims ~/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/Testing_Sims  \
+-s 34 34 \
+-n Reference Reference2 \
+-o ~/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/Testing_Sims/plots
+
+
 #python morpholopy.py \
 #-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/11_fkin_0p1_L006N0188/ \
 #-s 23 23 \
@@ -43,9 +50,9 @@
 #-n Reference SFfreefall1e3 \
 #-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SF_FREEFALL_01_44
 
-python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/10_steepEOS_1e3_schmidtlaw_L006N0188 \
--s 23 23 \
--n Reference SteepEOS \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_W_vs_WO_EOS_for_SCHMIDT_LAW_01_10
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/10_steepEOS_1e3_schmidtlaw_L006N0188 \
+#-s 23 23 \
+#-n Reference SteepEOS \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_W_vs_WO_EOS_for_SCHMIDT_LAW_01_10
 

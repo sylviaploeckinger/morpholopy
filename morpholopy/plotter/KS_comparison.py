@@ -39,8 +39,15 @@ def KS_relation_plots(siminfo,index,name_list):
                      label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
                      linestyle="--")
 
+            Sigma_g = np.logspace(-1, 4, 1000)
+            Sigma_star = KS(Sigma_g, 1.06, 2.511e-4)
+            plt.plot(np.log10(Sigma_g), np.log10(Sigma_star), lw=1, color="green",
+                     label=r"2.51e-4 $\times$ $\Sigma_{g}^{1.06}$ (Pessa+ 2021)",
+                     linestyle="-")
+
             # load the observational data
             if mode == 0:
+
                 for ind, observation in enumerate(observational_data):
                     if observation.gas_surface_density is not None:
                         if (observation.description == "Bigiel et al. (2008) inner"):
@@ -54,6 +61,7 @@ def KS_relation_plots(siminfo,index,name_list):
                 plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
 
             elif mode == 1:
+
                 for ind, observation in enumerate(observational_data):
                     if observation.gas_surface_density is not None:
                         if (observation.description == "Bigiel et al. (2008) inner"):
@@ -79,13 +87,18 @@ def KS_relation_plots(siminfo,index,name_list):
                     median_relations(surface_density, SFR_surface_density)
 
                 plt.plot(surface_density, SFR_surface_density, 'o', color=color[i])
-                plt.plot(median_surface_density, median_SFR_surface_density, '-',
+                plt.plot(median_surface_density, median_SFR_surface_density, '-', lw=2, color='white')
+                plt.plot(median_surface_density, median_SFR_surface_density, '-',lw=1.2,
                          color=color[i],label=name)
                 plt.fill_between(median_surface_density, SFR_surface_density_err_down,
                                  SFR_surface_density_err_up, alpha=0.2, color=color[i])
-                i += 1
 
-            plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
+
+                i += 1
+            if mode == 0:
+                plt.legend(loc=[0,0.6],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
+            if mode == 1:
+                plt.legend(loc=[0,0.7],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
             ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
             plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
             plt.xlim(-1.0, 3.0)
@@ -172,6 +185,7 @@ def depletion_time_plots(siminfo,index,name_list):
                     median_relations(surface_density, SFR_surface_density)
 
                 plt.plot(surface_density, SFR_surface_density, 'o', color=color[i], alpha=0.6)
+                plt.plot(median_surface_density, median_SFR_surface_density, '-', lw=2, color='white')
                 plt.plot(median_surface_density, median_SFR_surface_density, '-',
                          color=color[i],label=name)
                 plt.fill_between(median_surface_density, SFR_surface_density_err_down,
@@ -246,7 +260,8 @@ def surface_ratios_plots(siminfo, index, name_list):
                 Median_Sigma_gas, Median_Sigma_ratio, Sigma_ratio_err_down, \
                 Sigma_ratio_err_up = median_relations(Sigma_gas, Sigma_ratio)
                 plt.plot(Sigma_gas, Sigma_ratio, 'o', color=color[i], alpha=0.6)
-                plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', color=color[i],label=name)
+                plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', lw=2, color='white')
+                plt.plot(Median_Sigma_gas, Median_Sigma_ratio, '-', lw=1.2, color=color[i],label=name)
                 plt.fill_between(Median_Sigma_gas, Sigma_ratio_err_down, Sigma_ratio_err_up, alpha=0.2, color=color[i])
             if method == 'radii':
                 data1 = np.loadtxt(f"{siminfo.output_path}/Surface_density_ratio_radii_250pc_%i_"%(index)+name+".txt")
