@@ -122,22 +122,22 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
 
     select = np.where((metals > -1.2) & (metals < -0.8))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, '-', lw=1.5, color='white')
-    plt.plot(x, y, '-', lw=1, color='lightcoral', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='crimson', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
 
     select = np.where((metals > -0.2) & (metals < 0.2))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, '-', lw=1.5, color='white')
-    plt.plot(x, y, '-', lw=1, color='mediumpurple', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0')
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='mediumpurple', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0')
 
     select = np.where(metals > 0.6)[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, '-', lw=1.5, color='white')
-    plt.plot(x, y, '-', lw=1, color='lightblue', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1')
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='lightblue', label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1')
 
     x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
-    plt.plot(x, y, '-', lw=1.5, color='white')
-    plt.plot(x, y, '-', lw=1, color='grey',label='All')
+    plt.plot(x, y, '-', lw=2, color='white')
+    plt.plot(x, y, '-', lw=1.5, color='grey',label='All')
 
     select = np.where(sigma_SFR > -5.5)[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
@@ -179,7 +179,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
     select = np.where((metals>-1.2) & (metals<-0.8))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])
     plt.plot(x, y, '-', lw=2, color='white')
-    plt.plot(x, y, '-', lw=1.5, color='lightcoral',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
+    plt.plot(x, y, '-', lw=1.5, color='crimson',label='log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1')
 
     select = np.where((metals>-0.2) & (metals<0.2))[0]
     x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_ratio[select])
