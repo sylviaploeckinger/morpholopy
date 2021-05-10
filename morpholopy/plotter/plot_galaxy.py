@@ -1,5 +1,5 @@
 from pylab import *
-#from sphviewer.tools import QuickView
+from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from numpy import matmul
 
@@ -381,8 +381,8 @@ def render_luminosity_map(parts_data, luminosity, filtname, ang_momentum, halo_d
 def visualize_galaxy(stars_data, gas_data, star_absmag, stars_ang_momentum, gas_ang_momentum,
                              halo_data, i, siminfo):
 
-    #plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, siminfo)
-    #plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, siminfo)
+    plot_galaxy(stars_data, 4, stars_ang_momentum, halo_data, i, siminfo)
+    plot_galaxy(gas_data, 0, stars_ang_momentum, halo_data, i, siminfo)
 
     plot_galaxy_parts(stars_data, 4, stars_ang_momentum, halo_data, i, siminfo)
     plot_galaxy_parts(gas_data, 0, stars_ang_momentum, halo_data, i, siminfo)
