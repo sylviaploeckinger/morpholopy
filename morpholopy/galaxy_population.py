@@ -195,19 +195,23 @@ def load_population_plots(web, name_list, output_path):
     title = "Fraction of active galaxies"
     id = abs(hash("Fraction of active galaxies per stellar mass bin"))
     outfile = "fraction_active_galaxies.png"
-    caption = "Fraction of active galaxies per stellar mass bin."
+    caption = "Fraction of active galaxies per stellar mass bin. Solid lines " \
+              "indicate the fraction of galaxies in those bins where the number of " \
+              "galaxies is larger than 2. Thin solid lines just indicate the fraction."
     PlotsInWeb.load_plots(title, caption, outfile, id)
 
     title = "Fraction of passive galaxies"
     id = abs(hash("Fraction of passive galaxies per stellar mass bin"))
     outfile = "fraction_passive_galaxies.png"
-    caption = "Fraction of passive galaxies per stellar mass bin."
+    caption = "Fraction of passive galaxies per stellar mass bin. Solid lines " \
+              "indicate the fraction of galaxies in those bins where the number of " \
+              "galaxies is larger than 2. Thin solid lines just indicate the fraction."
     PlotsInWeb.load_plots(title, caption, outfile, id)
 
     id = abs(hash("Population plots"))
     plots = PlotsInWeb.plots_details
     title = "Galaxy population plots"
-    caption = "Stellar mass bins are [6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75 " \
+    caption = "Stellar mass bins are [6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75 " \
               "9, 9.25, 9.5, 9.75, 10, 10.25, 10.5, 10.75] [log10 Msun]"
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
