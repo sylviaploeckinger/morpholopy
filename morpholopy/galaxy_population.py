@@ -169,6 +169,86 @@ def plot_population_data(output_path, name_list):
     plt.savefig(f"{output_path}/fraction_active_galaxies.png", dpi=200)
     plt.close()
 
+    #########
+
+    fig = figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    i = 0
+    for name in name_list:
+        data = np.loadtxt(f"{output_path}/galaxy_data_" + name + ".txt")
+        stellar_mass = data[:, 1]
+        histogram_all, _ = np.histogram(stellar_mass, bins=bins)
+        cumulative_histogram_all = np.cumsum(histogram_all)
+        plt.plot(mass_bins, cumulative_histogram_all, color=color[i], label=name)
+        i += 1
+
+    plt.xlabel("log$_{10}$ M$_{*}$ [M$_{\odot}$]")
+    plt.ylabel("Cumulative Number of galaxies per bin")
+    plt.xlim(6, 12)
+    # plt.ylim(-6.0, 0.0)
+
+    plt.legend()
+    plt.savefig(f"{output_path}/cumulative_number_galaxies.png", dpi=200)
+    plt.close()
+
+    #############
+
+    fig = figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    i = 0
+    for name in name_list:
+        data = np.loadtxt(f"{output_path}/galaxy_data_" + name + ".txt")
+        stellar_mass = data[:, 1]
+        sfr = data[:, 0]
+        ssfr = sfr / 10 ** stellar_mass
+        passive_galaxies = np.where(ssfr < 1e-11)[0]  # yr^-1
+        histogram_passive, _ = np.histogram(stellar_mass[passive_galaxies], bins=bins)
+        cumulative_histogram_passive = np.cumsum(histogram_passive)
+        plt.plot(mass_bins, cumulative_histogram_passive, color=color[i], label=name)
+        i += 1
+
+    plt.xlabel("log$_{10}$ M$_{*}$ [M$_{\odot}$]")
+    plt.ylabel("Cumulative number of passive galaxies per bin")
+    plt.xlim(6, 12)
+    # plt.ylim(-6.0, 0.0)
+
+    plt.legend()
+    plt.savefig(f"{output_path}/cumulative_number_passive_galaxies.png", dpi=200)
+    plt.close()
+
+    #############
+
+    fig = figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    i = 0
+    for name in name_list:
+        data = np.loadtxt(f"{output_path}/galaxy_data_" + name + ".txt")
+        stellar_mass = data[:, 1]
+        sfr = data[:, 0]
+        ssfr = sfr / 10 ** stellar_mass
+        active_galaxies = np.where(ssfr >= 1e-11)[0]  # yr^-1
+        histogram_active, _ = np.histogram(stellar_mass[active_galaxies], bins=bins)
+        cumulative_histogram_active = np.cumsum(histogram_active)
+        plt.plot(mass_bins, cumulative_histogram_active, color=color[i], label=name)
+        i += 1
+
+    plt.xlabel("log$_{10}$ M$_{*}$ [M$_{\odot}$]")
+    plt.ylabel("Cumulative number of active galaxies per bin")
+    plt.xlim(6, 12)
+    # plt.ylim(-6.0, 0.0)
+
+    plt.legend()
+    plt.savefig(f"{output_path}/cumulative_number_active_galaxies.png", dpi=200)
+    plt.close()
+
+    #############
+
 
 def load_population_plots(web, name_list, output_path):
 
@@ -207,6 +287,25 @@ def load_population_plots(web, name_list, output_path):
               "indicate the fraction of galaxies in those bins where the number of " \
               "galaxies is larger than 2. Thin solid lines just indicate the fraction."
     PlotsInWeb.load_plots(title, caption, outfile, id)
+
+    title = "Cumulative number of galaxies"
+    id = abs(hash("Cumulative number of galaxies per stellar mass bin"))
+    outfile = "cumulative_number_galaxies.png"
+    caption = "Cumulative number of galaxies per stellar mass bin."
+    PlotsInWeb.load_plots(title, caption, outfile, id)
+
+    title = "Cumulative number of active galaxies"
+    id = abs(hash("Cumulative number of active galaxies per stellar mass bin"))
+    outfile = "cumulative_number_active_galaxies.png"
+    caption = "Cumulative number of active galaxies per stellar mass bin."
+    PlotsInWeb.load_plots(title, caption, outfile, id)
+
+    title = "Cumulative number of passive galaxies"
+    id = abs(hash("Cumulative number of passive galaxies per stellar mass bin"))
+    outfile = "cumulative_number_passive_galaxies.png"
+    caption = "Cumulative number of passive galaxies per stellar mass bin."
+    PlotsInWeb.load_plots(title, caption, outfile, id)
+
 
     id = abs(hash("Population plots"))
     plots = PlotsInWeb.plots_details
