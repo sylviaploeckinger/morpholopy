@@ -55,7 +55,11 @@ def make_particle_data(siminfo,halo_id):
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10
     stars_birthz = (pow(data.stars.birth_scale_factors,-1)-1.)[mask_stars].value
-    stars_age = (cosmo.lookback_time(stars_birthz)-cosmo.lookback_time(z_snap)).value #in Gyr
+
+    if len(stars_birthz) > 1:
+        stars_age = (cosmo.lookback_time(stars_birthz)-cosmo.lookback_time(z_snap)).value #in Gyr
+    else: stars_age = 0
+
     stars_Z = data.stars.metal_mass_fractions[mask_stars].value #absolute
     stars_initmass = data.stars.initial_masses[mask_stars].value * 1e10
 
