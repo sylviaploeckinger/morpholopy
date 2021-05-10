@@ -62,6 +62,7 @@ def morpholopy(siminfo, web):
     halo_data = HaloCatalogue(siminfo, lower_mass)
 
     # Loop over the sample to calculate morphological parameters
+
     for i in range(halo_data.num):
 
         # Read particle data
@@ -92,6 +93,7 @@ def morpholopy(siminfo, web):
     output_morphology(halo_data, siminfo)
     plot_surface_densities(halo_data, siminfo)
     output_galaxy_data(halo_data,siminfo)
+
     return web
 
 
