@@ -185,7 +185,7 @@ def plot_population_data(output_path, name_list):
         i += 1
 
     plt.xlabel("log$_{10}$ M$_{*}$ [M$_{\odot}$]")
-    plt.ylabel("Cumulative Number of galaxies per bin")
+    plt.ylabel("Cumulative number of galaxies")
     plt.xlim(6, 12)
     # plt.ylim(-6.0, 0.0)
 
@@ -212,7 +212,7 @@ def plot_population_data(output_path, name_list):
         i += 1
 
     plt.xlabel("log$_{10}$ M$_{*}$ [M$_{\odot}$]")
-    plt.ylabel("Cumulative number of passive galaxies per bin")
+    plt.ylabel("Cumulative number of passive galaxies")
     plt.xlim(6, 12)
     # plt.ylim(-6.0, 0.0)
 
@@ -239,7 +239,7 @@ def plot_population_data(output_path, name_list):
         i += 1
 
     plt.xlabel("log$_{10}$ M$_{*}$ [M$_{\odot}$]")
-    plt.ylabel("Cumulative number of active galaxies per bin")
+    plt.ylabel("Cumulative number of active galaxies")
     plt.xlim(6, 12)
     # plt.ylim(-6.0, 0.0)
 
