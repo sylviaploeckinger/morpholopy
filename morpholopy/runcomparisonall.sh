@@ -74,38 +74,44 @@
 #-n Reference SNE3e51 \
 #-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_SNE_01_20
 
-python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/15_alphavir_0p5_L006N0188 \
--s 23 23 \
--n Reference Alphavir0p5 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_ALPHA_VIRIAL_01_15
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/15_alphavir_0p5_L006N0188 \
+#-s 23 23 \
+#-n Reference Alphavir0p5 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_ALPHA_VIRIAL_01_15
+#
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/40_alphavir_0p25_L006N0188 \
+#-s 23 23 \
+#-n Reference Alphavir0p25 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_ALPHA_VIRIAL_01_40
+#
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/59_alphavir_2p00_L006N0188 \
+#-s 23 23 \
+#-n Reference Alphavir2p0 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_ALPHA_VIRIAL_01_59
+#
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/35_SF_efficiency_0p003_L006N0188 \
+#-s 23 23 \
+#-n Reference SFeff0p003 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_35
+#
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/36_SF_efficiency_0p001_L006N0188 \
+#-s 23 23 \
+#-n Reference SFeff0p001 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_36
+#
+#python morpholopy.py \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/49_SF_efficiency_0p03_L006N0188 \
+#-s 23 23 \
+#-n Reference SFeff0p03 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_49
 
 python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/40_alphavir_0p25_L006N0188 \
--s 23 23 \
--n Reference Alphavir0p25 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_ALPHA_VIRIAL_01_40
-
-python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/59_alphavir_2p00_L006N0188 \
--s 23 23 \
--n Reference Alphavir2p0 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_ALPHA_VIRIAL_01_59
-
-python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/35_SF_efficiency_0p003_L006N0188 \
--s 23 23 \
--n Reference SFeff0p003 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_35
-
-python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/36_SF_efficiency_0p001_L006N0188 \
--s 23 23 \
--n Reference SFeff0p001 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_36
-
-python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/49_SF_efficiency_0p03_L006N0188 \
--s 23 23 \
--n Reference SFeff0p03 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_49
+-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/39_only_UVB_L006N0188 \
+-s 19 19 \
+-n Reference OnlyUVB \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z1.0_only_UVB_01_39
