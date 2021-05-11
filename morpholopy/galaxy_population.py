@@ -310,7 +310,7 @@ def load_population_plots(web, name_list, output_path):
     id = abs(hash("Population plots"))
     plots = PlotsInWeb.plots_details
     title = "Galaxy population plots"
-    caption = "Stellar mass bins are [6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75 " \
+    caption = "Stellar mass bins are [6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75 " \
               "9, 9.25, 9.5, 9.75, 10, 10.25, 10.5, 10.75] [log10 Msun]"
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
