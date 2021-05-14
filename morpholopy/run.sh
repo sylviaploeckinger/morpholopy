@@ -5,6 +5,7 @@ python morpholopy.py \
 -d /cosma7/data/dp004/dc-chai1/zooms/batch1_12_05_21/halo1 \
 -s 37 \
 -n halo_1 \
+-z yes \
 -o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo1
 
 #python morpholopy.py \

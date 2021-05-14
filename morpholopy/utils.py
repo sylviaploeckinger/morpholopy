@@ -39,7 +39,7 @@ parser.add_argument(
     "--run-names",
     help="Names of the runs for placement in legends.",
     type=str,
-    required=False,
+    required=True,
     nargs="*",
 )
 
@@ -47,9 +47,18 @@ parser.add_argument(
     "-o",
     "--output",
     help="Output directory for the figures. If not present, the same directory as the snapshots are in is used.",
-    required=False,
+    required=True,
     type=str,
     default=None,
+)
+
+parser.add_argument(
+    "-z",
+    "--zoom",
+    help="Option for whether the snapshot corresponds to a zoom simulation",
+    required=False,
+    type=str,
+    default="no",
 )
 
 args = parser.parse_args()

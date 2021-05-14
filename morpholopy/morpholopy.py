@@ -20,9 +20,10 @@ import unyt
 
 
 class SimInfo:
-    def __init__(self, folder, snap, output_path, name):
+    def __init__(self, folder, snap, output_path, name, option):
         self.name = name
         self.output_path = output_path
+        self.zoom = option
         snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
         if os.path.exists(snapshot):
             self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
@@ -120,6 +121,7 @@ if __name__ == '__main__':
     number_of_inputs = len(args.snapshot)
     directory_list = args.directory
     snapshot_list = args.snapshot
+    option_list = args.zoom
 
     name_list = (
         args.run_names
@@ -132,7 +134,8 @@ if __name__ == '__main__':
         directory = directory_list[sims]
         snap_number = int(snapshot_list[sims])
         sim_name = name_list[sims]
-        siminfo = SimInfo(directory, snap_number,output_path, sim_name)
+        option = option_list[sims]
+        siminfo = SimInfo(directory, snap_number,output_path, sim_name, option)
 
         # Make initial website
         if sims == 0: web = make_web(siminfo)

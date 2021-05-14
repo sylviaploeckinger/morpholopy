@@ -5,6 +5,11 @@ import h5py
 class HaloCatalogue:
     def __init__(self,siminfo, lower_mass):
 
+        if siminfo.zoom == "yes":
+            to_kpc_units = 1.
+        else :
+            to_kpc_units = 1e3
+
         properties = h5py.File(siminfo.subhalo_properties, "r")
         #properties = load_catalogue(siminfo.subhalo_properties)
         stellar_mass = properties["Aperture_mass_star_30_kpc"][:] * 1e10 #msun
@@ -13,10 +18,10 @@ class HaloCatalogue:
         gas_mass = properties["Aperture_mass_gas_30_kpc"][:] * 1e10 #msun
         #gas_mass = properties.masses.m_gas_30kpc
         #gas_mass.convert_to_units("msun")
-        half_mass_radius_star = properties["R_HalfMass_star"][:] * 1e3 #kpc
+        half_mass_radius_star = properties["R_HalfMass_star"][:] * to_kpc_units #kpc
         #half_mass_radius_star = properties.radii.r_halfmass_star
         #half_mass_radius_star.convert_to_units("kpc")
-        half_mass_radius_gas = properties["R_HalfMass_gas"][:] * 1e3 #kpc
+        half_mass_radius_gas = properties["R_HalfMass_gas"][:] * to_kpc_units #kpc
         #half_mass_radius_gas = properties.radii.r_halfmass_gas
         #half_mass_radius_gas.convert_to_units("kpc")
         sfr = properties["Aperture_SFR_gas_30_kpc"][:] * 10227144.8879616 / 1e9 #Msun/yr
@@ -80,9 +85,9 @@ class HaloCatalogue:
 
 
         # Subhalo data :
-        self.xminpot = properties["Xcminpot"][catalogue] * 1e3 #kpc
-        self.yminpot = properties["Ycminpot"][catalogue] * 1e3 #kpc
-        self.zminpot = properties["Zcminpot"][catalogue] * 1e3 #kpc
+        self.xminpot = properties["Xcminpot"][catalogue] * to_kpc_units #kpc
+        self.yminpot = properties["Ycminpot"][catalogue] * to_kpc_units #kpc
+        self.zminpot = properties["Zcminpot"][catalogue] * to_kpc_units #kpc
         #self.xminpot = properties.positions.xcminpot[catalogue].value * 1e3
         #self.yminpot = properties.positions.ycminpot[catalogue].value * 1e3
         #self.zminpot = properties.positions.zcminpot[catalogue].value * 1e3

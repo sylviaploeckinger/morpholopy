@@ -32,6 +32,11 @@ def make_particle_data(siminfo,halo_id):
     # [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz
     # | (7) hsml ]
 
+    if siminfo.zoom == "yes":
+        to_kpc_units = 1.
+    else:
+        to_kpc_units = 1e3
+
     mask_gas, mask_stars = make_masks(siminfo,halo_id)
     data = load(siminfo.snapshot)
     z_snap = data.metadata.redshift
@@ -39,10 +44,10 @@ def make_particle_data(siminfo,halo_id):
     gas_mass = data.gas.masses[mask_gas].value * 1e10 #Msun
     gas_n_parts = len(gas_mass)
     gas_data = np.zeros((gas_n_parts,13))
-    gas_data[:,0:3] = data.gas.coordinates[mask_gas].value * siminfo.a * 1e3 #kpc
+    gas_data[:,0:3] = data.gas.coordinates[mask_gas].value * siminfo.a * to_kpc_units #kpc
     gas_data[:, 3] = gas_mass # Msun
     gas_data[:,4:7] = data.gas.velocities[mask_gas].value #km/s
-    gas_data[:,7] = data.gas.smoothing_lengths[mask_gas].value * siminfo.a * 1e3 #kpc
+    gas_data[:,7] = data.gas.smoothing_lengths[mask_gas].value * siminfo.a * to_kpc_units #kpc
     
     XH = data.gas.element_mass_fractions.hydrogen[mask_gas].value
     gas_HI = data.gas.species_fractions.HI[mask_gas].value
@@ -50,7 +55,7 @@ def make_particle_data(siminfo,halo_id):
     gas_data[:, 8] = gas_HI * XH * gas_mass # Msun
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
     gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value * 10227144.8879616 / 1e9 #Msun/yr
-    gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * 1e3)**3) #Msun / kpc^3
+    gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * to_kpc_units)**3) #Msun / kpc^3
     gas_data[:, 12] = data.gas.metal_mass_fractions[mask_gas].value/0.0134 # !assuming Solar metallicty
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10
@@ -65,7 +70,7 @@ def make_particle_data(siminfo,halo_id):
 
     stars_n_parts = len(stars_mass)
     stars_data = np.zeros((stars_n_parts,12))
-    stars_data[:,0:3] = data.stars.coordinates[mask_stars].value * siminfo.a * 1e3 #kpc
+    stars_data[:,0:3] = data.stars.coordinates[mask_stars].value * siminfo.a * to_kpc_units #kpc
     stars_data[:,3] = stars_mass #Msun
     stars_data[:,4:7] = data.stars.velocities[mask_stars].value #km/s
     stars_data[:, 7] = 0.5 * siminfo.baryon_maxsoft * np.ones(stars_mass.size)
