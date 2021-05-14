@@ -2,10 +2,10 @@
 
 # Runs MorpholoPy using the following variables:
 python morpholopy.py \
--d ~/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/Testing_Sims  \
--s 34 \
--n Reference \
--o ~/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/Testing_Sims/plots
+-d /cosma7/data/dp004/dc-chai1/zooms/batch1_12_05_21/halo1 \
+-s 37 \
+-n halo_1 \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo1
 
 #python morpholopy.py \
 #-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/39_only_UVB_L006N0188 \
