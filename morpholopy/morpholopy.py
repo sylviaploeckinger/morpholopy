@@ -5,6 +5,7 @@ Description here
 import os
 import h5py
 import glob
+import re
 
 from catalogue import HaloCatalogue, output_galaxy_data
 from particles import calculate_morphology, make_particle_data, calculate_luminosities
@@ -24,39 +25,38 @@ class SimInfo:
         self.name = name
         self.output_path = output_path
         self.zoom = option
-        snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
-        if os.path.exists(snapshot):
-            self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
+
+        if self.zoom == 'no':
+            snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
+            if os.path.exists(snapshot):
+                self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
+
+            properties = os.path.join(folder, "halo_%04i.properties.0" % snap)
+            if os.path.exists(properties):
+                self.subhalo_properties = os.path.join(folder, "halo_%04i.properties.0" % snap)
+            else:
+                self.subhalo_properties = os.path.join(folder, "halo_%04i.properties" % snap)
+
+            catalog = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
+            if os.path.exists(catalog):
+                self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
+            else:
+                self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups"%snap)
+
+            catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
+            if os.path.exists(catalog_particles):
+                self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
+            else:
+                self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles" % snap)
+
         else:
-            self.snapshot = os.path.join(folder,"snapshot_"+name+"_%04i.hdf5"%snap)
+            temp = re.compile("([a-zA-Z]+)([0-9]+)")
+            res = temp.match(name).groups()
 
-        properties = os.path.join(folder,"halo_%04i.properties.0"%snap)
-        properties_2 = os.path.join(folder,"halo_%04i.properties"%snap)
-        if os.path.exists(properties):
-            self.subhalo_properties = os.path.join(folder,"halo_%04i.properties.0"%snap)
-        elif os.path.exists(properties_2):
-            self.subhalo_properties = os.path.join(folder,"halo_%04i.properties"%snap)
-        else :
-            self.subhalo_properties = os.path.join(folder,"halo_"+name+"_%04i.properties"%snap)
-
-
-        catalog = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
-        catalog_2 = os.path.join(folder,"halo_%04i.catalog_groups"%snap)
-        if os.path.exists(catalog):
-            self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
-        elif os.path.exists(catalog_2):
-            self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups"%snap)
-        else :
-            self.catalog_groups = os.path.join(folder,"halo_"+name+"_%04i.catalog_groups"%snap)
-
-        catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
-        catalog_particles_2 = os.path.join(folder, "halo_%04i.catalog_particles" % snap)
-        if os.path.exists(catalog_particles):
-            self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
-        elif os.path.exists(catalog_particles_2):
-            self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles" % snap)
-        else :
-            self.catalog_particles = os.path.join(folder, "halo_"+name+"_%04i.catalog_particles" % snap)
+            self.snapshot = os.path.join(folder,"snapshot_"+res[0]+"_"+res[1]+"_%04i.hdf5"%snap)
+            self.subhalo_properties = os.path.join(folder,"halo_"+res[0]+"_"+res[1]+"_%04i.properties"%snap)
+            self.catalog_groups = os.path.join(folder,"halo_"+res[0]+"_"+res[1]+"_%04i.catalog_groups"%snap)
+            self.catalog_particles = os.path.join(folder, "halo_"+res[0]+"_"+res[1]+"_%04i.catalog_particles" % snap)
 
         snapshot_file = h5py.File(self.snapshot, "r")
         self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
@@ -75,11 +75,10 @@ def morpholopy(siminfo, web):
     # Loading halo catalogue and selecting galaxies more massive than lower limit
     lower_mass = 1e6 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo, lower_mass)
-    print(halo_data.stellar_mass)
- 
-    # Loop over the sample to calculate morphological parameters
+    num_galaxies = halo_data.num
 
-    for i in range(halo_data.num):
+    # Loop over the sample to calculate morphological parameters
+    for i in range(num_galaxies):
 
         # Read particle data
         gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])
@@ -110,7 +109,7 @@ def morpholopy(siminfo, web):
     plot_surface_densities(halo_data, siminfo)
     output_galaxy_data(halo_data,siminfo)
 
-    return web
+    return web, num_galaxies
 
 
 if __name__ == '__main__':
@@ -142,14 +141,14 @@ if __name__ == '__main__':
         if sims > 0: add_metadata_to_web(web, siminfo)
 
         # Run morpholoPy
-        web = morpholopy(siminfo, web)
+        web, num_galaxies = morpholopy(siminfo, web)
 
-    make_comparison_plots(siminfo, name_list)
+    make_comparison_plots(siminfo, name_list, num_galaxies)
     plot_morphology(siminfo, name_list)
 
     # After making individual plots finish up the website
     # Load galaxy plots
-    loadGalaxyPlots(web, name_list, siminfo.output_path)
+    loadGalaxyPlots(web, name_list, siminfo.output_path, num_galaxies)
 
     # Finish and output html file
     render_web(web, siminfo.output_path)

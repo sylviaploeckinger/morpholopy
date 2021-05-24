@@ -6,7 +6,7 @@ class HaloCatalogue:
     def __init__(self,siminfo, lower_mass):
 
         if siminfo.zoom == "yes":
-            to_kpc_units = 1.
+            to_kpc_units = 1
         else :
             to_kpc_units = 1e3
 

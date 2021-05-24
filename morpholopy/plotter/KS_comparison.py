@@ -281,9 +281,9 @@ def surface_ratios_plots(siminfo, index, name_list):
 
 
 
-def make_comparison_plots(siminfo, name_list):
+def make_comparison_plots(siminfo, name_list, num_galaxies):
 
-    for index in range(10):
+    for index in range(num_galaxies):
 
         KS_relation_plots(siminfo, index, name_list)
         depletion_time_plots(siminfo, index, name_list)

@@ -57,6 +57,7 @@ parser.add_argument(
     "--zoom",
     help="Option for whether the snapshot corresponds to a zoom simulation",
     required=False,
+    nargs="*",
     type=str,
     default="no",
 )

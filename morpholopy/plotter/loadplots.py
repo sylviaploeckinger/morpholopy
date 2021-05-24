@@ -1,11 +1,11 @@
 import numpy as np
 from plotter.html import add_web_section, PlotsInPipeline
 
-def loadGalaxyPlots(web,name_list,output_path):
+def loadGalaxyPlots(web,name_list,output_path,num_galaxies):
 
     PlotsInWeb = PlotsInPipeline()
 
-    for index in range(10):
+    for index in range(num_galaxies):
 
         for name in name_list:
             title = "Gas component ("+name+")"
@@ -138,20 +138,36 @@ def loadGalaxyPlots(web,name_list,output_path):
         caption = " "
         for name in name_list:
             data = np.loadtxt(f"{output_path}/galaxy_data_"+name+".txt")
-            sfr_galaxy = data[:,0]
-            mass_galaxy = data[:,1]
-            gas_mass_galaxy = data[:,2]
-            mass_halo = data[:,3]
-            galaxy_metallicity_gas_sfr = data[:,4]
-            galaxy_metallicity_gas = data[:,5]
+            if num_galaxies == 1:
+                sfr_galaxy = data[0]
+                mass_galaxy = data[1]
+                gas_mass_galaxy = data[2]
+                mass_halo = data[3]
+                galaxy_metallicity_gas_sfr = data[4]
+                galaxy_metallicity_gas = data[5]
+                caption += "<strong>Simulation: "+name+"</strong>. Galaxy details: "
+                caption += r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
+                caption += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+                caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr)
+                caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas)
+                caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
+                caption += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style=\"font-size:18px;\">" % (gas_mass_galaxy)
 
-            caption += "<strong>Simulation: "+name+"</strong>. Galaxy details: "
-            caption += r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo[index])
-            caption += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy[index])
-            caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr[index])
-            caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas[index])
-            caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy[index])
-            caption += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style=\"font-size:18px;\">" % (gas_mass_galaxy[index])
+            else:
+                sfr_galaxy = data[:,0]
+                mass_galaxy = data[:,1]
+                gas_mass_galaxy = data[:,2]
+                mass_halo = data[:,3]
+                galaxy_metallicity_gas_sfr = data[:,4]
+                galaxy_metallicity_gas = data[:,5]
+
+                caption += "<strong>Simulation: "+name+"</strong>. Galaxy details: "
+                caption += r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo[index])
+                caption += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy[index])
+                caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (galaxy_metallicity_gas_sfr[index])
+                caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas[index])
+                caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy[index])
+                caption += " $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style=\"font-size:18px;\">" % (gas_mass_galaxy[index])
 
         id = abs(hash("galaxy and ks relation %i" % index))
         plots = PlotsInWeb.plots_details

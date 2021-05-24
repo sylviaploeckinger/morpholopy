@@ -33,9 +33,11 @@ def make_particle_data(siminfo,halo_id):
     # | (7) hsml ]
 
     if siminfo.zoom == "yes":
-        to_kpc_units = 1.
+        to_kpc_units = 1
+        to_msun_per_yr_units = 6.44399e26 * (3600 * 24 * 365.25) / 1.989e33
     else:
         to_kpc_units = 1e3
+        to_msun_per_yr_units = 10227144.8879616 / 1e9
 
     mask_gas, mask_stars = make_masks(siminfo,halo_id)
     data = load(siminfo.snapshot)
@@ -54,7 +56,7 @@ def make_particle_data(siminfo,halo_id):
     gas_H2 = data.gas.species_fractions.H2[mask_gas].value * 2.
     gas_data[:, 8] = gas_HI * XH * gas_mass # Msun
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
-    gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value * 10227144.8879616 / 1e9 #Msun/yr
+    gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value * to_msun_per_yr_units #Msun/yr
     gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * to_kpc_units)**3) #Msun / kpc^3
     gas_data[:, 12] = data.gas.metal_mass_fractions[mask_gas].value/0.0134 # !assuming Solar metallicty
 
@@ -93,7 +95,6 @@ def calculate_morphology(halo_data, part_data, siminfo, halo_index, parttype):
     #Store morphology parameters in halo data and continue
     if parttype == 4: halo_data.add_stellar_morphology(morphology, halo_index)
     if parttype == 0: halo_data.add_gas_morphology(morphology, halo_index)
-
     return momentum, part_data
 
 def calculate_luminosities(halo_data, part_data, siminfo, halo_index, parttype, pgrids):
