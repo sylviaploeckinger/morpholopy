@@ -197,11 +197,7 @@ def plot_momentum(siminfo,name_list):
         color = ['tab:blue','tab:orange']
         for name in name_list:
             data = np.loadtxt(f"{siminfo.output_path}/momentum_parttype_%i_"%(parttype)+name+".txt")
-            if siminfo.zoom == 'no':
-                plt.plot(data[:,0], data[:,1], 'o', color=color[i],label=name)
-            else:
-                plt.plot(data[0], data[1], 'o', color=color[i],label=name)
-
+            plt.plot(data[:,0], data[:,1], 'o', color=color[i],label=name)
             i+=1
         plt.xlabel("Stellar Mass [M$_{\odot}$]")
         plt.ylabel(ylabel)
@@ -248,10 +244,7 @@ def plot_kappa(siminfo,name_list):
         color = ['tab:blue','tab:orange']
         for name in name_list:
             data = np.loadtxt(f"{siminfo.output_path}/Kappa_co_parttype_%i_"%(parttype)+name+".txt")
-            if siminfo.zoom == 'no':
-                plt.plot(data[:,0], data[:,1], 'o', color=color[i],label=name)
-            else:
-                plt.plot(data[0], data[1], 'o', color=color[i],label=name)
+            plt.plot(data[:,0], data[:,1], 'o', color=color[i],label=name)
             i+=1
 
         plt.xscale('log')
@@ -304,10 +297,7 @@ def plot_axis_ratios(siminfo,name_list):
         color = ['tab:blue','tab:orange']
         for name in name_list:
             data = np.loadtxt(f"{siminfo.output_path}/Axis_ratios_parttype_%i_"%(parttype)+name+".txt")
-            if siminfo.zoom == 'no':
-                plt.plot(data[:,0], data[:,1], 'o', color=color[i],label=name)
-            else:
-                plt.plot(data[0], data[1], 'o', color=color[i],label=name)
+            plt.plot(data[:,0], data[:,1], 'o', color=color[i],label=name)
             i+=1
 
         plt.xscale('log')
@@ -325,10 +315,7 @@ def plot_axis_ratios(siminfo,name_list):
         color = ['tab:blue','tab:orange']
         for name in name_list:
             data = np.loadtxt(f"{siminfo.output_path}/Axis_ratios_parttype_%i_"%(parttype)+name+".txt")
-            if siminfo.zoom == 'no':
-                plt.plot(data[:,0], data[:,2], 'o', color=color[i],label=name)
-            else:
-                plt.plot(data[0], data[2], 'o', color=color[i],label=name)
+            plt.plot(data[:,0], data[:,2], 'o', color=color[i],label=name)
             i+=1
 
         plt.xscale('log')
@@ -346,10 +333,7 @@ def plot_axis_ratios(siminfo,name_list):
         color = ['tab:blue','tab:orange']
         for name in name_list:
             data = np.loadtxt(f"{siminfo.output_path}/Axis_ratios_parttype_%i_"%(parttype)+name+".txt")
-            if siminfo.zoom == 'no':
-                plt.plot(data[:,0], data[:,3], 'o', color=color[i],label=name)
-            else:
-                plt.plot(data[0], data[3], 'o', color=color[i],label=name)
+            plt.plot(data[:,0], data[:,3], 'o', color=color[i],label=name)
             i+=1
 
         plt.xscale('log')
