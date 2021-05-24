@@ -40,10 +40,16 @@ class HaloCatalogue:
         catalogue = catalogue[select]
 
         # Selecting centrals only
-        structure_type = properties["Structuretype"][:]
-        #structure_type = properties.structure_type.structuretype.value
-        centrals = np.where(structure_type[catalogue] == 10)[0]
-        catalogue = catalogue[centrals]
+        if siminfo.zoom == 'no':
+            structure_type = properties["Structuretype"][:]
+            centrals = np.where(structure_type[catalogue] == 10)[0]
+            catalogue = catalogue[centrals]
+
+        else :
+            # Select first 10 only
+            if len(catalogue) > 10:
+                select = stellar_mass[catalogue] > 1e7
+                catalogue = catalogue[select]
 
         self.num = len(catalogue)
         self.halo_index = [ catalogue[i] for i in range(self.num) ]
@@ -82,7 +88,6 @@ class HaloCatalogue:
         self.radii_surface_density = None
         self.radii_surface_ratio = None
         self.radii_nbins = None
-
 
         # Subhalo data :
         self.xminpot = properties["Xcminpot"][catalogue] * to_kpc_units #kpc

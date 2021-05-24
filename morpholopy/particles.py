@@ -40,9 +40,15 @@ def make_particle_data(siminfo,halo_id):
         to_msun_per_yr_units = 10227144.8879616 / 1e9
 
     mask_gas, mask_stars = make_masks(siminfo,halo_id)
+    # clean negative indexes.
+    no_negative = mask_gas > 0
+    mask_gas = mask_gas[no_negative]
+    no_negative = mask_stars > 0
+    mask_stars = mask_stars[no_negative]
+
     data = load(siminfo.snapshot)
     z_snap = data.metadata.redshift
-    
+
     gas_mass = data.gas.masses[mask_gas].value * 1e10 #Msun
     gas_n_parts = len(gas_mass)
     gas_data = np.zeros((gas_n_parts,13))
@@ -58,7 +64,7 @@ def make_particle_data(siminfo,halo_id):
     gas_data[:, 9] = gas_H2 * XH * gas_mass # Msun
     gas_data[:, 10] = data.gas.star_formation_rates[mask_gas].value * to_msun_per_yr_units #Msun/yr
     gas_data[:, 11] = data.gas.densities[mask_gas].value * (1e10 / (siminfo.a * to_kpc_units)**3) #Msun / kpc^3
-    gas_data[:, 12] = data.gas.metal_mass_fractions[mask_gas].value/0.0134 # !assuming Solar metallicty
+    gas_data[:, 12] = data.gas.metal_mass_fractions[mask_gas].value / 0.0134 # !assuming Solar metallicty
 
     stars_mass = data.stars.masses[mask_stars].value * 1e10
     stars_birthz = (pow(data.stars.birth_scale_factors,-1)-1.)[mask_stars].value
