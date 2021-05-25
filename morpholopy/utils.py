@@ -59,10 +59,16 @@ parser.add_argument(
     required=False,
     nargs="*",
     type=str,
-    default="no",
+    default=None,
 )
 
 args = parser.parse_args()
+
+if args.zoom is None:
+    if len(args.snapshot) == 1:
+        args.zoom = "no"
+    else:
+        args.zoom = ["no","no"]
 
 if args.output is None:
     args.output = args.directory[0]

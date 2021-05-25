@@ -5,6 +5,8 @@ def loadGalaxyPlots(web,name_list,output_path,num_galaxies):
 
     PlotsInWeb = PlotsInPipeline()
 
+    if num_galaxies > 10 : num_galaxies=10 #let's plot only 10 most massive
+
     for index in range(num_galaxies):
 
         for name in name_list:

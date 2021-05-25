@@ -283,6 +283,8 @@ def surface_ratios_plots(siminfo, index, name_list):
 
 def make_comparison_plots(siminfo, name_list, num_galaxies):
 
+    if num_galaxies > 10: num_galaxies = 10 #let's plot 10 most massive only
+
     for index in range(num_galaxies):
 
         KS_relation_plots(siminfo, index, name_list)
