@@ -2,24 +2,17 @@
 
 # Runs MorpholoPy using the following variables:
 #python morpholopy.py \
-#-d /Users/camila/SimulationData/COLIBRE/COSMA_SIMULATION_RUNS/zooms/halo_1 \
+#-d /cosma7/data/dp004/dc-chai1/zooms/batch1_12_05_21/halo_1 \
 #-s 37 \
 #-n halo1 \
 #-z yes \
-#-o /Users/camila/SimulationData/COLIBRE/COSMA_SIMULATION_RUNS/zooms/halo_1/plots
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo1
 
 python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/zooms/batch1_12_05_21/halo_1 \
--s 37 \
--n halo1 \
--z yes \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo1
-
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/39_only_UVB_L006N0188 \
-#-s 23 23 \
-#-n Reference Reference+OnlyUVB \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_only_UVB_01_39
+-d /cosma7/data/dp004/dc-chai1/HAWK/02a_reference_L012N0188 /cosma7/data/dp004/dc-chai1/HAWK/extra02_SNE_3e51_L012N0376 \
+-s 23 23 \
+-n RefN188 SNE3e51N376 \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SNE_L12_extra02_02a
 
 #python morpholopy.py \
 #-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/11_fkin_0p1_L006N0188/ \
