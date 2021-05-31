@@ -1,64 +1,60 @@
 #!/bin/bash
 
 # Runs MorpholoPy using the following variables:
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/zooms/batch1_12_05_21/halo_1 \
-#-s 37 \
-#-n halo1 \
-#-z yes \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo1
+python morpholopy.py \
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_2 \
+-s 37 \
+-n halo2 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo2
 
 python morpholopy.py \
--d /cosma7/data/dp004/dc-chai1/HAWK/02a_reference_L012N0188 /cosma7/data/dp004/dc-chai1/HAWK/extra02_SNE_3e51_L012N0376 \
--s 23 23 \
--n RefN188 SNE3e51N376 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SNE_L12_extra02_02a
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_3 \
+-s 37 \
+-n halo3 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo3
+
+python morpholopy.py \
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_5 \
+-s 37 \
+-n halo5 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo5
+
+python morpholopy.py \
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_6 \
+-s 37 \
+-n halo6 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo6
+
+python morpholopy.py \
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_7 \
+-s 37 \
+-n halo7 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo7
+
+python morpholopy.py \
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_9 \
+-s 37 \
+-n halo9 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo9
+
+python morpholopy.py \
+-d /cosma7/data/dp004/dc-chai1/zooms/01_reference/halo_10 \
+-s 37 \
+-n halo10 \
+-z yes \
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/zooms/halo10
+
 
 #python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/11_fkin_0p1_L006N0188/ \
+#-d /cosma7/data/dp004/dc-chai1/HAWK/02a_reference_L012N0188 /cosma7/data/dp004/dc-chai1/HAWK/extra02_SNE_3e51_L012N0376 \
 #-s 23 23 \
-#-n Reference fkin0p1 \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_fkin_01_11
-#
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/35_SF_efficiency_0p003_L006N0188 \
-#-s 23 23 \
-#-n SFeff0p003 \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_35
-#
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/36_SF_efficiency_0p001_L006N0188 \
-#-s 23 23 \
-#-n Reference SFeff0p001 \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SFeff_01_36
-#
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/37_same_gr_softening_L006N0188 \
-#-s 23 23 \
-#-n Reference SameGrSoftening \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_DM_softening_01_37
-#
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/38_AGN_dT_3e8_L006N0188 \
-#-s 23 23 \
-#-n Reference AGNdT3e8 \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_AGNdT_01_38
-#
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/43_sf_freefall_1e2_L006N0188 \
-#-s 23 23 \
-#-n Reference SFfreefall1e2 \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SF_FREEFALL_01_43
-#
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/44_sf_freefall_1e3_L006N0188 \
-#-s 23 23 \
-#-n Reference SFfreefall1e3 \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SF_FREEFALL_01_44
+#-n RefN188 SNE3e51N376 \
+#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_VARY_SNE_L12_extra02_02a
 
-#python morpholopy.py \
-#-d /cosma7/data/dp004/dc-chai1/HAWK/01_reference_L006N0188 /cosma7/data/dp004/dc-chai1/HAWK/10_steepEOS_1e3_schmidtlaw_L006N0188 \
-#-s 23 23 \
-#-n Reference SteepEOS \
-#-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/comparisons/z0.0_W_vs_WO_EOS_for_SCHMIDT_LAW_01_10
 
