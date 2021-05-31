@@ -27,6 +27,8 @@ class SimInfo:
         self.zoom = option
 
         if self.zoom == 'no':
+            to_kpc_units = 1e3
+
             snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
             if os.path.exists(snapshot):
                 self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
@@ -50,6 +52,8 @@ class SimInfo:
                 self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles" % snap)
 
         else:
+            to_kpc_units = 1
+
             temp = re.compile("([a-zA-Z]+)([0-9]+)")
             res = temp.match(name).groups()
 
@@ -59,9 +63,9 @@ class SimInfo:
             self.catalog_particles = os.path.join(folder, "halo_"+res[0]+"_"+res[1]+"_%04i.catalog_particles" % snap)
 
         snapshot_file = h5py.File(self.snapshot, "r")
-        self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * 1e3 #kpc
+        self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * to_kpc_units #kpc
         self.a = snapshot_file["/Header"].attrs["Scale-factor"]
-        self.baryon_maxsoft = snapshot_file["/GravityScheme"].attrs['Maximal physical baryon softening length  [internal units]'] * 1e3 #kpc
+        self.baryon_maxsoft = snapshot_file["/GravityScheme"].attrs['Maximal physical baryon softening length  [internal units]'] * to_kpc_units #kpc
 
 
 def morpholopy(siminfo, web):
