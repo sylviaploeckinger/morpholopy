@@ -99,7 +99,7 @@ def KS_relation_plots(siminfo,index,name_list):
             plt.legend(loc='upper left',labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
             ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
             plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
-            plt.xlim(-1.0, 3.0)
+            plt.xlim(-1.0, 4.0)
             plt.ylim(-6.5, 1.0)
             if mode == 0:
                 plt.savefig(f"{siminfo.output_path}/KS_relation_best_"+method+"_%i.png"%(index), dpi=200)
@@ -193,7 +193,7 @@ def depletion_time_plots(siminfo,index,name_list):
             plt.legend(labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False)
             ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
             plt.ylabel("log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$")
-            plt.xlim(-1, 3.0)
+            plt.xlim(-1, 4.0)
             plt.ylim(7, 12)
             if mode == 0:
                 plt.savefig(f"{siminfo.output_path}/gas_depletion_timescale_best_" + method + "_%i.png"%(index), dpi=200)
@@ -269,7 +269,7 @@ def surface_ratios_plots(siminfo, index, name_list):
             i+=1
 
 
-        plt.xlim(-1.0, 3.0)
+        plt.xlim(-1.0, 4.0)
         plt.ylim(-8.0, 0.5)
         plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
         plt.xlabel(r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]")

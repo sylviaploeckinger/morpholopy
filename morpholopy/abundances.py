@@ -200,7 +200,7 @@ def read_obs_data_MgFe():
            FeH_fornax, MgFe_fornax, FeH_sagittarius, MgFe_sagittarius
 
 
-def calculate_relative_abundances(siminfo, web):
+def calculate_relative_abundances(siminfo):
 
     Fe_H, O_Fe, Mg_Fe, redshift = read_data(siminfo)
 
@@ -359,7 +359,7 @@ if __name__ == '__main__':
         if sims > 0: add_metadata_to_web(web, siminfo)
 
         # Run morpholoPy
-        calculate_relative_abundances(siminfo, web)
+        calculate_relative_abundances(siminfo)
 
 
     # Load galaxy plots

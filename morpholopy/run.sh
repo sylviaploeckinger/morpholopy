@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Runs MorpholoPy using the following variables:
-python morpholopy.py \
+python abundances.py \
 -d /cosma7/data/dp004/dc-chai1/HAWK/77_reference_L025N0376 \
 -s 13 \
 -n RefL25N376 \
