@@ -1,0 +1,6 @@
+#VANDELS composite spectra stacked in bins of stellar mass
+#Range 2.65<z<3.15 - Cullen et al. 2019
+# 1-2 Mass range, 3 Median mass, 4 redshift, 5 metallicity +/- error
+8.24	9.39	9.08	2.98	-2.64	0.11
+9.41	9.74	9.57	2.92	-2.63	0.10
+9.78	10.46	10.02	2.97	-2.44	0.10

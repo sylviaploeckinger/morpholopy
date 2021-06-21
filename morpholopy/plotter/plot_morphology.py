@@ -173,7 +173,7 @@ def plot_momentum(siminfo,name_list):
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.9,
-        "lines.markersize": 6,
+        "lines.markersize": 2,
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)
@@ -223,7 +223,7 @@ def plot_kappa(siminfo,name_list):
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.18,
         "figure.subplot.top": 0.9,
-        "lines.markersize": 6,
+        "lines.markersize": 2,
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)
@@ -272,7 +272,7 @@ def plot_axis_ratios(siminfo,name_list):
         "figure.subplot.top": 0.9,
         "figure.subplot.wspace": 0.3,
         "figure.subplot.hspace": 0.3,
-        "lines.markersize": 6,
+        "lines.markersize": 2,
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)

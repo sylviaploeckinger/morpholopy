@@ -52,6 +52,12 @@ def render_population_web(web,output_path):
     web.save_html(f"{output_path}/population.html")
     return
 
+def render_abundance_web(web,output_path):
+    web.add_metadata(page_name="MorpholoPy Page")
+    web.render_webpage()
+    web.save_html(f"{output_path}/abundance.html")
+    return
+
 def format_number(number):
     """
     Formats a number from float (with or without units) to a latex-like number.

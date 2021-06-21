@@ -37,8 +37,8 @@ def plot_combined_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass
 
     plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
-    plt.xlim(-1.0, 3.0)
-    plt.ylim(-6.0, 0.0)
+    plt.xlim(-1.0, 4.0)
+    plt.ylim(-6.0, 1.0)
 
     plt.legend()
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
@@ -61,8 +61,8 @@ def plot_combined_surface_densities(sigma_SFR, sigma_gas, sigma_H2, stellar_mass
 
     plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
-    plt.xlim(-1.0, 3.0)
-    plt.ylim(-6.0, 0.0)
+    plt.xlim(-1.0, 4.0)
+    plt.ylim(-6.0, 1.0)
     plt.legend()
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
     cbar_ax.tick_params(labelsize=15)
@@ -146,8 +146,8 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel("log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$")
-    plt.xlim(-1.0, 3.0)
-    plt.ylim(-6.0, 0.0)
+    plt.xlim(-1.0, 4.0)
+    plt.ylim(-6.0, 1.0)
     plt.legend(loc=[0.0,0.5],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
 
     cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
@@ -201,7 +201,7 @@ def plot_combined_density_ratios(galaxy_data, siminfo):
 
     plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel(r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$")
-    plt.xlim(-1.0, 3.0)
+    plt.xlim(-1.0, 4.0)
     plt.ylim(-8.0, 0.5)
     plt.legend(loc=[0.65,0.0],labelspacing=0.2, handlelength=1, handletextpad=0.2, frameon=False)
 
