@@ -68,7 +68,7 @@ class SimInfo:
         self.baryon_maxsoft = snapshot_file["/GravityScheme"].attrs['Maximal physical baryon softening length  [internal units]'] * to_kpc_units #kpc
 
 
-def morpholopy(siminfo, web):
+def morpholopy(siminfo):
 
     # Loading photometry grids for interpolation
     system = 'GAMA'  # hard-coded for now
@@ -113,7 +113,7 @@ def morpholopy(siminfo, web):
     plot_surface_densities(halo_data, siminfo)
     # output_galaxy_data(halo_data,siminfo)
 
-    return web, num_galaxies
+    return num_galaxies
 
 
 if __name__ == '__main__':
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         #if sims > 0: add_metadata_to_web(web, siminfo)
 
         # Run morpholoPy
-        web, num_galaxies = morpholopy(siminfo, web)
+        num_galaxies = morpholopy(siminfo)
 
     #make_comparison_plots(siminfo, name_list, num_galaxies)
     plot_morphology(siminfo, name_list)
