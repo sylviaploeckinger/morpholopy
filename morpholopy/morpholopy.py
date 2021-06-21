@@ -81,7 +81,7 @@ def morpholopy(siminfo):
     halo_data = HaloCatalogue(siminfo, lower_mass)
     num_galaxies = halo_data.num
 
-    # # Loop over the sample to calculate morphological parameters
+    # Loop over the sample to calculate morphological parameters
     # for i in range(num_galaxies):
     #
     #     # Read particle data
@@ -107,10 +107,10 @@ def morpholopy(siminfo):
     #                          gas_ang_momentum, halo_data, i, siminfo)
     #
     #         make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, siminfo)
-
-    # Finish plotting and output webpage
+    #
+    # #Finish plotting and output webpage
     # output_morphology(halo_data, siminfo)
-    plot_surface_densities(halo_data, siminfo)
+    # plot_surface_densities(halo_data, siminfo)
     # output_galaxy_data(halo_data,siminfo)
 
     return num_galaxies
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         # Run morpholoPy
         num_galaxies = morpholopy(siminfo)
 
-    #make_comparison_plots(siminfo, name_list, num_galaxies)
+    make_comparison_plots(siminfo, name_list, num_galaxies)
     plot_morphology(siminfo, name_list)
 
     # After making individual plots finish up the website
