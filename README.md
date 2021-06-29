@@ -29,6 +29,8 @@ python morpholopy.py \
   -d /cosma7/data/Simulation1 /cosma7/data/Simulation2 ... \ # These are directories where sims outputs are
   -s 23 23 ... \ # Snapshot numbers from the different sims
   -n name_one name_two ... \ # Names for different sims (for legend)
+  -z no no ... \ # Additional option for zooms set it to yes
+  -g 20 20 ... \ # Additional option to set number of morphology plots for 20 most massive galaxies, (default 10)
   -o output_directory
 ```
 

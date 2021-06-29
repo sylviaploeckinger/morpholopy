@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Runs MorpholoPy using the following variables:
-python abundances.py \
+python morpholopy.py \
 -d /cosma7/data/dp004/dc-chai1/HAWK/77_reference_L025N0376 \
--s 13 \
+-s 23 \
 -n RefL25N376 \
 -z no \
 -g 20 \
--o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/77_reference_L025N0376/output_013/
+-o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/77_reference_L025N0376/output_023/
+
+python morpholopy.py -d /cosma7/data/dp004/dc-chai1/HAWK/77_reference_L025N0376 -s 23 -n RefL25N376 -z no -g 20 -o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/77_reference_L025N0376/output_023/
 
 #python abundances.py \
 #-d ~/Dropbox/Science-projects/swift-COLIBRE/morphology_estimators/data/Testing_Sims/ \
