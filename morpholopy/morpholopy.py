@@ -21,10 +21,12 @@ import unyt
 
 
 class SimInfo:
-    def __init__(self, folder, snap, output_path, name, option):
+    def __init__(self, folder, snap, output_path, name, option, option_number_galaxies):
         self.name = name
         self.output_path = output_path
         self.zoom = option
+        self.output_galaxies = option_number_galaxies
+        self.num_galaxies = None
 
         if self.zoom == 'no':
             to_kpc_units = 1e3
@@ -77,43 +79,43 @@ def morpholopy(siminfo):
         pgrids[pht[-1]] = MakeGrid(pht)
 
     # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e6 * unyt.msun  # ! Option of lower limit for gas mass
+    lower_mass = 1e9 * unyt.msun  # ! Option of lower limit for gas mass
     halo_data = HaloCatalogue(siminfo, lower_mass)
     num_galaxies = halo_data.num
+    siminfo.num_galaxies = num_galaxies
 
     # Loop over the sample to calculate morphological parameters
-    # for i in range(num_galaxies):
-    #
-    #     # Read particle data
-    #     gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])
-    #
-    #     if len(gas_data) == 0: continue
-    #
-    #     # Calculate morphology estimators: kappa, axial ratios for stars ..
-    #     stars_ang_momentum, stars_data = calculate_morphology(halo_data, stars_data, siminfo, i, 4)
-    #
-    #     # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
-    #     gas_ang_momentum, gas_data = calculate_morphology(halo_data, gas_data, siminfo, i, 0)
-    #
-    #     # Calculate stellar luminosities
-    #     star_abmags = calculate_luminosities(halo_data, stars_data, siminfo, i, 4, pgrids)
-    #
-    #     # Calculate surface densities for HI+H2 gas ..
-    #     calculate_surface_densities(gas_data, gas_ang_momentum, halo_data, i)
-    #
-    #     # Make plots for individual galaxies, perhaps.. only first 10
-    #     if i < 10:
-    #         visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum,
-    #                          gas_ang_momentum, halo_data, i, siminfo)
-    #
-    #         make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, siminfo)
-    #
-    # #Finish plotting and output webpage
-    # output_morphology(halo_data, siminfo)
-    # plot_surface_densities(halo_data, siminfo)
-    # output_galaxy_data(halo_data,siminfo)
+    for i in range(num_galaxies):
 
-    return num_galaxies
+        # Read particle data
+        gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])
+
+        if len(gas_data) == 0: continue
+
+        # Calculate morphology estimators: kappa, axial ratios for stars ..
+        stars_ang_momentum, stars_data = calculate_morphology(halo_data, stars_data, siminfo, i, 4)
+
+        # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
+        gas_ang_momentum, gas_data = calculate_morphology(halo_data, gas_data, siminfo, i, 0)
+
+        # Calculate stellar luminosities
+        star_abmags = calculate_luminosities(halo_data, stars_data, siminfo, i, 4, pgrids)
+
+        # Calculate surface densities for HI+H2 gas ..
+        calculate_surface_densities(gas_data, gas_ang_momentum, halo_data, i)
+
+        # Make plots for individual galaxies, perhaps.. only first 10
+        if i < siminfo.output_galaxies:
+            visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum,
+                             gas_ang_momentum, halo_data, i, siminfo)
+
+            make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, siminfo)
+
+    # Finish plotting and output webpage
+    output_morphology(halo_data, siminfo)
+    plot_surface_densities(halo_data, siminfo)
+    output_galaxy_data(halo_data,siminfo)
+
 
 
 if __name__ == '__main__':
@@ -125,6 +127,7 @@ if __name__ == '__main__':
     directory_list = args.directory
     snapshot_list = args.snapshot
     option_list = args.zoom
+    number_of_galaxies = args.galaxy_number
 
     name_list = (
         args.run_names
@@ -138,24 +141,25 @@ if __name__ == '__main__':
         snap_number = int(snapshot_list[sims])
         sim_name = name_list[sims]
         option = option_list[sims]
-        siminfo = SimInfo(directory, snap_number,output_path, sim_name, option)
+        option_number_galaxies = number_of_galaxies[sims]
+        siminfo = SimInfo(directory, snap_number, output_path, sim_name, option, option_number_galaxies)
 
         # Make initial website
-        #if sims == 0: web = make_web(siminfo)
-        #if sims > 0: add_metadata_to_web(web, siminfo)
+        if sims == 0: web = make_web(siminfo)
+        if sims > 0: add_metadata_to_web(web, siminfo)
 
         # Run morpholoPy
-        num_galaxies = morpholopy(siminfo)
+        morpholopy(siminfo)
 
-    make_comparison_plots(siminfo, name_list, num_galaxies)
+    make_comparison_plots(siminfo, name_list)
     plot_morphology(siminfo, name_list)
 
     # After making individual plots finish up the website
     # Load galaxy plots
-    #loadGalaxyPlots(web, name_list, siminfo.output_path, num_galaxies)
+    loadGalaxyPlots(web, siminfo, name_list)
 
     # Finish and output html file
-    #render_web(web, siminfo.output_path)
+    render_web(web, siminfo.output_path)
 
 
 

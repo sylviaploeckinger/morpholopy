@@ -6,6 +6,7 @@ python abundances.py \
 -s 13 \
 -n RefL25N376 \
 -z no \
+-g 20 \
 -o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/MorpholoPy/HAWK/77_reference_L025N0376/output_013/
 
 #python abundances.py \

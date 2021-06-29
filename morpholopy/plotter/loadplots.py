@@ -1,13 +1,11 @@
 import numpy as np
 from plotter.html import add_web_section, PlotsInPipeline
 
-def loadGalaxyPlots(web,name_list,output_path,num_galaxies):
+def loadGalaxyPlots(web, siminfo, name_list):
 
     PlotsInWeb = PlotsInPipeline()
 
-    if num_galaxies > 10 : num_galaxies=10 #let's plot only 10 most massive
-
-    for index in range(num_galaxies):
+    for index in range(siminfo.output_galaxies):
 
         for name in name_list:
             title = "Gas component ("+name+")"
@@ -139,8 +137,8 @@ def loadGalaxyPlots(web,name_list,output_path,num_galaxies):
         title = '%i Galaxy ' % (index + 1)
         caption = " "
         for name in name_list:
-            data = np.loadtxt(f"{output_path}/galaxy_data_"+name+".txt")
-            if num_galaxies == 1:
+            data = np.loadtxt(f"{siminfo.output_path}/galaxy_data_"+name+".txt")
+            if siminfo.output_galaxies == 1:
                 sfr_galaxy = data[0]
                 mass_galaxy = data[1]
                 gas_mass_galaxy = data[2]

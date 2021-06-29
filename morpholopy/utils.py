@@ -59,8 +59,19 @@ parser.add_argument(
     required=False,
     nargs="*",
     type=str,
-    default=None,
+    default="no",
 )
+
+parser.add_argument(
+    "-g",
+    "--galaxy_number",
+    help="Option for outputting morphology plots of g number of galaxies",
+    required=False,
+    nargs="*",
+    type=float,
+    default=10,
+)
+
 
 args = parser.parse_args()
 
