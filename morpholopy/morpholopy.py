@@ -149,7 +149,7 @@ if __name__ == '__main__':
         if sims > 0: add_metadata_to_web(web, siminfo)
 
         # Run morpholoPy
-        # morpholopy(siminfo)
+        morpholopy(siminfo)
 
     make_comparison_plots(siminfo, name_list)
     plot_morphology(siminfo, name_list)
