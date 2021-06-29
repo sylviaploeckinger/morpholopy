@@ -5,7 +5,7 @@ def loadGalaxyPlots(web, siminfo, name_list):
 
     PlotsInWeb = PlotsInPipeline()
 
-    for index in range(siminfo.output_galaxies):
+    for index in range(int(siminfo.output_galaxies)):
 
         for name in name_list:
             title = "Gas component ("+name+")"

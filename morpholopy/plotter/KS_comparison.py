@@ -283,7 +283,7 @@ def surface_ratios_plots(siminfo, index, name_list):
 
 def make_comparison_plots(siminfo, name_list):
 
-    num_galaxies = siminfo.output_galaxies #let's plot 10 most massive only
+    num_galaxies = int(siminfo.output_galaxies) #let's plot 10 most massive only
 
     for index in range(num_galaxies):
 
