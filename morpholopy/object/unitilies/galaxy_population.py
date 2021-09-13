@@ -1,8 +1,8 @@
 from pylab import *
 import numpy as np
 import os
-import glob
-from plotter.html import (
+
+from morpholopy.plotter.html import (
     make_web,
     add_metadata_to_web,
     PlotsInPipeline,
@@ -342,17 +342,17 @@ class SimInfo:
 
 
 if __name__ == "__main__":
-    from utils import *
+
+    from morpholopy.argumentparser import ArgumentParser
+
+    config_parameters = ArgumentParser()
 
     # Load MorpholoPy production details
-    output_path = args.output
-    number_of_inputs = len(args.snapshot_name)
-    directory_list = args.directory
-    snapshot_list = args.snapshot_name
-
-    name_list = (
-        args.run_names if args.run_names is not None else [None] * number_of_inputs
-    )
+    output_path = config_parameters.output_directory
+    number_of_inputs = len(config_parameters.snapshot_list)
+    directory_list = config_parameters.directory_list
+    snapshot_list = config_parameters.snapshot_list
+    name_list = config_parameters.name_list
 
     # Loop over simulation list
     for sims in range(number_of_inputs):

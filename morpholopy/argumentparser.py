@@ -1,8 +1,13 @@
 import argparse
+import unyt
 from typing import List, Optional
+from numpy import log10
 
 
 class ArgumentParser(object):
+    """
+    Class for handeling arguments that are passed to the script
+    """
 
     # List of snapshots that are to be processed.
     snapshot_list: List[str]
@@ -18,6 +23,8 @@ class ArgumentParser(object):
     number_of_inputs: int
     # Number of galaxies to make individual plots for
     number_of_galaxies: int
+    # Minimum stellar mass. Haloes with smaller stellar masses won't be processed
+    min_stellar_mass: unyt.array.unyt_quantity
 
     def __init__(self):
 
@@ -65,6 +72,16 @@ class ArgumentParser(object):
         )
 
         parser.add_argument(
+            "-m",
+            "--min-stellar-mass",
+            help="Minimum stellar mass in units of Msun. Haloes whose stellar mass is smaller than "
+            "this threshold won't be processed.",
+            type=float,
+            required=False,
+            default=1e7,
+        )
+
+        parser.add_argument(
             "-o",
             "--output-directory",
             help="Output directory for the produced figure.",
@@ -75,9 +92,8 @@ class ArgumentParser(object):
         parser.add_argument(
             "-g",
             "--galaxy_number",
-            help="Option for outputting morphology plots of g number of galaxies",
+            help="Number of galaxies (with the largest masses) to visualize. Default: 10",
             required=False,
-            nargs="?",
             type=int,
             default=10,
         )
@@ -96,3 +112,18 @@ class ArgumentParser(object):
 
         self.number_of_inputs = len(args.snapshots)
         self.number_of_galaxies = args.galaxy_number
+        self.min_stellar_mass = unyt.unyt_quantity(args.min_stellar_mass, "Msun")
+
+        print("Parsed arguments:")
+        print("---------------------\n")
+        print(f"Snapshot list: {self.snapshot_list}")
+        print(f"Catalogue list: {self.catalogue_list}")
+        print(f"Input directory list: {self.directory_list}")
+        print(f"Run names: {self.name_list}")
+        print(f"Output directory: {self.output_directory}")
+        print(f"Number of runs: {self.number_of_inputs}")
+        print(f"Number of galaxies to visualise: {self.number_of_galaxies}")
+        print(
+            f"Log10 of Minimum stellar mass: {log10(self.min_stellar_mass.value)} Msun"
+        )
+        print("")

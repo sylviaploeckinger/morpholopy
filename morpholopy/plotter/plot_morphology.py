@@ -80,17 +80,20 @@ def output_accumulative_densities(galaxy_data, output_path, simulation_name):
     )
 
 
-def output_morphology(galaxy_data, output_path, simulation_name):
+def write_morphology_data_to_file(galaxy_data, output_path, simulation_name):
+    """
+    Writes morphology data to a file
+    """
 
     output_momentum(
-        10 ** galaxy_data.stellar_mass,
+        10 ** galaxy_data.log10_stellar_mass,
         galaxy_data.momentum,
         4,
         output_path,
         simulation_name,
     )
     output_momentum(
-        10 ** galaxy_data.stellar_mass,
+        10 ** galaxy_data.log10_stellar_mass,
         galaxy_data.gas_momentum,
         0,
         output_path,
@@ -99,14 +102,14 @@ def output_morphology(galaxy_data, output_path, simulation_name):
 
     # plot kappa for stars and gas :
     output_kappa(
-        10 ** galaxy_data.stellar_mass,
+        10 ** galaxy_data.log10_stellar_mass,
         galaxy_data.kappa_co,
         4,
         output_path,
         simulation_name,
     )
     output_kappa(
-        10 ** galaxy_data.stellar_mass,
+        10 ** galaxy_data.log10_stellar_mass,
         galaxy_data.gas_kappa_co,
         0,
         output_path,
@@ -119,7 +122,11 @@ def output_morphology(galaxy_data, output_path, simulation_name):
     axis_ratios[:, 1] = galaxy_data.axis_cb
     axis_ratios[:, 2] = galaxy_data.axis_ba
     output_axis_ratios(
-        10 ** galaxy_data.stellar_mass, axis_ratios, 4, output_path, simulation_name
+        10 ** galaxy_data.log10_stellar_mass,
+        axis_ratios,
+        4,
+        output_path,
+        simulation_name,
     )
 
     axis_ratios = np.zeros((len(galaxy_data.gas_axis_ca), 3))
@@ -127,11 +134,17 @@ def output_morphology(galaxy_data, output_path, simulation_name):
     axis_ratios[:, 1] = galaxy_data.gas_axis_cb
     axis_ratios[:, 2] = galaxy_data.gas_axis_ba
     output_axis_ratios(
-        10 ** galaxy_data.stellar_mass, axis_ratios, 0, output_path, simulation_name
+        10 ** galaxy_data.log10_stellar_mass,
+        axis_ratios,
+        0,
+        output_path,
+        simulation_name,
     )
 
     # plot surface densities
     output_accumulative_densities(galaxy_data, output_path, simulation_name)
+
+    return
 
 
 def plot_surface_densities(

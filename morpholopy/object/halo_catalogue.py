@@ -1,5 +1,5 @@
 import numpy as np
-from unyt import unit_object, unyt_quantity
+import unyt
 from velociraptor import load
 
 
@@ -8,49 +8,68 @@ class HaloCatalogue:
     General class containing halo properties
     """
 
-    number_of_haloes: int
-    path_to_catalogue: str
+    def __init__(self, path_to_catalogue: str, galaxy_min_stellar_mass: unyt.array.unyt_quantity):
+        """
+        Parameters
+        ----------
+        path_to_catalogue: str
+        Path to the catalogue with halo properties
 
-    def __init__(self, path_to_catalogue: str, galaxy_min_stellar_mass: unit_object):
+        galaxy_min_stellar_mass: unyt.array.unyt_quantity
+        Minimum stellar mass in units of Msun. Objects whose stellar mass is lower than this
+        threshold are disregarded
+        """
 
         self.path_to_catalogue = path_to_catalogue
 
+        # Load catalogue using velociraptor python library
         catalogue = load(self.path_to_catalogue)
 
-        # Selecting galaxies more massive than lower limit
+        # Selecting central galaxies whose stellar mass is larger than
+        # 'galaxy_min_stellar_mass'
         mask = np.logical_and(
             catalogue.apertures.mass_star_30_kpc >= galaxy_min_stellar_mass,
             catalogue.structure_type.structuretype == 10,
         )
+        # They also need to contain at least one gas particle
         mask = np.logical_and(
-            mask, catalogue.apertures.mass_gas_30_kpc > unyt_quantity(0.0, "Msun")
+            mask, catalogue.apertures.mass_gas_30_kpc > unyt.unyt_quantity(0.0, "Msun")
         )
-
+        # Compute the number of haloes following the selection mask
         self.number_of_haloes = mask.sum()
 
-        # Masses
-        self.stellar_mass = np.log10(
+        # Log10 stellar mass in units of Msun
+        self.log10_stellar_mass = np.log10(
             catalogue.apertures.mass_star_30_kpc.to("Msun").value[mask]
         )
-        self.gas_mass = np.log10(
+        # Log10 gas mass in units of Msun
+        self.log10_gas_mass = np.log10(
             catalogue.apertures.mass_gas_30_kpc.to("Msun").value[mask]
         )
-        self.halo_mass = np.log10(catalogue.masses.mass_200crit.to("Msun").value[mask])
+        # Log10 halo mass in units of Msun
+        self.log10_halo_mass = np.log10(
+            catalogue.masses.mass_200crit.to("Msun").value[mask]
+        )
 
-        # Radii
+        # Half mass radius in units of kpc (stars)
         self.half_mass_radius_star = catalogue.radii.r_halfmass_star.to("kpc").value[
             mask
         ]
+        # Half mass radius in units of kpc (gas)
         self.half_mass_radius_gas = catalogue.radii.r_halfmass_gas.to("kpc").value[mask]
 
-        # Metallicity and star formation rate
+        # Star formation rate in units of Msun/yr
         self.sfr = (
             catalogue.apertures.sfr_gas_30_kpc.value[mask] * 10227144.8879616 / 1e9
         )
+
+        # Metallicity of star-forming gas
         self.metallicity_gas_sfr = catalogue.apertures.zmet_gas_sf_30_kpc.value[mask]
 
+        # Metallicity of all gas
         self.metallicity_gas = catalogue.apertures.zmet_gas_30_kpc.value[mask]
 
+        # Ids of haloes satisfying the selection criterion
         self.halo_ids = np.array([i for i in range(len(mask)) if mask[i] == True])
 
         self.kappa_co = np.zeros(self.number_of_haloes)
@@ -76,7 +95,6 @@ class HaloCatalogue:
 
         self.radii_surface_density = np.zeros(self.number_of_haloes)
         self.radii_surface_ratio = np.zeros(self.number_of_haloes)
-        self.radii_nbins = np.zeros(self.number_of_haloes)
 
         self.xminpot = catalogue.positions.xcminpot.to("kpc").value[mask]
         self.yminpot = catalogue.positions.ycminpot.to("kpc").value[mask]

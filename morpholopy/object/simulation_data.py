@@ -1,40 +1,26 @@
-from typing import List, Union, Tuple
-from unyt import unit_object
+from typing import List, Union, Tuple, Dict
+import unyt
 import numpy as np
 import glob
 
 from .unitilies import constants
-from .unitilies.functions import calculate_kappa_co, AxialRatios
+from .unitilies.helper_functions import calculate_kappa_co, AxialRatios
 from .unitilies import luminosities as lum
 
 from .halo_catalogue import HaloCatalogue
-from .particles import Particles
+from .particle_ids import ParticleIds
 
 from swiftsimio import load, SWIFTDataset
 from astropy.cosmology import WMAP9 as cosmo
 
 
-class SimInfo(Particles):
+class SimInfo(ParticleIds):
 
-    directory: str
-    snapshot_name: str
-    catalogue_name: str
-    simulation_name: Union[str, None]
-    catalogue_groups: str
-    catalogue_particles: str
-
-    a: float
-    baryon_max_soft: float
-    box_size: float
-
-    snapshot: SWIFTDataset
-
-    to_kpc_units: float
-    to_Msun_units: float
-
+    # Solar metallicity
     Zsolar = 0.0134
 
-    halo_data: HaloCatalogue
+    # Dict with photometry tables to compute stars' luminosities
+    pgrids: Dict = {}
 
     def __init__(
         self,
@@ -42,40 +28,74 @@ class SimInfo(Particles):
         snapshot: str,
         catalogue: str,
         name: Union[str, None],
-        galaxy_min_stellar_mass: unit_object,
+        galaxy_min_stellar_mass: unyt.array.unyt_quantity,
     ):
+        """
+        Parameters
+        ----------
+
+        directory: str
+        Run directory
+
+        snapshot: str
+        Name of the snapshot file
+
+        catalogue: str
+        Name of the catalogue file
+
+        name:
+        Name of the run
+
+        galaxy_min_stellar_mass: unyt.array.unyt_quantity
+        """
 
         self.directory = directory
         self.snapshot_name = snapshot
         self.catalogue_name = catalogue
-        self.simulation_name = name
 
+        # Find the group and particle catalogue files
         self.__find_groups_and_particles_catalogues()
 
+        # Load snapshot via swiftsimio
         self.snapshot = load(f"{self.directory}/{self.snapshot_name}")
 
+        # Fetch the run name if not provided
+        if name is not None:
+            self.simulation_name = name
+        else:
+            self.simulation_name = snapshot.metadata.run_name
+
+        # Conversion from internal units to kpc
         self.to_kpc_units = (
             self.snapshot.metadata.internal_code_units["Unit length in cgs (U_L)"][0]
             / constants.kpc
         )
 
+        # Conversion from internal units to Msun
         self.to_Msun_units = (
             self.snapshot.metadata.internal_code_units["Unit mass in cgs (U_M)"][0]
             / constants.Msun
         )
 
+        # Conversion from internal units to Myr
         self.to_Myr_units = (
             self.snapshot.metadata.internal_code_units["Unit time in cgs (U_t)"][0]
             / constants.Myr
         )
 
+        # Conversion from internal units to yr
         self.to_yr_units = (
             self.snapshot.metadata.internal_code_units["Unit time in cgs (U_t)"][0]
             / constants.yr
         )
 
+        # Box size of the simulation in kpc
         self.boxSize = self.snapshot.metadata.boxsize.to("kpc").value[0]
+
+        # Cosmic scale factor
         self.a = self.snapshot.metadata.scale_factor
+
+        # Maximum softening for baryons
         self.baryon_max_soft = (
             self.snapshot.metadata.gravity_scheme[
                 "Maximal physical baryon softening length  [internal units]"
@@ -83,20 +103,26 @@ class SimInfo(Particles):
             * self.to_kpc_units
         )
 
+        # Object containing halo properties (from halo catalogue)
         self.halo_data = HaloCatalogue(
             path_to_catalogue=f"{self.directory}/{self.catalogue_name}",
             galaxy_min_stellar_mass=galaxy_min_stellar_mass,
         )
 
+        # Init parent class with particle ids
         super().__init__(
             path_to_groups_file=f"{self.directory}/{self.catalogue_groups}",
             path_to_particles_file=f"{self.directory}/{self.catalogue_particles}",
             path_to_snapshot_file=f"{self.directory}/{self.snapshot_name}",
         )
 
+        print(f"Data from run '{self.simulation_name}' has been loaded! \n")
+
+        return
+
     def __find_groups_and_particles_catalogues(self) -> None:
         """
-        Finds paths to the fiels with particles catalogue and groups catalogue
+        Finds paths to the fields with particles catalogue and groups catalogue
         """
 
         catalogue_num = "".join([s for s in self.catalogue_name if s.isdigit()])
@@ -121,6 +147,8 @@ class SimInfo(Particles):
         else:
             raise IOError("Couldn't find catalogue_particles file")
 
+        return
+
     def make_particle_data(self, halo_id: int) -> Tuple[np.ndarray, np.ndarray]:
         """
         Create particle data :
@@ -138,7 +166,7 @@ class SimInfo(Particles):
         Arrays with gas and stellar properties
         """
 
-        mask_gas, mask_stars = self.make_masks_gas_and_stars(halo_idx=halo_id)
+        mask_gas, mask_stars = self.make_masks_gas_and_stars(halo_id=halo_id)
 
         gas_mass = self.snapshot.gas.masses[mask_gas].value * self.to_Msun_units
         gas_n_parts = len(gas_mass)
@@ -177,7 +205,9 @@ class SimInfo(Particles):
         )
 
         stars_mass = self.snapshot.stars.masses[mask_stars].value * self.to_Msun_units
-        stars_birthz = 1.0 / self.snapshot.stars.birth_scale_factors[mask_stars].value - 1.0
+        stars_birthz = (
+            1.0 / self.snapshot.stars.birth_scale_factors[mask_stars].value - 1.0
+        )
 
         if len(stars_birthz) > 1:
             stars_age = cosmo.age(0.0).value - cosmo.age(stars_birthz).value  # in Gyr
@@ -245,53 +275,68 @@ class SimInfo(Particles):
             self.halo_data.add_gas_morphology(morphology, halo_index)
         return momentum, part_data
 
-    def output_galaxy_data(self, output_path: str) -> None:
+    def write_galaxy_data_to_file(self, output_path: str) -> None:
         """
+        Writes data with halo main properties to a file
+
         Parameters
         ----------
-
         output_path: str
-        Path to output directory
+        Path to output directory where the file will be saved
         """
 
-        sfr_galaxy = self.halo_data.sfr
-        mass_galaxy = self.halo_data.stellar_mass
-        gas_mass_galaxy = self.halo_data.gas_mass
-        mass_halo = self.halo_data.halo_mass
-        galaxy_metallicity_gas_sfr = self.halo_data.metallicity_gas_sfr
-        galaxy_metallicity_gas = self.halo_data.metallicity_gas
-
         np.savetxt(
-            f"{output_path}/galaxy_data_" + self.simulation_name + ".txt",
+            f"{output_path}/galaxy_data_{self.simulation_name}.txt",
             np.transpose(
                 [
-                    sfr_galaxy,
-                    mass_galaxy,
-                    gas_mass_galaxy,
-                    mass_halo,
-                    galaxy_metallicity_gas_sfr,
-                    galaxy_metallicity_gas,
+                    self.halo_data.sfr,
+                    self.halo_data.log10_stellar_mass,
+                    self.halo_data.log10_gas_mass,
+                    self.halo_data.log10_halo_mass,
+                    self.halo_data.metallicity_gas_sfr,
+                    self.halo_data.metallicity_gas,
                 ]
             ),
         )
 
         return
 
-    @staticmethod
-    def calculate_luminosities(spart_data: np.ndarray, pgrids):
+    @classmethod
+    def load_photometry_grid(cls):
+        """
+        Loads photometry grids for interpolation
+        """
+
+        if not cls.pgrids:
+            system = "GAMA"  # hard-coded for now
+            for pht in glob.glob(f"./photometry/{system}/*"):
+                cls.pgrids[pht[-1]] = lum.MakeGrid(pht)
+            print("Photometry tables have been loaded! \n")
+
+    @classmethod
+    def calculate_luminosities(cls, spart_data: np.ndarray):
         """
         Computes stellar luminosities
         Parameters
         ----------
         spart_data: np.ndarray
+        Array with spart data
 
-        An array with spart properties
+        Returns
+        -------
+        Output: np.ndarray
+        An array with spart luminosities
         """
+
+        assert cls.pgrids is not {}, (
+            "'pgrids' is empty! Load photometry tables before calculating"
+            " stellar luminosities!"
+        )
 
         star_abmags = {}
 
-        for filt in pgrids.keys():
-            grid, Z_p, t_p = pgrids[filt]
+        for filt in cls.pgrids.keys():
+            grid, Z_p, t_p = cls.pgrids[filt]
             fluxes = (
                 lum.BiPowInterp(t_p, Z_p, grid, spart_data[:, 9], spart_data[:, 10])
                 * spart_data[:, 11]

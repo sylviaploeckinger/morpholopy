@@ -366,7 +366,7 @@ def plot_surface_densities(galaxy_data, output_path, simulation_name):
         galaxy_data.sigma_SFR,
         galaxy_data.sigma_gas,
         galaxy_data.sigma_H2,
-        galaxy_data.stellar_mass,
+        galaxy_data.log10_stellar_mass,
         output_path,
         simulation_name,
     )

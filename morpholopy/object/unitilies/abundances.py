@@ -5,7 +5,7 @@ import os
 import warnings
 
 warnings.filterwarnings("ignore")
-from plotter.html import (
+from morpholopy.plotter.html import (
     make_web,
     add_metadata_to_web,
     PlotsInPipeline,
@@ -72,22 +72,22 @@ def read_obs_data_OFe():
 
     ## I assume these works use Grevesser & Anders solar metallicity
 
-    file = "./plotter/obs_data/Letarte_2007.txt"
+    file = "../../plotter/obs_data/Letarte_2007.txt"
     data = np.loadtxt(file, skiprows=1)
     FeH_fornax = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_fornax = data[:, 4] + O_over_Fe_AG89 - O_over_Fe
 
-    file = "./plotter/obs_data/Sbordone_2007.txt"
+    file = "../../plotter/obs_data/Sbordone_2007.txt"
     data = np.loadtxt(file, skiprows=1)
     FeH_sg = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_sg = data[:, 4] + O_over_Fe_AG89 - O_over_Fe
 
-    file = "./plotter/obs_data/Koch_2008.txt"
+    file = "../../plotter/obs_data/Koch_2008.txt"
     data = np.loadtxt(file, skiprows=1)
     FeH_ca = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_ca = data[:, 4] + O_over_Fe_AG89 - O_over_Fe
 
-    file = "./plotter/obs_data/Geisler_2005.txt"
+    file = "../../plotter/obs_data/Geisler_2005.txt"
     data = np.loadtxt(file, skiprows=3)
     FeH_scu = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_scu = data[:, 4] - data[:, 0] + O_over_Fe_AG89 - O_over_Fe
@@ -96,7 +96,7 @@ def read_obs_data_OFe():
     FeH_MW = []
     OFe_MW = []
 
-    file = "./plotter/obs_data/Koch_2008.txt"
+    file = "../../plotter/obs_data/Koch_2008.txt"
     data = np.loadtxt(file, skiprows=3)
     FeH_koch = data[:, 1] + Fe_over_H_AG89 - Fe_over_H
     OH_koch = data[:, 2]
@@ -105,7 +105,7 @@ def read_obs_data_OFe():
     FeH_MW = np.append(FeH_MW, FeH_koch)
     OFe_MW = np.append(OFe_MW, OFe_koch)
 
-    file = "./plotter/obs_data/Bai_2004.txt"
+    file = "../../plotter/obs_data/Bai_2004.txt"
     data = np.loadtxt(file, skiprows=3, usecols=[1, 2])
     FeH_bai = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_bai = data[:, 1] + O_over_Fe_AG89 - O_over_Fe
@@ -113,7 +113,7 @@ def read_obs_data_OFe():
     FeH_MW = np.append(FeH_MW, FeH_bai)
     OFe_MW = np.append(OFe_MW, OFe_bai)
 
-    file = "./plotter/obs_data/Cayrel_2004.txt"
+    file = "../../plotter/obs_data/Cayrel_2004.txt"
     data = np.loadtxt(file, skiprows=18, usecols=[2, 6])
     FeH_cayrel = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_cayrel = data[:, 1] + O_over_Fe_AG89 - O_over_Fe
@@ -121,7 +121,7 @@ def read_obs_data_OFe():
     FeH_MW = np.append(FeH_MW, FeH_cayrel)
     OFe_MW = np.append(OFe_MW, OFe_cayrel)
 
-    file = "./plotter/obs_data/Israelian_1998.txt"
+    file = "../../plotter/obs_data/Israelian_1998.txt"
     data = np.loadtxt(file, skiprows=3, usecols=[1, 3])
     FeH_isra = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_isra = data[:, 1] + O_over_Fe_AG89 - O_over_Fe
@@ -129,7 +129,7 @@ def read_obs_data_OFe():
     FeH_MW = np.append(FeH_MW, FeH_isra)
     OFe_MW = np.append(OFe_MW, OFe_isra)
 
-    file = "./plotter/obs_data/Mishenina_1999.txt"
+    file = "../../plotter/obs_data/Mishenina_1999.txt"
     data = np.loadtxt(file, skiprows=3, usecols=[1, 3])
     FeH_mish = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_mish = data[:, 1] + O_over_Fe_AG89 - O_over_Fe
@@ -137,7 +137,7 @@ def read_obs_data_OFe():
     FeH_MW = np.append(FeH_MW, FeH_mish)
     OFe_MW = np.append(OFe_MW, OFe_mish)
 
-    file = "./plotter/obs_data/Zhang_Zhao_2005.txt"
+    file = "../../plotter/obs_data/Zhang_Zhao_2005.txt"
     data = np.loadtxt(file, skiprows=3)
     FeH_zhang = data[:, 0] + Fe_over_H_AG89 - Fe_over_H
     OFe_zhang = data[:, 1] + O_over_Fe_AG89 - O_over_Fe
@@ -162,27 +162,27 @@ def read_obs_data_MgFe():
     # -------------------------------------------------------------------------------
     # alpha-enhancement (Mg/Fe), extracted manually from Tolstoy, Hill & Tosi (2009)
     # -------------------------------------------------------------------------------
-    file = "./plotter/obs_data/Fornax.txt"
+    file = "../../plotter/obs_data/Fornax.txt"
     data = np.loadtxt(file)
     FeH_fornax = data[:, 0]
     MgFe_fornax = data[:, 1]
 
-    file = "./plotter/obs_data/Sculptor.txt"
+    file = "../../plotter/obs_data/Sculptor.txt"
     data = np.loadtxt(file)
     FeH_sculptor = data[:, 0]
     MgFe_sculptor = data[:, 1]
 
-    file = "./plotter/obs_data/Sagittarius.txt"
+    file = "../../plotter/obs_data/Sagittarius.txt"
     data = np.loadtxt(file)
     FeH_sagittarius = data[:, 0]
     MgFe_sagittarius = data[:, 1]
 
-    file = "./plotter/obs_data/Carina.txt"
+    file = "../../plotter/obs_data/Carina.txt"
     data = np.loadtxt(file)
     FeH_carina = data[:, 0]
     MgFe_carina = data[:, 1]
 
-    file = "./plotter/obs_data/MW.txt"
+    file = "../../plotter/obs_data/MW.txt"
     data = np.loadtxt(file)
     FeH_mw = data[:, 0]
     MgFe_mw = data[:, 1]
@@ -426,17 +426,17 @@ class SimInfo:
 
 
 if __name__ == "__main__":
-    from utils import *
+
+    from morpholopy.argumentparser import ArgumentParser
+
+    config_parameters = ArgumentParser()
 
     # Load MorpholoPy production details
-    output_path = args.output
-    number_of_inputs = len(args.snapshot_name)
-    directory_list = args.directory
-    snapshot_list = args.snapshot_name
-
-    name_list = (
-        args.run_names if args.run_names is not None else [None] * number_of_inputs
-    )
+    output_path = config_parameters.output_directory
+    number_of_inputs = len(config_parameters.snapshot_list)
+    directory_list = config_parameters.directory_list
+    snapshot_list = config_parameters.snapshot_list
+    name_list = config_parameters.name_list
 
     # Loop over simulation list
     for sims in range(number_of_inputs):

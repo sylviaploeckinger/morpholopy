@@ -4,6 +4,7 @@ The routines that calculate disc fractions, circularities and axis ratios have b
 """
 
 import numpy as np
+from scipy.interpolate import interp1d
 
 
 def calculate_kappa_co(halo_data, partsDATA, box_size, halo_index):

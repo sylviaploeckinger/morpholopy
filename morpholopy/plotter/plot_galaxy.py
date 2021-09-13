@@ -149,7 +149,7 @@ def plot_galaxy_parts(
     ax = plt.subplot(1, 2, 2)
     if parttype == 4:
         kappa = halo_data.kappa_co[index]
-        mass = halo_data.stellar_mass[index]
+        mass = halo_data.log10_stellar_mass[index]
         ac = halo_data.axis_ca[index]
         cb = halo_data.axis_cb[index]
         ba = halo_data.axis_ba[index]
@@ -162,7 +162,7 @@ def plot_galaxy_parts(
         title += "\n Stellar half mass radius %0.2f kpc" % (radius)
     if parttype == 0:
         kappa = halo_data.gas_kappa_co[index]
-        mass = halo_data.gas_mass[index]
+        mass = halo_data.log10_gas_mass[index]
         ac = halo_data.gas_axis_ca[index]
         cb = halo_data.gas_axis_cb[index]
         ba = halo_data.gas_axis_ba[index]
@@ -308,7 +308,7 @@ def plot_galaxy(
     ax = plt.subplot(1, 2, 2)
     if parttype == 4:
         kappa = halo_data.kappa_co[index]
-        mass_galaxy = halo_data.stellar_mass[index]
+        mass_galaxy = halo_data.log10_stellar_mass[index]
         ac = halo_data.axis_ca[index]
         cb = halo_data.axis_cb[index]
         ba = halo_data.axis_ba[index]
@@ -319,7 +319,7 @@ def plot_galaxy(
         title += " b/a = %0.2f" % (ba)
     if parttype == 0:
         kappa = halo_data.gas_kappa_co[index]
-        mass_galaxy = halo_data.gas_mass[index]
+        mass_galaxy = halo_data.log10_gas_mass[index]
         ac = halo_data.gas_axis_ca[index]
         cb = halo_data.gas_axis_cb[index]
         ba = halo_data.gas_axis_ba[index]
@@ -366,6 +366,8 @@ def plot_galaxy(
         outfile = f"{output_path}/galaxy_stars_%i_" % (index) + simulation_name + ".png"
     fig.savefig(outfile, dpi=150)
     plt.close("all")
+
+    return
 
 
 def render_luminosity_map(
@@ -484,6 +486,8 @@ def render_luminosity_map(
     fig.savefig(outfile, dpi=150)
     plt.close("all")
 
+    return
+
 
 def visualize_galaxy(
     stars_data,
@@ -523,3 +527,5 @@ def visualize_galaxy(
             output_path,
             simulation_name,
         )
+
+    return
