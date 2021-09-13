@@ -18,16 +18,23 @@ def bin_data_general(array_x, array_y, array_x_bin, x_limit):
         mask = (array_x > array_x_bin[i]) & (array_x < array_x_bin[i + 1])
         y_array_bin[i] = np.median(array_y[mask])
         try:
-            y_array_bin_std_up[i], y_array_bin_std_down[i] = np.transpose(np.percentile(array_y[mask], [16, 84]))
+            y_array_bin_std_up[i], y_array_bin_std_down[i] = np.transpose(
+                np.percentile(array_y[mask], [16, 84])
+            )
         except:
-            y_array_bin_std_up[i], y_array_bin_std_down[i] = [0., 0.]
+            y_array_bin_std_up[i], y_array_bin_std_down[i] = [0.0, 0.0]
 
-    array_x_bin = (array_x_bin[1:] + array_x_bin[:-1]) / 2.
+    array_x_bin = (array_x_bin[1:] + array_x_bin[:-1]) / 2.0
     y_array_bin_std_up = np.abs(y_array_bin_std_up - y_array_bin)
     y_array_bin_std_down = np.abs(y_array_bin_std_down - y_array_bin)
     mask = array_x_bin > x_limit
 
-    return array_x_bin[mask], y_array_bin[mask], y_array_bin_std_up[mask], y_array_bin_std_down[mask]
+    return (
+        array_x_bin[mask],
+        y_array_bin[mask],
+        y_array_bin_std_up[mask],
+        y_array_bin_std_down[mask],
+    )
 
 
 class ObservationalData(object):
@@ -35,9 +42,19 @@ class ObservationalData(object):
     Holds observational data.
     """
 
-    def __init__(self, HI_surface_density, HI_surface_density_error, H2_surface_density, H2_surface_density_error,
-                 gas_surface_density, gas_surface_density_error, SFR_surface_density, SFR_surface_density_error,
-                 depl_time, description):
+    def __init__(
+        self,
+        HI_surface_density,
+        HI_surface_density_error,
+        H2_surface_density,
+        H2_surface_density_error,
+        gas_surface_density,
+        gas_surface_density_error,
+        SFR_surface_density,
+        SFR_surface_density_error,
+        depl_time,
+        description,
+    ):
         """
         Store stuff in me!
         """
@@ -53,70 +70,98 @@ class ObservationalData(object):
         self.description = description
 
     def bin_data_KS(self, surface_density_bin_array, surface_density_limit):
-        '''
-            Return the binned KS relation for the observation.
-        '''
+        """
+        Return the binned KS relation for the observation.
+        """
         obs_gas_surface_density = np.log10(self.gas_surface_density)
         obs_SFR_surface_density = np.log10(self.SFR_surface_density)
 
-        return bin_data_general(obs_gas_surface_density, obs_SFR_surface_density, surface_density_bin_array,
-                                surface_density_limit)
+        return bin_data_general(
+            obs_gas_surface_density,
+            obs_SFR_surface_density,
+            surface_density_bin_array,
+            surface_density_limit,
+        )
 
     def bin_data_KS_molecular(self, surface_density_bin_array, surface_density_limit):
-        '''
-            Return the binned KS relation for the observation.
-        '''
+        """
+        Return the binned KS relation for the observation.
+        """
         obs_gas_surface_density = np.log10(self.H2_surface_density)
         obs_SFR_surface_density = np.log10(self.SFR_surface_density)
 
-        return bin_data_general(obs_gas_surface_density, obs_SFR_surface_density, surface_density_bin_array,
-                                surface_density_limit)
+        return bin_data_general(
+            obs_gas_surface_density,
+            obs_SFR_surface_density,
+            surface_density_bin_array,
+            surface_density_limit,
+        )
 
     def bin_data_KS_atomic(self, surface_density_bin_array, surface_density_limit):
-        '''
-            Return the binned KS relation for the observation.
-        '''
+        """
+        Return the binned KS relation for the observation.
+        """
         obs_gas_surface_density = np.log10(self.HI_surface_density)
         obs_SFR_surface_density = np.log10(self.SFR_surface_density)
 
-        return bin_data_general(obs_gas_surface_density, obs_SFR_surface_density, surface_density_bin_array,
-                                surface_density_limit)
+        return bin_data_general(
+            obs_gas_surface_density,
+            obs_SFR_surface_density,
+            surface_density_bin_array,
+            surface_density_limit,
+        )
 
     def bin_data_gas_depletion(self, surface_density_bin_array, surface_density_limit):
-        '''
-            Return the binned KS gas depletion relation for the observation.
-        '''
+        """
+        Return the binned KS gas depletion relation for the observation.
+        """
         # Get the errays we want to get the binning
         obs_gas_surface_density = np.log10(self.gas_surface_density)
         obs_SFR_surface_density = np.log10(self.SFR_surface_density)
         obs_gas_consumption = obs_gas_surface_density - obs_SFR_surface_density + 6
 
-        return bin_data_general(obs_gas_surface_density, obs_gas_consumption, surface_density_bin_array,
-                                surface_density_limit)
+        return bin_data_general(
+            obs_gas_surface_density,
+            obs_gas_consumption,
+            surface_density_bin_array,
+            surface_density_limit,
+        )
 
-    def bin_data_gas_depletion_molecular(self, surface_density_bin_array, surface_density_limit):
-        '''
-            Return the binned KS gas depletion relation for the observation.
-        '''
+    def bin_data_gas_depletion_molecular(
+        self, surface_density_bin_array, surface_density_limit
+    ):
+        """
+        Return the binned KS gas depletion relation for the observation.
+        """
         # Get the errays we want to get the binning
         obs_gas_surface_density = np.log10(self.gas_surface_density)
         obs_SFR_surface_density = np.log10(self.SFR_surface_density)
         obs_gas_consumption = obs_gas_surface_density - obs_SFR_surface_density + 6
 
-        return bin_data_general(obs_gas_surface_density, obs_gas_consumption, surface_density_bin_array,
-                                surface_density_limit)
+        return bin_data_general(
+            obs_gas_surface_density,
+            obs_gas_consumption,
+            surface_density_bin_array,
+            surface_density_limit,
+        )
 
-    def bin_data_gas_depletion_atomic(self, surface_density_bin_array, surface_density_limit):
-        '''
-            Return the binned KS gas depletion relation for the observation.
-        '''
+    def bin_data_gas_depletion_atomic(
+        self, surface_density_bin_array, surface_density_limit
+    ):
+        """
+        Return the binned KS gas depletion relation for the observation.
+        """
         # Get the errays we want to get the binning
         obs_gas_surface_density = np.log10(self.HI_surface_density)
         obs_SFR_surface_density = np.log10(self.SFR_surface_density)
         obs_gas_consumption = obs_gas_surface_density - obs_SFR_surface_density + 6
 
-        return bin_data_general(obs_gas_surface_density, obs_gas_consumption, surface_density_bin_array,
-                                surface_density_limit)
+        return bin_data_general(
+            obs_gas_surface_density,
+            obs_gas_consumption,
+            surface_density_bin_array,
+            surface_density_limit,
+        )
 
 
 def read_obs_data(path="obs_data"):
@@ -124,67 +169,118 @@ def read_obs_data(path="obs_data"):
 
     # Load the data from Kennicutt 1998 (part 1, Normal spiral galaxies)
     file = f"{path}/KS_relation_Kennicutt1998.txt"
-    filecp = codecs.open(file, encoding='cp1252')
-    galaxy_name, D, sigma_HI, sigma_H2, sigma_gas, sigma_SFR, tdepl =\
-        np.genfromtxt(filecp, unpack=True, comments="#")
+    filecp = codecs.open(file, encoding="cp1252")
+    galaxy_name, D, sigma_HI, sigma_H2, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(
+        filecp, unpack=True, comments="#"
+    )
 
     output.append(
         ObservationalData(
-            10 ** sigma_HI, None, 10 ** sigma_H2, None, 10 ** sigma_gas, None, 10 ** sigma_SFR / 1.65, None, tdepl,
-            "Kennicutt (1998) [Normal spirals]"
+            10 ** sigma_HI,
+            None,
+            10 ** sigma_H2,
+            None,
+            10 ** sigma_gas,
+            None,
+            10 ** sigma_SFR / 1.65,
+            None,
+            tdepl,
+            "Kennicutt (1998) [Normal spirals]",
         )
     )
 
     # Load the data from Kennicutt 1998 (part 2, circumnuclear starbursts)
     file = f"{path}/KS_relation_Kennicutt1998b.txt"
-    filecp = codecs.open(file, encoding='cp1252')
-    D, sigma_H2, sigma_SFR, tdepl = np.genfromtxt(filecp, unpack=True,
-                                                  comments = "#", usecols=(2, 3, 4, 5))
+    filecp = codecs.open(file, encoding="cp1252")
+    D, sigma_H2, sigma_SFR, tdepl = np.genfromtxt(
+        filecp, unpack=True, comments="#", usecols=(2, 3, 4, 5)
+    )
 
     output.append(
         ObservationalData(
-            None, None, 10 ** sigma_H2, None, 10 ** sigma_H2, None, 10 ** sigma_SFR / 1.65, None, tdepl,
-            "Kennicutt (1998) [Starbursts]"
+            None,
+            None,
+            10 ** sigma_H2,
+            None,
+            10 ** sigma_H2,
+            None,
+            10 ** sigma_SFR / 1.65,
+            None,
+            tdepl,
+            "Kennicutt (1998) [Starbursts]",
         )
     )
 
     # Load the data from Freundlich et al. 2013 (high redshift z=1.2 galaxies)
     file = f"{path}/KS_relation_freundlich2013.txt"
-    filecp = codecs.open(file, encoding='cp1252')
-    Mgas, SFR, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(filecp, unpack=True,
-                                                           usecols=(2, 3, 4, 5, 6), comments = "#")
+    filecp = codecs.open(file, encoding="cp1252")
+    Mgas, SFR, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(
+        filecp, unpack=True, usecols=(2, 3, 4, 5, 6), comments="#"
+    )
 
     output.append(
         ObservationalData(
-            None, None, None, None, 10 ** sigma_gas, None, 10 ** sigma_SFR, None, tdepl,
-            "Freundlich et al. (2013) [z=1.2 galaxies]"
+            None,
+            None,
+            None,
+            None,
+            10 ** sigma_gas,
+            None,
+            10 ** sigma_SFR,
+            None,
+            tdepl,
+            "Freundlich et al. (2013) [z=1.2 galaxies]",
         )
     )
 
     # Load the data from Leroy et al. (2008) and Frank et al. (2016)
     file = f"{path}/surfdens_online.txt"
-    filecp = codecs.open(file, encoding='cp1252')
-    sigma_HI, sigma_HI_err, sigma_H2, sigma_H2_err, sigma_SFR, sigma_SFR_err = np.genfromtxt(
-        filecp, unpack=True, usecols=(2, 3, 4, 5, 6, 7), comments = "#")
+    filecp = codecs.open(file, encoding="cp1252")
+    (
+        sigma_HI,
+        sigma_HI_err,
+        sigma_H2,
+        sigma_H2_err,
+        sigma_SFR,
+        sigma_SFR_err,
+    ) = np.genfromtxt(filecp, unpack=True, usecols=(2, 3, 4, 5, 6, 7), comments="#")
 
     sigma_gas = sigma_H2 + sigma_HI
 
     output.append(
         ObservationalData(
-            sigma_HI, sigma_HI_err, sigma_H2, sigma_H2_err, sigma_gas, None, sigma_SFR * 1e-4, sigma_SFR_err * 1e-4,
-            tdepl, "Leroy et al. (2008) and Frank et al. (2016)"
+            sigma_HI,
+            sigma_HI_err,
+            sigma_H2,
+            sigma_H2_err,
+            sigma_gas,
+            None,
+            sigma_SFR * 1e-4,
+            sigma_SFR_err * 1e-4,
+            tdepl,
+            "Leroy et al. (2008) and Frank et al. (2016)",
         )
     )
 
     file = f"{path}/KS_relation_genzel2010.txt"
-    filecp = codecs.open(file, encoding='cp1252')
-    sigma_H2, sigma_SFR = np.genfromtxt(filecp, unpack=True, usecols=(11, 13), comments = "#")
+    filecp = codecs.open(file, encoding="cp1252")
+    sigma_H2, sigma_SFR = np.genfromtxt(
+        filecp, unpack=True, usecols=(11, 13), comments="#"
+    )
     sigma_gas = sigma_H2
 
     output.append(
         ObservationalData(
-            None, None, 10 ** sigma_H2, None, 10 ** sigma_gas, None, 10 ** sigma_SFR, None, None,
-            "Genzel et al. (2010) [SFG z=1-3]"
+            None,
+            None,
+            10 ** sigma_H2,
+            None,
+            10 ** sigma_gas,
+            None,
+            10 ** sigma_SFR,
+            None,
+            None,
+            "Genzel et al. (2010) [SFG z=1-3]",
         )
     )
 
@@ -225,8 +321,16 @@ def read_obs_data(path="obs_data"):
 
     output.append(
         ObservationalData(
-            10 ** sigma_HI / 1.36, sigma_HI_err, 10 ** sigma_H2 / 1.36, sigma_H2_err, sigma_gas / 1.36, None,
-            10 ** sigma_SFR, sigma_SFR_err, None, "Bigiel et al. (2008) inner"
+            10 ** sigma_HI / 1.36,
+            sigma_HI_err,
+            10 ** sigma_H2 / 1.36,
+            sigma_H2_err,
+            sigma_gas / 1.36,
+            None,
+            10 ** sigma_SFR,
+            sigma_SFR_err,
+            None,
+            "Bigiel et al. (2008) inner",
         )
     )
 
@@ -259,8 +363,16 @@ def read_obs_data(path="obs_data"):
 
     output.append(
         ObservationalData(
-            10 ** sigma_HI / 1.36, sigma_HI_err, None, None, sigma_gas / 1.36, None, sigma_SFR * 1e-5,
-            sigma_SFR_err * 1e-5, None, "Bigiel et al. (2010) outer"
+            10 ** sigma_HI / 1.36,
+            sigma_HI_err,
+            None,
+            None,
+            sigma_gas / 1.36,
+            None,
+            sigma_SFR * 1e-5,
+            sigma_SFR_err * 1e-5,
+            None,
+            "Bigiel et al. (2010) outer",
         )
     )
 
@@ -302,16 +414,30 @@ def read_obs_data(path="obs_data"):
 
     output.append(
         ObservationalData(
-            sigma_HI, sigma_HI_err, sigma_H2, sigma_H2_err, sigma_gas, None, sigma_SFR * 1e-4, sigma_SFR_err * 1e-4,
-            None, "Leroy et al. (2008)"
+            sigma_HI,
+            sigma_HI_err,
+            sigma_H2,
+            sigma_H2_err,
+            sigma_gas,
+            None,
+            sigma_SFR * 1e-4,
+            sigma_SFR_err * 1e-4,
+            None,
+            "Leroy et al. (2008)",
         )
     )
 
     file = f"{path}/data_schruba2011.txt"
-    filecp = codecs.open(file, encoding='cp1252')
-    sigma_SFR, sigma_SFR_err, sigma_HI, \
-    sigma_HI_err, sigma_H2, sigma_H2_err, \
-    quality = np.genfromtxt(filecp, unpack=True, usecols=(3, 4, 5, 6, 7, 8, 10), comments="#")
+    filecp = codecs.open(file, encoding="cp1252")
+    (
+        sigma_SFR,
+        sigma_SFR_err,
+        sigma_HI,
+        sigma_HI_err,
+        sigma_H2,
+        sigma_H2_err,
+        quality,
+    ) = np.genfromtxt(filecp, unpack=True, usecols=(3, 4, 5, 6, 7, 8, 10), comments="#")
 
     sigma_gas = sigma_HI + sigma_H2
 
@@ -319,8 +445,16 @@ def read_obs_data(path="obs_data"):
 
     output.append(
         ObservationalData(
-            sigma_HI[mask], sigma_HI_err[mask], sigma_H2[mask], sigma_H2_err[mask], sigma_gas[mask], None,
-            sigma_SFR[mask], sigma_SFR[mask], None, "Schruba et al. (2011)"
+            sigma_HI[mask],
+            sigma_HI_err[mask],
+            sigma_H2[mask],
+            sigma_H2_err[mask],
+            sigma_gas[mask],
+            None,
+            sigma_SFR[mask],
+            sigma_SFR[mask],
+            None,
+            "Schruba et al. (2011)",
         )
     )
 

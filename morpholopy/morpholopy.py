@@ -2,164 +2,147 @@
 Description here
 """
 
-import os
-import h5py
+from ArgumentParser import ArgumentParser
 import glob
-import re
 
-from catalogue import HaloCatalogue, output_galaxy_data
-from particles import calculate_morphology, make_particle_data, calculate_luminosities
-from plotter.html import make_web, add_web_section, render_web, PlotsInPipeline, add_metadata_to_web
 from plotter.plot_galaxy import visualize_galaxy
-from luminosities import MakeGrid
-from plotter.loadplots import loadGalaxyPlots
-from plotter.KS_comparison import make_comparison_plots
-from plotter.plot_morphology import plot_morphology, output_morphology
+from object.unitilies.luminosities import MakeGrid
 from plotter.KS_relation import make_KS_plots, calculate_surface_densities
+from plotter.KS_comparison import make_comparison_plots
+from plotter.plot_morphology import output_morphology, plot_morphology
 from plotter.plot_surface_densities import plot_surface_densities
+from object import simulation_metadata
+from plotter.loadplots import loadGalaxyPlots
+from plotter import html
+from tqdm import tqdm
 import unyt
 
 
-class SimInfo:
-    def __init__(self, folder, snap, output_path, name, option, option_number_galaxies):
-        self.name = name
-        self.output_path = output_path
-        self.zoom = option
-        self.output_galaxies = option_number_galaxies
-        self.num_galaxies = None
-
-        if self.zoom == 'no':
-            to_kpc_units = 1e3
-
-            snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
-            if os.path.exists(snapshot):
-                self.snapshot = os.path.join(folder,"colibre_%04i.hdf5"%snap)
-
-            properties = os.path.join(folder, "halo_%04i.properties.0" % snap)
-            if os.path.exists(properties):
-                self.subhalo_properties = os.path.join(folder, "halo_%04i.properties.0" % snap)
-            else:
-                self.subhalo_properties = os.path.join(folder, "halo_%04i.properties" % snap)
-
-            catalog = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
-            if os.path.exists(catalog):
-                self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups.0"%snap)
-            else:
-                self.catalog_groups = os.path.join(folder,"halo_%04i.catalog_groups"%snap)
-
-            catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
-            if os.path.exists(catalog_particles):
-                self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles.0" % snap)
-            else:
-                self.catalog_particles = os.path.join(folder, "halo_%04i.catalog_particles" % snap)
-
-        else:
-            to_kpc_units = 1
-
-            temp = re.compile("([a-zA-Z]+)([0-9]+)")
-            res = temp.match(name).groups()
-
-            self.snapshot = os.path.join(folder,"snapshot_"+res[0]+"_"+res[1]+"_%04i.hdf5"%snap)
-            self.subhalo_properties = os.path.join(folder,"halo_"+res[0]+"_"+res[1]+"_%04i.properties"%snap)
-            self.catalog_groups = os.path.join(folder,"halo_"+res[0]+"_"+res[1]+"_%04i.catalog_groups"%snap)
-            self.catalog_particles = os.path.join(folder, "halo_"+res[0]+"_"+res[1]+"_%04i.catalog_particles" % snap)
-
-        snapshot_file = h5py.File(self.snapshot, "r")
-        self.boxSize = snapshot_file["/Header"].attrs["BoxSize"][0] * to_kpc_units #kpc
-        self.a = snapshot_file["/Header"].attrs["Scale-factor"]
-        self.baryon_maxsoft = snapshot_file["/GravityScheme"].attrs['Maximal physical baryon softening length  [internal units]'] * to_kpc_units #kpc
-
-
-def morpholopy(siminfo):
+def compute_morpholopy(
+    siminfo: simulation_metadata.SimInfo, num_galaxies: int, output_path: str
+):
 
     # Loading photometry grids for interpolation
-    system = 'GAMA'  # hard-coded for now
+    system = "GAMA"  # hard-coded for now
     pgrids = {}
-    for pht in glob.glob(f'./photometry/{system}/*'):
+    for pht in glob.glob(f"./photometry/{system}/*"):
         pgrids[pht[-1]] = MakeGrid(pht)
 
-    # Loading halo catalogue and selecting galaxies more massive than lower limit
-    lower_mass = 1e7 * unyt.msun  # ! Option of lower limit for gas mass
-    halo_data = HaloCatalogue(siminfo, lower_mass)
-    num_galaxies = halo_data.num
-    siminfo.num_galaxies = num_galaxies
-
     # Loop over the sample to calculate morphological parameters
-    for i in range(num_galaxies):
+    for count, i in enumerate(tqdm(siminfo.halo_data.halo_ids)):
+
+        print(count, i)
 
         # Read particle data
-        gas_data, stars_data = make_particle_data(siminfo, halo_data.halo_index[i])
+        gas_data, stars_data = siminfo.make_particle_data(halo_id=i)
 
-        if len(gas_data) == 0: continue
+        if len(gas_data) == 0:
+            continue
 
         # Calculate morphology estimators: kappa, axial ratios for stars ..
-        stars_ang_momentum, stars_data = calculate_morphology(halo_data, stars_data, siminfo, i, 4)
+        stars_ang_momentum, stars_data = siminfo.calculate_morphology(
+            stars_data, count, 4
+        )
 
         # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
-        gas_ang_momentum, gas_data = calculate_morphology(halo_data, gas_data, siminfo, i, 0)
+        gas_ang_momentum, gas_data = siminfo.calculate_morphology(gas_data, count, 0)
 
         # Calculate stellar luminosities
-        star_abmags = calculate_luminosities(halo_data, stars_data, siminfo, i, 4, pgrids)
+        star_abmags = siminfo.calculate_luminosities(stars_data, pgrids)
 
         # Calculate surface densities for HI+H2 gas ..
-        calculate_surface_densities(gas_data, gas_ang_momentum, halo_data, i)
+        calculate_surface_densities(
+            gas_data, gas_ang_momentum, siminfo.halo_data, count
+        )
 
         # Make plots for individual galaxies, perhaps.. only first 10
-        if i < siminfo.output_galaxies:
-            visualize_galaxy(stars_data, gas_data, star_abmags, stars_ang_momentum,
-                             gas_ang_momentum, halo_data, i, siminfo)
+        if count < num_galaxies:
+            visualize_galaxy(
+                stars_data,
+                gas_data,
+                star_abmags,
+                stars_ang_momentum,
+                gas_ang_momentum,
+                siminfo.halo_data,
+                count,
+                output_path,
+                siminfo.simulation_name,
+            )
 
-            make_KS_plots(gas_data, stars_ang_momentum, halo_data, i, siminfo)
+            make_KS_plots(
+                gas_data,
+                stars_ang_momentum,
+                siminfo.halo_data,
+                count,
+                output_path,
+                siminfo.simulation_name,
+            )
 
     # Finish plotting and output webpage
-    output_morphology(halo_data, siminfo)
-    plot_surface_densities(halo_data, siminfo)
-    output_galaxy_data(halo_data,siminfo)
+    output_morphology(siminfo.halo_data, output_path, siminfo.simulation_name)
+    plot_surface_densities(siminfo.halo_data, output_path, siminfo.simulation_name)
+    siminfo.output_galaxy_data(output_path=output_path)
 
 
+def main(config: ArgumentParser):
 
-if __name__ == '__main__':
-    from utils import *
-
-    # Load MorpholoPy production details
-    output_path = args.output
-    number_of_inputs = len(args.snapshot)
-    directory_list = args.directory
-    snapshot_list = args.snapshot
-    option_list = args.zoom
-    number_of_galaxies = args.galaxy_number
-
-    name_list = (
-        args.run_names
-        if args.run_names is not None
-        else [None] * number_of_inputs
-    )
+    min_stellar_mass = unyt.unyt_quantity(1e8, "Msun")
+    web = None
 
     # Loop over simulation list
-    for sims in range(number_of_inputs):
-        directory = directory_list[sims]
-        snap_number = int(snapshot_list[sims])
-        sim_name = name_list[sims]
-        option = option_list[sims]
-        option_number_galaxies = number_of_galaxies[sims]
-        siminfo = SimInfo(directory, snap_number, output_path, sim_name, option, option_number_galaxies)
+    for sim in range(config.number_of_inputs):
+
+        directory = config.directory_list[sim]
+        snapshot = config.snapshot_list[sim]
+        catalogue = config.catalogue_list[sim]
+        sim_name = config.name_list[sim]
+
+        sim_info = simulation_metadata.SimInfo(
+            directory=directory,
+            snapshot=snapshot,
+            catalogue=catalogue,
+            name=sim_name,
+            galaxy_min_stellar_mass=min_stellar_mass,
+        )
 
         # Make initial website
-        if sims == 0: web = make_web(siminfo)
-        if sims > 0: add_metadata_to_web(web, siminfo)
+
+        if sim == 0:
+            web = html.make_web(sim_info.snapshot)
+        elif web is not None:
+            html.add_metadata_to_web(web, sim_info.snapshot)
 
         # Run morpholoPy
-        morpholopy(siminfo)
+        compute_morpholopy(
+            sim_info,
+            config.number_of_galaxies,
+            output_path=config_parameters.output_directory,
+        )
 
-    make_comparison_plots(siminfo, name_list)
-    plot_morphology(siminfo, name_list)
+    make_comparison_plots(
+        output_path=config_parameters.output_directory,
+        name_list=config_parameters.name_list,
+        num_of_galaxies=config_parameters.number_of_galaxies,
+    )
+    plot_morphology(
+        output_path=config_parameters.output_directory,
+        name_list=config_parameters.name_list,
+    )
 
     # After making individual plots finish up the website
     # Load galaxy plots
-    loadGalaxyPlots(web, siminfo, name_list)
+    loadGalaxyPlots(
+        web,
+        config_parameters.output_directory,
+        config_parameters.number_of_galaxies,
+        config_parameters.name_list,
+    )
 
     # Finish and output html file
-    render_web(web, siminfo.output_path)
+    html.render_web(web, config.output_directory)
 
 
+if __name__ == "__main__":
 
+    config_parameters = ArgumentParser()
+    main(config_parameters)
