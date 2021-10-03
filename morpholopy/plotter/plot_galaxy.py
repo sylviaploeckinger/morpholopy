@@ -501,16 +501,22 @@ def visualize_galaxy(
     simulation_name,
 ):
 
+    # Create stars image
     plot_galaxy(
         stars_data, 4, stars_ang_momentum, halo_data, i, output_path, simulation_name
     )
+
+    # Create gas image
     plot_galaxy(
         gas_data, 0, stars_ang_momentum, halo_data, i, output_path, simulation_name
     )
 
+    # Plot distribution of stellar particles
     plot_galaxy_parts(
         stars_data, 4, stars_ang_momentum, halo_data, i, output_path, simulation_name
     )
+
+    # Plot distribution of gas particles
     plot_galaxy_parts(
         gas_data, 0, stars_ang_momentum, halo_data, i, output_path, simulation_name
     )
