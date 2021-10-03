@@ -243,7 +243,13 @@ def median_relations(x, y):
 
 
 def make_KS_data(
-    particles_data, ang_momentum, mode, galaxy_data, index, output_path, simulation_name
+    particles_data,
+    ang_momentum,
+    mode,
+    index,
+    output_path,
+    simulation_name,
+    combined_data,
 ):
 
     # Plotting KS relations with size
@@ -255,25 +261,15 @@ def make_KS_data(
         particles_data, ang_momentum, mode, method, size
     )
 
-    # Get median lines
-    (
-        median_surface_density,
-        median_SFR_surface_density,
-        SFR_surface_density_err_down,
-        SFR_surface_density_err_up,
-    ) = median_relations(surface_density, SFR_surface_density)
-
-    # Let's append data points to haloes for final plot at the end
-    if mode == 1:
-        galaxy_data.surface_density = np.append(
-            galaxy_data.surface_density, surface_density
-        )
-        galaxy_data.SFR_density = np.append(
-            galaxy_data.SFR_density, SFR_surface_density
-        )
-        galaxy_data.metallicity = np.append(galaxy_data.metallicity, metals)
-
     if mode == 0:
+
+        combined_data.molecular_gas_surface_density = np.append(
+            combined_data.molecular_gas_surface_density, surface_density
+        )
+        combined_data.depletion_time_molecular_gas = np.append(
+            combined_data.depletion_time_molecular_gas, tgas
+        )
+
         np.savetxt(
             f"{output_path}/KS_molecular_relation_grid_%i_" % (index)
             + simulation_name
@@ -281,15 +277,6 @@ def make_KS_data(
             np.transpose([surface_density, SFR_surface_density]),
         )
 
-    elif mode == 1:
-        np.savetxt(
-            f"{output_path}/KS_relation_best_grid_%i_" % (index)
-            + simulation_name
-            + ".txt",
-            np.transpose([surface_density, SFR_surface_density]),
-        )
-
-    if mode == 0:
         np.savetxt(
             f"{output_path}/molecular_gas_depletion_timescale_grid_%i_" % (index)
             + simulation_name
@@ -298,6 +285,25 @@ def make_KS_data(
         )
 
     elif mode == 1:
+
+        combined_data.neutral_gas_surface_density = np.append(
+            combined_data.neutral_gas_surface_density, surface_density
+        )
+        combined_data.depletion_time_neutral_gas = np.append(
+            combined_data.depletion_time_neutral_gas, tgas
+        )
+        combined_data.SFR_surface_density = np.append(
+            combined_data.SFR_surface_density, SFR_surface_density
+        )
+        combined_data.gas_metallicity = np.append(combined_data.gas_metallicity, metals)
+
+        np.savetxt(
+            f"{output_path}/KS_relation_best_grid_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, SFR_surface_density]),
+        )
+
         np.savetxt(
             f"{output_path}/gas_depletion_timescale_best_grid_%i_" % (index)
             + simulation_name
@@ -309,11 +315,8 @@ def make_KS_data(
 
     # Plotting KS relations with size
     method = "radii"
-
-    # size = 0.25  # kpc
-    # surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
-
     size = 0.8  # kpc
+
     surface_density, SFR_surface_density, tgas, metals = KS_relation(
         particles_data, ang_momentum, mode, method, size
     )
@@ -326,23 +329,6 @@ def make_KS_data(
             np.transpose([surface_density, SFR_surface_density]),
         )
 
-    elif mode == 1:
-        np.savetxt(
-            f"{output_path}/KS_relation_best_radii_%i_" % (index)
-            + simulation_name
-            + ".txt",
-            np.transpose([surface_density, SFR_surface_density]),
-        )
-
-    # size = 0.25  # kpc
-    # surface_density, SFR_surface_density, tgas, metals = KS_relation(particles_data, ang_momentum, mode, method, size)
-
-    size = 0.8  # kpc
-    surface_density, SFR_surface_density, tgas, metals = KS_relation(
-        particles_data, ang_momentum, mode, method, size
-    )
-
-    if mode == 0:
         np.savetxt(
             f"{output_path}/molecular_gas_depletion_timescale_radii_%i_" % (index)
             + simulation_name
@@ -352,11 +338,20 @@ def make_KS_data(
 
     elif mode == 1:
         np.savetxt(
+            f"{output_path}/KS_relation_best_radii_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, SFR_surface_density]),
+        )
+
+        np.savetxt(
             f"{output_path}/gas_depletion_timescale_best_radii_%i_" % (index)
             + simulation_name
             + ".txt",
             np.transpose([surface_density, tgas]),
         )
+
+    return
 
 
 def surface_ratios(data, ang_momentum, method, size):
@@ -386,12 +381,21 @@ def surface_ratios(data, ang_momentum, method, size):
     # Bounds
     map_H2[map_H2 <= 0] = 1e-6
     map_gas[map_gas <= 0] = 1e-6
-    ratio = map_H2 / map_gas
+    H2_to_neutral_ratio = map_H2 / map_gas
 
-    surface_density = np.log10(map_gas.flatten())  # HI+H2 Msun / kpc^2
-    ratio_density = np.log10(ratio.flatten())  # no units
-    surface_density -= 6  # HI+H2 Msun / pc^2
-    return surface_density, ratio_density
+    neutral_gas_surface_density = np.log10(map_gas.flatten())  # HI+H2 Msun / kpc^2
+    molecular_gas_surface_density = np.log10(map_H2.flatten())  # H2 Msun / kpc^2
+
+    neutral_gas_surface_density -= 6  # HI+H2 Msun / pc^2
+    molecular_gas_surface_density -= 6  # H2 Msun / pc^2
+
+    H2_to_neutral_ratio_density = np.log10(H2_to_neutral_ratio.flatten())  # no units
+
+    return (
+        neutral_gas_surface_density,
+        molecular_gas_surface_density,
+        H2_to_neutral_ratio_density,
+    )
 
 
 def Krumholz_eq39(Sigma_neutral, f):
@@ -409,20 +413,25 @@ def Krumholz_eq39(Sigma_neutral, f):
 
 
 def make_surface_density_ratios(
-    data, ang_momentum, galaxy_data, index, output_path, simulation_name
+    data, ang_momentum, index, output_path, simulation_name, combined_data
 ):
 
     # Get the surface densities
     method = "grid"
     binsize = 0.25  # kpc
-    Sigma_gas, Sigma_ratio = surface_ratios(data, ang_momentum, method, binsize)
+    Sigma_gas_neutral, Sigma_gas_molecular, Sigma_ratio = surface_ratios(
+        data, ang_momentum, method, binsize
+    )
 
-    galaxy_data.ratio_densities = np.append(galaxy_data.ratio_densities, Sigma_ratio)
+    combined_data.H2_to_neutral_surface_density_ratio = np.append(
+        combined_data.H2_to_neutral_surface_density_ratio, Sigma_ratio
+    )
+
     np.savetxt(
         f"{output_path}/Surface_density_ratio_grid_%i_" % (index)
         + simulation_name
         + ".txt",
-        np.transpose([Sigma_gas, Sigma_ratio]),
+        np.transpose([Sigma_gas_neutral, Sigma_ratio]),
     )
 
     ########################################################################
@@ -430,42 +439,37 @@ def make_surface_density_ratios(
     method = "radii"
 
     binsize = 0.25  # kpc
-    Sigma_gas_250pc, Sigma_ratio_250pc = surface_ratios(
-        data, ang_momentum, method, binsize
-    )
+    (
+        Sigma_gas_250pc_neutral,
+        Sigma_gas_250pc_molecular,
+        Sigma_ratio_250pc,
+    ) = surface_ratios(data, ang_momentum, method, binsize)
 
     binsize = 0.8  # kpc
-    Sigma_gas_800pc, Sigma_ratio_800pc = surface_ratios(
-        data, ang_momentum, method, binsize
-    )
+    (
+        Sigma_gas_800pc_neutral,
+        Sigma_gas_800pc_molecular,
+        Sigma_ratio_800pc,
+    ) = surface_ratios(data, ang_momentum, method, binsize)
 
-    Sigma_gas = Sigma_gas_800pc
-    # Sigma_gas = np.append(Sigma_gas,Sigma_gas_800pc)
-    Sigma_ratio = Sigma_ratio_800pc
-    # Sigma_ratio = np.append(Sigma_ratio,Sigma_ratio_800pc)
-    galaxy_data.radii_surface_density = np.append(
-        galaxy_data.radii_surface_density, Sigma_gas
+    combined_data.radii_neutral_gas_surface_density = np.append(
+        combined_data.radii_neutral_gas_surface_density, Sigma_gas_800pc_neutral
     )
-    galaxy_data.radii_surface_ratio = np.append(
-        galaxy_data.radii_surface_ratio, Sigma_ratio
+    combined_data.radii_H2_to_neutral_surface_density_ratio = np.append(
+        combined_data.radii_H2_to_neutral_surface_density_ratio, Sigma_ratio_800pc
     )
-
-    # Median_Sigma_gas, Median_Sigma_ratio, _, _ = median_relations(Sigma_gas, Sigma_ratio)
-    # galaxy_data.radii_surface_density = np.append(galaxy_data.radii_surface_density, Median_Sigma_gas)
-    # galaxy_data.radii_surface_ratio = np.append(galaxy_data.radii_surface_ratio, Median_Sigma_ratio)
-    # galaxy_data.radii_nbins = np.append(galaxy_data.radii_nbins, len(Median_Sigma_gas))
 
     np.savetxt(
         f"{output_path}/Surface_density_ratio_radii_250pc_%i_" % (index)
         + simulation_name
         + ".txt",
-        np.transpose([Sigma_gas_250pc, Sigma_ratio_250pc]),
+        np.transpose([Sigma_gas_250pc_neutral, Sigma_ratio_250pc]),
     )
     np.savetxt(
         f"{output_path}/Surface_density_ratio_radii_800pc_%i_" % (index)
         + simulation_name
         + ".txt",
-        np.transpose([Sigma_gas_800pc, Sigma_ratio_800pc]),
+        np.transpose([Sigma_gas_800pc_neutral, Sigma_ratio_800pc]),
     )
 
 
@@ -498,17 +502,19 @@ def calculate_integrated_quantities(data, ang_momentum, radius, mode):
     return Sigma_gas, Sigma_SFR
 
 
-def make_KS_plots(data, ang_momentum, galaxy_data, index, output_path, simulation_name):
+def make_KS_plots(
+    data, ang_momentum, index, output_path, simulation_name, combined_data
+):
 
     for mode, project in enumerate(
         ["molecular_hydrogen_masses", "not_ionized_hydrogen_masses"]
     ):
         make_KS_data(
-            data, ang_momentum, mode, galaxy_data, index, output_path, simulation_name
+            data, ang_momentum, mode, index, output_path, simulation_name, combined_data
         )
 
     make_surface_density_ratios(
-        data, ang_momentum, galaxy_data, index, output_path, simulation_name
+        data, ang_momentum, index, output_path, simulation_name, combined_data
     )
 
 

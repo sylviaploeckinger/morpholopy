@@ -105,8 +105,8 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
     PlotsInWeb.reset_plots_list()
 
     for name in name_list:
-        title = "Combined spatially resolved surface density ratios (" + name + ")"
-        caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
+        title = "Molecular-to-neutral surface density vs. neutral gas surface density (" + name + ")"
+        caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
         caption += (
             " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated"
             " using the grid method with a pixel size of 250pc. Coloured solid lines show the median relations"
@@ -118,10 +118,11 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     for name in name_list:
-        title = "Combined spatially resolved surface density (" + name + ")"
-        caption = "Combined spatially resolved measurements from the ten most massive individual galaxies,"
+        title = "SFR surface density vs. neutral gas surface density (" + name + ")"
+        caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
         caption += (
-            " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated"
+            " coloured by the mean metallicity of the resolved pixel. The X axis shows the surface density of neutral"
+            " gas and the Y axis shows the star formation rate surface density. The surface densities were calculated"
             " using the grid method with a pixel size of 250pc. Coloured lines show in the median relations"
             " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
             " shows the median relation for all pixels, whereas the black solid line shows the relation"
@@ -129,6 +130,49 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
         )
         filename = "combined_surface_density_gas_" + name + ".png"
         id = abs(hash("combined_surface_density_gas_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "SFR surface density vs. molecular gas surface density (" + name + ")"
+        caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
+        caption += (
+            " coloured by the mean metallicity of the resolved pixel. The X axis shows the surface density of molecular"
+            " gas and the Y axis shows the star formation rate surface density. The surface densities were calculated"
+            " using the grid method with a pixel size of 250pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "combined_surface_density_H2_" + name + ".png"
+        id = abs(hash("combined_surface_density_H2_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Depletion time vs. surface density, neutral gas (" + name + ")"
+        caption = "Depletion time of neutral gas vs. neutral gas surface density from N most massive individual galaxies,"
+        caption += (
+            " coloured by the mean metallicity of the resolved pixel. The surface densities"
+            " were calculated using a grid with pixel size of 250 pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "depletion_time_combined_surface_density_gas_" + name + ".png"
+        id = abs(hash("depletion_time_combined_surface_density_gas_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Depletion time vs. surface density, molecular gas (" + name + ")"
+        caption = "Depletion time of molecular gas vs. molecular gas surface density from N most massive individual galaxies,"
+        caption += (
+            " coloured by the mean metallicity of the resolved pixel. The surface densities"
+            " were calculated using a grid with pixel size of 250 pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "depletion_time_combined_surface_density_H2_" + name + ".png"
+        id = abs(hash("depletion_time_combined_surface_density_H2_" + name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = "Combined surface densities"
@@ -185,7 +229,7 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
                 id = abs(hash("%s-band emission galaxy %i" % (filtname, index) + name))
                 outfile = "galaxy_%s_map_%i_" % (filtname, index) + name + ".png"
                 # Don't show these plots
-                #PlotsInWeb.load_plots(title, caption, outfile, id)
+                # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         title = "KS relation (data: H2 mass, method: grid)"
         id = abs(hash("galaxy KS relation H2 grid %i" % (index)))
@@ -247,7 +291,7 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
         caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
         caption += "and the observational data-points correspond to Bigiel et al. (2008) inner, same as in KS relation (H2 mass) figure."
         # Don't shown dipletion time plots
-        #PlotsInWeb.load_plots(title, caption, outfile, id)
+        # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         title = "Depletion time (data: H2+HI mass, method: Azimuthal average)"
         id = abs(hash("galaxy depletion H2+HI radii %i" % (index)))
@@ -257,7 +301,7 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
         caption += " Black solid line indicates the median relation, shaded area the 84-16th percentiles, "
         caption += "and the observational data-points correspond to Bigiel et al. (2008, 2010) inner, same as in KS relation (H2+HI mass) figure."
         # Don't shown dipletion time plots
-        #PlotsInWeb.load_plots(title, caption, outfile, id)
+        # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         title = "Surface density ratios (method: grid)"
         id = abs(hash("density ratio H2+HI grid %i" % (index)))

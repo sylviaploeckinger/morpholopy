@@ -116,6 +116,9 @@ class SimInfo(ParticleIds):
             path_to_snapshot_file=f"{self.directory}/{self.snapshot_name}",
         )
 
+        # Contained with spatially resolved data for combined plots
+        self.combined_data = CombinedData()
+
         print(f"Data from run '{self.simulation_name}' has been loaded! \n")
 
         return
@@ -343,3 +346,25 @@ class SimInfo(ParticleIds):
             )
             star_abmags[filt] = -2.5 * np.log10(fluxes * lum.magfac)
         return star_abmags
+
+
+class CombinedData:
+    """
+    Container holding spatially resolved data for combined plots
+    """
+
+    def __init__(self):
+
+        self.neutral_gas_surface_density: np.ndarray = np.array([])
+        self.molecular_gas_surface_density: np.ndarray = np.array([])
+        self.SFR_surface_density: np.ndarray = np.array([])
+
+        self.depletion_time_molecular_gas: np.ndarray = np.array([])
+        self.depletion_time_neutral_gas: np.ndarray = np.array([])
+
+        self.H2_to_neutral_surface_density_ratio: np.ndarray = np.array([])
+
+        self.gas_metallicity: np.ndarray = np.array([])
+
+        self.radii_neutral_gas_surface_density: np.ndarray = np.array([])
+        self.radii_H2_to_neutral_surface_density_ratio: np.ndarray = np.array([])

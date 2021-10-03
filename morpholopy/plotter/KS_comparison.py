@@ -83,7 +83,7 @@ def KS_relation_plots(output_path, index, name_list):
                                 color="darkred",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "log $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
 
             elif mode == 1:
@@ -103,7 +103,9 @@ def KS_relation_plots(output_path, index, name_list):
                                 label=observation.description,
                                 color="darkred",
                             )
-                plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+                plt.xlabel(
+                    "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
 
             color = ["tab:blue", "tab:orange"]
             i = 0
@@ -262,7 +264,10 @@ def depletion_time_plots(output_path, index, name_list):
                                 color="darkred",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
+                plt.ylabel(
+                    "log $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
                 )
             elif mode == 1:
                 for ind, observation in enumerate(observational_data):
@@ -280,11 +285,16 @@ def depletion_time_plots(output_path, index, name_list):
                                 label=observation.description,
                                 color="darkred",
                             )
-                plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+                plt.xlabel(
+                    "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
+                plt.ylabel(
+                    "log $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+                )
 
             color = ["tab:blue", "tab:orange"]
-            i = 0
-            for name in name_list:
+
+            for i, name in enumerate(name_list):
                 if mode == 0:
                     data = np.loadtxt(
                         f"{output_path}/gas_depletion_timescale_best_"
@@ -293,6 +303,7 @@ def depletion_time_plots(output_path, index, name_list):
                         + name
                         + ".txt"
                     )
+
                 elif mode == 1:
                     data = np.loadtxt(
                         f"{output_path}/molecular_gas_depletion_timescale_"
@@ -303,7 +314,7 @@ def depletion_time_plots(output_path, index, name_list):
                     )
 
                 surface_density = data[:, 0]
-                SFR_surface_density = data[:, 1]
+                t_gas = data[:, 1]
 
                 # Get median lines
                 (
@@ -311,10 +322,10 @@ def depletion_time_plots(output_path, index, name_list):
                     median_SFR_surface_density,
                     SFR_surface_density_err_down,
                     SFR_surface_density_err_up,
-                ) = median_relations(surface_density, SFR_surface_density)
+                ) = median_relations(surface_density, t_gas)
 
                 plt.plot(
-                    surface_density, SFR_surface_density, "o", color=color[i], alpha=0.6
+                    surface_density, t_gas, "o", color=color[i], alpha=0.6
                 )
                 plt.plot(
                     median_surface_density,
@@ -337,15 +348,12 @@ def depletion_time_plots(output_path, index, name_list):
                     alpha=0.2,
                     color=color[i],
                 )
-                i += 1
 
             plt.legend(
                 labelspacing=0.2, handlelength=2, handletextpad=0.4, frameon=False
             )
             ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
-            plt.ylabel(
-                "log $\\rm t_{gas} = \\Sigma_{H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
-            )
+
             plt.xlim(-1, 4.0)
             plt.ylim(7, 12)
             if mode == 0:

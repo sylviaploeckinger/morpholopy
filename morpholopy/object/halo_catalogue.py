@@ -8,7 +8,9 @@ class HaloCatalogue:
     General class containing halo properties
     """
 
-    def __init__(self, path_to_catalogue: str, galaxy_min_stellar_mass: unyt.array.unyt_quantity):
+    def __init__(
+        self, path_to_catalogue: str, galaxy_min_stellar_mass: unyt.array.unyt_quantity
+    ):
         """
         Parameters
         ----------
@@ -87,14 +89,6 @@ class HaloCatalogue:
         self.sigma_H2 = np.zeros(self.number_of_haloes)
         self.sigma_gas = np.zeros(self.number_of_haloes)
         self.sigma_SFR = np.zeros(self.number_of_haloes)
-
-        self.surface_density = np.zeros(self.number_of_haloes)
-        self.SFR_density = np.zeros(self.number_of_haloes)
-        self.ratio_densities = np.zeros(self.number_of_haloes)
-        self.metallicity = np.zeros(self.number_of_haloes)
-
-        self.radii_surface_density = np.zeros(self.number_of_haloes)
-        self.radii_surface_ratio = np.zeros(self.number_of_haloes)
 
         self.xminpot = catalogue.positions.xcminpot.to("kpc").value[mask]
         self.yminpot = catalogue.positions.ycminpot.to("kpc").value[mask]

@@ -3,7 +3,7 @@ from .KS_relation import median_relations
 import numpy as np
 
 
-def plot_combined_surface_densities(
+def plot_integrated_surface_densities(
     sigma_SFR, sigma_gas, sigma_H2, stellar_mass, output_path, simulation_name
 ):
 
@@ -38,7 +38,7 @@ def plot_combined_surface_densities(
         np.log10(Sigma_star),
         "--",
         color="grey",
-        label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
+        label=r"1.51e-4 $\times$ $\Sigma_{\rm g}^{1.4}$",
     )
     plt.scatter(
         sigma_H2,
@@ -53,7 +53,7 @@ def plot_combined_surface_densities(
         zorder=2,
     )
 
-    plt.xlabel("log $\\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+    plt.xlabel("log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel(
         "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
     )
@@ -81,7 +81,7 @@ def plot_combined_surface_densities(
         np.log10(Sigma_star),
         "--",
         color="grey",
-        label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
+        label=r"1.51e-4 $\times$ $\Sigma_{\rm g}^{1.4}$",
     )
     plt.scatter(
         sigma_gas,
@@ -96,7 +96,9 @@ def plot_combined_surface_densities(
         zorder=2,
     )
 
-    plt.xlabel("log $\\Sigma_{HI}+ \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+    plt.xlabel(
+        "log $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+    )
     plt.ylabel(
         "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
     )
@@ -114,7 +116,7 @@ def plot_combined_surface_densities(
     plt.close()
 
 
-def plot_combined_density_ratios(galaxy_data, output_path, simulation_name):
+def plot_combined_surface_densities(combined_data, output_path, simulation_name):
 
     # Get the default KS relation for correct IMF
     def KS(sigma_g, n, A):
@@ -135,135 +137,256 @@ def plot_combined_density_ratios(galaxy_data, output_path, simulation_name):
     }
     rcParams.update(params)
 
-    fig = figure()
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    Sigma_g = np.logspace(-2, 3, 1000)
-    Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-    plt.plot(
-        np.log10(Sigma_g),
-        np.log10(Sigma_star),
-        "--",
-        color="grey",
-        label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
-    )
-    Sigma_g = np.logspace(-1, 4, 1000)
-    Sigma_star = KS(Sigma_g, 1.06, 2.511e-4)
-    plt.plot(
-        np.log10(Sigma_g),
-        np.log10(Sigma_star),
-        lw=1,
-        color="green",
-        label=r"2.51e-4 $\times$ $\Sigma_{g}^{1.06}$ (Pessa+ 2021)",
-        linestyle="-",
-    )
-
-    sigma_gas = galaxy_data.surface_density[1:]
-    sigma_SFR = galaxy_data.SFR_density[1:]
-    metals = galaxy_data.metallicity[1:]
+    sigma_SFR = combined_data.SFR_surface_density
+    metals = combined_data.gas_metallicity
     metals[metals == 0] = 1e-6
     metals = np.log10(np.array(metals, dtype="float"))
     arg_sort = np.argsort(metals)
     metals = metals[arg_sort[::-1]]
-    sigma_gas = sigma_gas[arg_sort[::-1]]
     sigma_SFR = sigma_SFR[arg_sort[::-1]]
 
-    plt.scatter(
-        sigma_gas,
-        sigma_SFR,
-        c=metals,
-        alpha=0.9,
-        s=10,
-        vmin=-3,
-        vmax=1,
-        cmap="CMRmap_r",
-        edgecolors="none",
-        zorder=2,
-    )
+    for plot in ["gas", "H2"]:
 
-    select = np.where((metals > -1.2) & (metals < -0.8))[0]
-    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, "-", lw=2, color="white")
-    plt.plot(
-        x,
-        y,
-        "-",
-        lw=1.5,
-        color="crimson",
-        label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1",
-    )
+        # star formation rate surgface density vs surface density
+        fig = figure()
+        ax = plt.subplot(1, 1, 1)
+        plt.grid("True")
 
-    select = np.where((metals > -0.2) & (metals < 0.2))[0]
-    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, "-", lw=2, color="white")
-    plt.plot(
-        x,
-        y,
-        "-",
-        lw=1.5,
-        color="mediumpurple",
-        label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0",
-    )
+        Sigma_g = np.logspace(-2, 3, 1000)
+        Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+        plt.plot(
+            np.log10(Sigma_g),
+            np.log10(Sigma_star),
+            "--",
+            color="grey",
+            label=r"1.51e-4 $\times$ $\Sigma_{\rm g}^{1.4}$",
+        )
+        Sigma_g = np.logspace(-1, 4, 1000)
+        Sigma_star = KS(Sigma_g, 1.06, 2.511e-4)
+        plt.plot(
+            np.log10(Sigma_g),
+            np.log10(Sigma_star),
+            lw=1,
+            color="green",
+            label=r"2.51e-4 $\times$ $\Sigma_{\rm g}^{1.06}$ (Pessa+ 2021)",
+            linestyle="-",
+        )
 
-    select = np.where(metals > 0.6)[0]
-    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, "-", lw=2, color="white")
-    plt.plot(
-        x,
-        y,
-        "-",
-        lw=1.5,
-        color="lightblue",
-        label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1",
-    )
+        if plot == "gas":
+            sigma_gas = combined_data.neutral_gas_surface_density
+            t_gas = combined_data.depletion_time_neutral_gas
+        else:
+            sigma_gas = combined_data.molecular_gas_surface_density
+            t_gas = combined_data.depletion_time_molecular_gas
 
-    x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
-    plt.plot(x, y, "-", lw=2, color="white")
-    plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
+        sigma_gas = sigma_gas[arg_sort[::-1]]
+        t_gas = t_gas[arg_sort[::-1]]
 
-    select = np.where(sigma_SFR > -5.5)[0]
-    x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-    plt.plot(x, y, "-", lw=2, color="white")
-    plt.plot(x, y, "-", lw=1.5, color="black")
+        plt.scatter(
+            sigma_gas,
+            sigma_SFR,
+            c=metals,
+            alpha=0.9,
+            s=10,
+            vmin=-3,
+            vmax=1,
+            cmap="CMRmap_r",
+            edgecolors="none",
+            zorder=2,
+        )
 
-    plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
-    plt.ylabel(
-        "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
-    )
-    plt.xlim(-1.0, 4.0)
-    plt.ylim(-6.0, 1.0)
-    plt.legend(
-        loc=[0.0, 0.5],
-        labelspacing=0.2,
-        handlelength=1,
-        handletextpad=0.2,
-        frameon=False,
-    )
+        select = np.where((metals > -1.2) & (metals < -0.8))[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(
+            x,
+            y,
+            "-",
+            lw=1.5,
+            color="crimson",
+            label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1",
+        )
 
-    cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
-    cbar_ax.tick_params(labelsize=15)
-    cb = plt.colorbar(ticks=[-3, -2, -1, 0, 1], cax=cbar_ax)
-    cb.set_label(label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
-    ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
-    plt.savefig(
-        f"{output_path}/combined_surface_density_gas_" + simulation_name + ".png",
-        dpi=200,
-    )
-    plt.close()
+        select = np.where((metals > -0.2) & (metals < 0.2))[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(
+            x,
+            y,
+            "-",
+            lw=1.5,
+            color="mediumpurple",
+            label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0",
+        )
+
+        select = np.where(metals > 0.6)[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(
+            x,
+            y,
+            "-",
+            lw=1.5,
+            color="lightblue",
+            label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1",
+        )
+
+        x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
+
+        select = np.where(sigma_SFR > -5.5)[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
+
+        if plot=="gas":
+            plt.xlabel(
+                "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+            )
+        else:
+            plt.xlabel("log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+
+        plt.ylabel(
+            "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
+        )
+        plt.xlim(-1.0, 4.0)
+        plt.ylim(-6.0, 1.0)
+        plt.legend(
+            loc=[0.0, 0.5],
+            labelspacing=0.2,
+            handlelength=1,
+            handletextpad=0.2,
+            frameon=False,
+        )
+
+        cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
+        cbar_ax.tick_params(labelsize=15)
+        cb = plt.colorbar(ticks=[-3, -2, -1, 0, 1], cax=cbar_ax)
+        cb.set_label(label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
+        ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
+        plt.savefig(
+            f"{output_path}/combined_surface_density_{plot}_" + simulation_name + ".png",
+            dpi=200,
+        )
+        plt.close()
+
+        # Depletion time vs surface density
+        fig = figure()
+        ax = plt.subplot(1, 1, 1)
+        plt.grid("True")
+
+        Sigma_g = np.logspace(-1, 4, 1000)
+        Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+        plt.plot(
+            np.log10(Sigma_g),
+            np.log10(Sigma_g) - np.log10(Sigma_star) + 6.0,
+            color="red",
+            label="KS law (Kennicutt 98)",
+            linestyle="--",
+        )
+
+        plt.scatter(
+            sigma_gas,
+            t_gas,
+            c=metals,
+            alpha=0.9,
+            s=10,
+            vmin=-3,
+            vmax=1,
+            cmap="CMRmap_r",
+            edgecolors="none",
+            zorder=2,
+        )
+
+        select = np.where((metals > -1.2) & (metals < -0.8))[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], t_gas[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(
+            x,
+            y,
+            "-",
+            lw=1.5,
+            color="crimson",
+            label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=-1",
+        )
+
+        select = np.where((metals > -0.2) & (metals < 0.2))[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], t_gas[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(
+            x,
+            y,
+            "-",
+            lw=1.5,
+            color="mediumpurple",
+            label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=0",
+        )
+
+        select = np.where(metals > 0.6)[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(
+            x,
+            y,
+            "-",
+            lw=1.5,
+            color="lightblue",
+            label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$=1",
+        )
+
+        x, y, y_down, y_up = median_relations(sigma_gas, t_gas)
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
+
+        select = np.where(sigma_SFR > -5.5)[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], t_gas[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
+
+        if plot == "gas":
+            plt.xlabel(
+                "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+            )
+            plt.ylabel(
+                "log $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+            )
+        else:
+            plt.xlabel(
+                "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+            )
+            plt.ylabel(
+                "log $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+            )
+
+        plt.xlim(-1, 4.0)
+        plt.ylim(7, 12)
+        plt.legend(
+            loc=[0.0, 0.5],
+            labelspacing=0.2,
+            handlelength=1,
+            handletextpad=0.2,
+            frameon=False,
+        )
+
+        cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
+        cbar_ax.tick_params(labelsize=15)
+        cb = plt.colorbar(ticks=[-3, -2, -1, 0, 1], cax=cbar_ax)
+        cb.set_label(label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
+        ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
+        plt.savefig(
+            f"{output_path}/depletion_time_combined_surface_density_{plot}_" + simulation_name + ".png",
+            dpi=200,
+        )
+        plt.close()
 
     #######
     fig = figure()
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
-    sigma_gas = galaxy_data.surface_density[1:]
-    sigma_ratio = galaxy_data.ratio_densities[1:]
-    metals = galaxy_data.metallicity[1:]
-    metals[metals == 0] = 1e-6
-    metals = np.log10(np.array(metals, dtype="float"))
-    arg_sort = np.argsort(metals)
-    metals = metals[arg_sort[::-1]]
+    sigma_gas = combined_data.neutral_gas_surface_density
+    sigma_ratio = combined_data.H2_to_neutral_surface_density_ratio
     sigma_gas = sigma_gas[arg_sort[::-1]]
     sigma_ratio = sigma_ratio[arg_sort[::-1]]
 
@@ -321,8 +444,8 @@ def plot_combined_density_ratios(galaxy_data, output_path, simulation_name):
     plt.plot(x, y, "-", lw=2, color="white")
     plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
 
-    sigma_gas = galaxy_data.radii_surface_density[1:]
-    sigma_ratio = galaxy_data.radii_surface_ratio[1:]
+    sigma_gas = combined_data.radii_neutral_gas_surface_density
+    sigma_ratio = combined_data.radii_H2_to_neutral_surface_density_ratio
     plt.plot(
         sigma_gas,
         sigma_ratio,
@@ -333,7 +456,9 @@ def plot_combined_density_ratios(galaxy_data, output_path, simulation_name):
         label="method:annuli",
     )
 
-    plt.xlabel("log $\\Sigma_{HI} + \\Sigma_{H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+    plt.xlabel(
+        "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+    )
     plt.ylabel(
         r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$"
     )
@@ -359,17 +484,17 @@ def plot_combined_density_ratios(galaxy_data, output_path, simulation_name):
     plt.close()
 
 
-def plot_surface_densities(galaxy_data, output_path, simulation_name):
+def plot_surface_densities(
+    halo_catalogue_data, combined_data, output_path, simulation_name
+):
 
-    # plot surface densities
-    plot_combined_surface_densities(
-        galaxy_data.sigma_SFR,
-        galaxy_data.sigma_gas,
-        galaxy_data.sigma_H2,
-        galaxy_data.log10_stellar_mass,
+    plot_integrated_surface_densities(
+        halo_catalogue_data.sigma_SFR,
+        halo_catalogue_data.sigma_gas,
+        halo_catalogue_data.sigma_H2,
+        halo_catalogue_data.log10_stellar_mass,
         output_path,
         simulation_name,
     )
 
-    # plot surface densities
-    plot_combined_density_ratios(galaxy_data, output_path, simulation_name)
+    plot_combined_surface_densities(combined_data, output_path, simulation_name)

@@ -42,7 +42,7 @@ def output_axis_ratios(
     )
 
 
-def output_accumulative_densities(galaxy_data, output_path, simulation_name):
+def output_accumulative_densities(combined_data, output_path, simulation_name):
 
     np.savetxt(
         f"{output_path}/accumulative_surface_density_gas_grid"
@@ -50,9 +50,22 @@ def output_accumulative_densities(galaxy_data, output_path, simulation_name):
         + ".txt",
         np.transpose(
             [
-                galaxy_data.surface_density[1:],
-                galaxy_data.SFR_density[1:],
-                galaxy_data.metallicity[1:],
+                combined_data.neutral_gas_surface_density,
+                combined_data.SFR_surface_density,
+                combined_data.gas_metallicity,
+            ]
+        ),
+    )
+
+    np.savetxt(
+        f"{output_path}/accumulative_surface_density_H2_grid"
+        + simulation_name
+        + ".txt",
+        np.transpose(
+            [
+                combined_data.molecular_gas_surface_density,
+                combined_data.SFR_surface_density,
+                combined_data.gas_metallicity,
             ]
         ),
     )
@@ -63,9 +76,9 @@ def output_accumulative_densities(galaxy_data, output_path, simulation_name):
         + ".txt",
         np.transpose(
             [
-                galaxy_data.surface_density[1:],
-                galaxy_data.ratio_densities[1:],
-                galaxy_data.metallicity[1:],
+                combined_data.SFR_surface_density,
+                combined_data.H2_to_neutral_surface_density_ratio,
+                combined_data.gas_metallicity,
             ]
         ),
     )
@@ -75,12 +88,17 @@ def output_accumulative_densities(galaxy_data, output_path, simulation_name):
         + simulation_name
         + ".txt",
         np.transpose(
-            [galaxy_data.radii_surface_density[1:], galaxy_data.radii_surface_ratio[1:]]
+            [
+                combined_data.radii_neutral_gas_surface_density,
+                combined_data.radii_H2_to_neutral_surface_density_ratio,
+            ]
         ),
     )
 
 
-def write_morphology_data_to_file(galaxy_data, output_path, simulation_name):
+def write_morphology_data_to_file(
+    galaxy_data, combined_data, output_path, simulation_name
+):
     """
     Writes morphology data to a file
     """
@@ -142,7 +160,7 @@ def write_morphology_data_to_file(galaxy_data, output_path, simulation_name):
     )
 
     # plot surface densities
-    output_accumulative_densities(galaxy_data, output_path, simulation_name)
+    output_accumulative_densities(combined_data, output_path, simulation_name)
 
     return
 
@@ -394,15 +412,8 @@ def plot_axis_ratios(output_path, name_list):
         "lines.linewidth": 2.0,
     }
     rcParams.update(params)
-    parttype_list = [0, 4]
-    for parttype in parttype_list:
 
-        if parttype == 4:
-            title = "Stellar component"
-            color = "tab:blue"
-        if parttype == 0:
-            title = "HI+H2 gas"
-            color = "tab:green"
+    for title, parttype in zip(["HI+H2 gas", "Stellar component"], [0, 4]):
 
         ########
         figure()

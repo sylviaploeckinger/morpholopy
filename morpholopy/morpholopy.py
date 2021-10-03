@@ -82,10 +82,10 @@ def compute_galaxy_morpholopy(
         make_KS_plots(
             gas_data,
             stars_ang_momentum,
-            sim_info.halo_data,
             halo_counter,
             output_path,
             sim_info.simulation_name,
+            sim_info.combined_data,
         )
 
     return
@@ -138,10 +138,16 @@ def main(config: ArgumentParser):
             )
 
         write_morphology_data_to_file(
-            sim_info.halo_data, config.output_directory, sim_info.simulation_name
+            sim_info.halo_data,
+            sim_info.combined_data,
+            config.output_directory,
+            sim_info.simulation_name,
         )
         plot_surface_densities(
-            sim_info.halo_data, config.output_directory, sim_info.simulation_name
+            sim_info.halo_data,
+            sim_info.combined_data,
+            config.output_directory,
+            sim_info.simulation_name,
         )
         sim_info.write_galaxy_data_to_file(output_path=config.output_directory)
 
@@ -155,7 +161,6 @@ def main(config: ArgumentParser):
         name_list=output_name_list,
     )
 
-    # After making individual plots finish up the website
     # Load galaxy plots
     loadGalaxyPlots(
         web,
