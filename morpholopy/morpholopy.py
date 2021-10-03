@@ -94,6 +94,7 @@ def compute_galaxy_morpholopy(
 def main(config: ArgumentParser):
 
     time_start = time()
+    output_name_list = []
     web = None
 
     # Loop over simulation list
@@ -114,6 +115,8 @@ def main(config: ArgumentParser):
             galaxy_min_stellar_mass=config.min_stellar_mass,
         )
 
+        output_name_list.append(sim_info.simulation_name)
+
         # Make initial part of the webpage
         if sim == 0:
             web = html.make_web(sim_info.snapshot)
@@ -125,6 +128,7 @@ def main(config: ArgumentParser):
 
         # Compute morphological properties (loop over haloes)
         print("Computing morphological properties...")
+
         for i in tqdm(range(sim_info.halo_data.number_of_haloes)):
             compute_galaxy_morpholopy(
                 sim_info=sim_info,
@@ -143,21 +147,21 @@ def main(config: ArgumentParser):
 
     make_comparison_plots(
         output_path=config.output_directory,
-        name_list=config.name_list,
+        name_list=output_name_list,
         num_of_galaxies=config.number_of_galaxies,
     )
     plot_morphology(
         output_path=config.output_directory,
-        name_list=config.name_list,
+        name_list=output_name_list,
     )
 
     # After making individual plots finish up the website
     # Load galaxy plots
     loadGalaxyPlots(
         web,
-        config_parameters.output_directory,
-        config_parameters.number_of_galaxies,
-        config_parameters.name_list,
+        config.output_directory,
+        config.number_of_galaxies,
+        output_name_list,
     )
 
     # Finish and output html file

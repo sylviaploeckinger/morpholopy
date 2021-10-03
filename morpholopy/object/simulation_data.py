@@ -63,7 +63,7 @@ class SimInfo(ParticleIds):
         if name is not None:
             self.simulation_name = name
         else:
-            self.simulation_name = snapshot.metadata.run_name
+            self.simulation_name = self.snapshot.metadata.run_name
 
         # Conversion from internal units to kpc
         self.to_kpc_units = (

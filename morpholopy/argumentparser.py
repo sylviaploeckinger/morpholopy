@@ -106,7 +106,7 @@ class ArgumentParser(object):
         self.name_list = (
             args.run_names
             if args.run_names is not None
-            else [None] * self.number_of_inputs
+            else [None] * len(self.directory_list)
         )
         self.output_directory = args.output_directory
 
