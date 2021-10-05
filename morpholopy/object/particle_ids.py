@@ -5,7 +5,7 @@ from typing import Tuple
 
 class ParticleIds:
     """
-    A class providing a mapping between
+    A class providing the mapping between
     particle ids and halo ids
     """
 

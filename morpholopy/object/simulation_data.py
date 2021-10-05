@@ -154,9 +154,30 @@ class SimInfo(ParticleIds):
 
     def make_particle_data(self, halo_id: int) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Create particle data :
-        [ (:3)Position[kpc]: (0)X | (1)Y | (2)Z  | (3)Mass[Msun] | (4:7)Velocity[km/s]: (4)Vx | (5)Vy | (6)Vz
-        | (7) hsml ]
+        Computes and saves gas and stellar particle data into numpy arrays.
+
+        gas data:
+        0-2 coordinates
+        3 masses
+        4-6 velocities
+        7 smoothing lengths
+        8 HI masses
+        9 H2 masses
+        10 SFR
+        11 densities
+        12 metallicities
+
+        star data:
+        0-2 coordinates
+        3 masses
+        4-7 velocities
+        7 softenings
+        8 Mass over softenning cubed
+        9 stellar ages
+        10 stellar metallicities
+        11 stellar initial masses
+
+        @TODO Use classes for the gas and stellar data containers, not numpy arrays
 
         Parameters
         ----------

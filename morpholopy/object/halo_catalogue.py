@@ -99,20 +99,41 @@ class HaloCatalogue:
         self.vzminpot = catalogue.velocities.vzcminpot.to("km/s").value[mask]
 
     def add_stellar_morphology(self, data, index):
+        """
+        Add stellar morphology data
+
+        @TODO rewrite this function such that it is obvious what arguments are passed in.
+        """
         self.kappa_co[index] = data[0]
         self.momentum[index] = data[1]
         self.axis_ca[index] = data[2]
         self.axis_cb[index] = data[3]
         self.axis_ba[index] = data[4]
 
+        return
+
     def add_gas_morphology(self, data, index):
+        """
+        Add gas morphology data
+
+        @TODO rewrite this function such that it is obvious what arguments are passed in.
+        """
         self.gas_kappa_co[index] = data[0]
         self.gas_momentum[index] = data[1]
         self.gas_axis_ca[index] = data[2]
         self.gas_axis_cb[index] = data[3]
         self.gas_axis_ba[index] = data[4]
 
+        return
+
     def add_surface_density(self, data, index):
+        """
+        Add surface density data
+
+        @TODO rewrite this function such that it is obvious what arguments are passed in.
+        """
         self.sigma_H2[index] = data[0]
         self.sigma_gas[index] = data[1]
         self.sigma_SFR[index] = data[2]
+
+        return

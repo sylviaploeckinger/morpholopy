@@ -108,8 +108,8 @@ def KS_relation_plots(output_path, index, name_list):
                 )
 
             color = ["tab:blue", "tab:orange"]
-            i = 0
-            for name in name_list:
+
+            for i, name in enumerate(name_list):
                 if mode == 0:
                     data = np.loadtxt(
                         f"{output_path}/KS_relation_best_"
@@ -161,8 +161,6 @@ def KS_relation_plots(output_path, index, name_list):
                     alpha=0.2,
                     color=color[i],
                 )
-
-                i += 1
 
             plt.legend(
                 loc="upper left",
@@ -324,9 +322,7 @@ def depletion_time_plots(output_path, index, name_list):
                     SFR_surface_density_err_up,
                 ) = median_relations(surface_density, t_gas)
 
-                plt.plot(
-                    surface_density, t_gas, "o", color=color[i], alpha=0.6
-                )
+                plt.plot(surface_density, t_gas, "o", color=color[i], alpha=0.6)
                 plt.plot(
                     median_surface_density,
                     median_SFR_surface_density,
@@ -428,9 +424,8 @@ def surface_ratios_plots(output_path, index, name_list):
         plt.plot(x_Schruba, y_Schruba, "o", color="darkred", label="Schruba+ (2011)")
 
         color = ["tab:blue", "tab:orange"]
-        i = 0
 
-        for name in name_list:
+        for i, name in enumerate(name_list):
             if method == "grid":
                 data = np.loadtxt(
                     f"{output_path}/Surface_density_ratio_"
@@ -479,7 +474,6 @@ def surface_ratios_plots(output_path, index, name_list):
                 plt.plot(
                     data2[:, 0], data2[:, 1], "o", ms=4, color=color[i], label=name
                 )
-            i += 1
 
         plt.xlim(-1.0, 4.0)
         plt.ylim(-8.0, 0.5)
@@ -504,9 +498,9 @@ def surface_ratios_plots(output_path, index, name_list):
         plt.close()
 
 
-def make_comparison_plots(output_path: str, name_list, num_of_galaxies: int):
+def make_comparison_plots(output_path: str, name_list, num_of_galaxies_to_show: int):
 
-    for index in range(num_of_galaxies):
+    for index in range(num_of_galaxies_to_show):
 
         KS_relation_plots(output_path, index, name_list)
         depletion_time_plots(output_path, index, name_list)

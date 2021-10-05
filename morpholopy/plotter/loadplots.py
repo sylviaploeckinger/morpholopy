@@ -1,8 +1,14 @@
 import numpy as np
 from .html import add_web_section, PlotsInPipeline
+from typing import List
 
 
-def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
+def loadGalaxyPlots(
+    web, output_path: str, num_galaxies_to_show: int, name_list: List[int]
+):
+    """
+    @TODO Create separate .yaml config containing all necessary information about the plots
+    """
 
     PlotsInWeb = PlotsInPipeline()
 
@@ -105,7 +111,11 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
     PlotsInWeb.reset_plots_list()
 
     for name in name_list:
-        title = "Molecular-to-neutral surface density vs. neutral gas surface density (" + name + ")"
+        title = (
+            "Molecular-to-neutral surface density vs. neutral gas surface density ("
+            + name
+            + ")"
+        )
         caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
         caption += (
             " coloured by the mean metallicity of the resolved pixel. The surface densities were calculated"
@@ -183,7 +193,7 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
     PlotsInWeb.reset_plots_list()
 
     # Individual galaxy plots
-    for index in range(int(output_galaxies)):
+    for index in range(num_galaxies_to_show):
 
         for name in name_list:
             title = "Gas component (" + name + ")"
@@ -325,27 +335,8 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
         caption = " "
         for name in name_list:
             data = np.loadtxt(f"{output_path}/galaxy_data_" + name + ".txt")
-            if output_galaxies == 1:
-                sfr_galaxy = data[0]
-                mass_galaxy = data[1]
-                gas_mass_galaxy = data[2]
-                mass_halo = data[3]
-                galaxy_metallicity_gas_sfr = data[4]
-                galaxy_metallicity_gas = data[5]
-                caption += "<strong>Simulation: " + name + "</strong>. Galaxy details: "
-                caption += r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
-                caption += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
-                caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (
-                    galaxy_metallicity_gas_sfr
-                )
-                caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas)
-                caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
-                caption += (
-                    ' $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style="font-size:18px;">'
-                    % (gas_mass_galaxy)
-                )
 
-            else:
+            try:
                 sfr_galaxy = data[:, 0]
                 mass_galaxy = data[:, 1]
                 gas_mass_galaxy = data[:, 2]
@@ -370,6 +361,28 @@ def loadGalaxyPlots(web, output_path, output_galaxies, name_list):
                 caption += (
                     ' $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style="font-size:18px;">'
                     % (gas_mass_galaxy[index])
+                )
+
+            # If only one galaxy is available, the data array is one dimensional
+            except IndexError:
+
+                sfr_galaxy = data[0]
+                mass_galaxy = data[1]
+                gas_mass_galaxy = data[2]
+                mass_halo = data[3]
+                galaxy_metallicity_gas_sfr = data[4]
+                galaxy_metallicity_gas = data[5]
+                caption += "<strong>Simulation: " + name + "</strong>. Galaxy details: "
+                caption += r"$\log_{10}$ M$_{200}$/M$_{\odot} = $%0.2f," % (mass_halo)
+                caption += " SFR = %0.1f M$_{\odot}$/yr," % (sfr_galaxy)
+                caption += " Z$_{\mathrm{SFR}>0}$ = %0.3f," % (
+                    galaxy_metallicity_gas_sfr
+                )
+                caption += " Z$_{\mathrm{gas}}$ = %0.3f," % (galaxy_metallicity_gas)
+                caption += " $\log_{10}$ M$_{*}$/M$_{\odot} = $%0.2f" % (mass_galaxy)
+                caption += (
+                    ' $\&$ $\log_{10}$ M$_{\mathrm{gas}}$/M$_{\odot} = $%0.2f.</p><p style="font-size:18px;">'
+                    % (gas_mass_galaxy)
                 )
 
         id = abs(hash("galaxy and ks relation %i" % index))

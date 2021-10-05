@@ -95,6 +95,8 @@ def main(config: ArgumentParser):
 
     time_start = time()
     output_name_list = []
+    output_number_of_galaxies_list = []
+    make_plots = True
     web = None
 
     # Loop over simulation list
@@ -126,6 +128,15 @@ def main(config: ArgumentParser):
         # Load luminosity tables
         simulation_data.SimInfo.load_photometry_grid()
 
+        # The actual number of galaxies to visualise for this run
+        output_number_of_galaxies_list.append(
+            min(sim_info.halo_data.number_of_haloes, config.number_of_galaxies)
+        )
+
+        print(
+            f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
+        )
+
         # Compute morphological properties (loop over haloes)
         print("Computing morphological properties...")
 
@@ -151,10 +162,12 @@ def main(config: ArgumentParser):
         )
         sim_info.write_galaxy_data_to_file(output_path=config.output_directory)
 
+    num_galaxies_to_show = min(output_number_of_galaxies_list)
+
     make_comparison_plots(
         output_path=config.output_directory,
         name_list=output_name_list,
-        num_of_galaxies=config.number_of_galaxies,
+        num_of_galaxies_to_show=num_galaxies_to_show,
     )
     plot_morphology(
         output_path=config.output_directory,
@@ -165,7 +178,7 @@ def main(config: ArgumentParser):
     loadGalaxyPlots(
         web,
         config.output_directory,
-        config.number_of_galaxies,
+        num_galaxies_to_show,
         output_name_list,
     )
 

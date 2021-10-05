@@ -103,11 +103,12 @@ class ArgumentParser(object):
         self.snapshot_list = args.snapshots
         self.catalogue_list = args.catalogues
         self.directory_list = args.input_directories
-        self.name_list = (
-            args.run_names
-            if args.run_names is not None
-            else [None] * len(self.directory_list)
-        )
+
+        if args.run_names is not None:
+            self.name_list = args.run_names
+        else:
+            self.name_list = [None] * len(self.directory_list)
+
         self.output_directory = args.output_directory
 
         self.number_of_inputs = len(args.snapshots)

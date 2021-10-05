@@ -1,6 +1,8 @@
 from pylab import *
 import numpy as np
 
+color = ["tab:blue", "tab:orange"]
+
 
 def output_momentum(stellar_mass, momentum, parttype, output_path, simulation_name):
     index = [i for i, v in enumerate(momentum) if v is not None]
@@ -325,14 +327,16 @@ def plot_momentum(output_path, name_list):
             ylabel = "$j_{\mathrm{gas}}$ [kpc km/s]"
 
         plt.grid("True")
-        i = 0
-        color = ["tab:blue", "tab:orange"]
-        for name in name_list:
+
+        for i, name in enumerate(name_list):
             data = np.loadtxt(
                 f"{output_path}/momentum_parttype_%i_" % (parttype) + name + ".txt"
             )
-            plt.plot(data[:, 0], data[:, 1], "o", color=color[i], label=name)
-            i += 1
+
+            # In case of no objects len(shape) = 1
+            if len(np.shape(data)) > 1:
+                plt.plot(data[:, 0], data[:, 1], "o", color=color[i], label=name)
+
         plt.xlabel("Stellar Mass [M$_{\odot}$]")
         plt.ylabel(ylabel)
         plt.yscale("log")
@@ -374,14 +378,14 @@ def plot_kappa(output_path, name_list):
 
         plt.grid("True")
 
-        i = 0
-        color = ["tab:blue", "tab:orange"]
-        for name in name_list:
+        for i, name in enumerate(name_list):
             data = np.loadtxt(
                 f"{output_path}/Kappa_co_parttype_%i_" % (parttype) + name + ".txt"
             )
-            plt.plot(data[:, 0], data[:, 1], "o", color=color[i], label=name)
-            i += 1
+
+            # In case of no objects len(shape) = 1
+            if len(np.shape(data)) > 1:
+                plt.plot(data[:, 0], data[:, 1], "o", color=color[i], label=name)
 
         plt.xscale("log")
         plt.xlabel("Stellar Mass [M$_{\odot}$]")
@@ -421,14 +425,14 @@ def plot_axis_ratios(output_path, name_list):
         ax.set_title(title)
         plt.grid("True")
 
-        i = 0
-        color = ["tab:blue", "tab:orange"]
-        for name in name_list:
+        for i, name in enumerate(name_list):
             data = np.loadtxt(
                 f"{output_path}/Axis_ratios_parttype_%i_" % (parttype) + name + ".txt"
             )
-            plt.plot(data[:, 0], data[:, 1], "o", color=color[i], label=name)
-            i += 1
+
+            # In case of no objects len(shape) = 1
+            if len(np.shape(data)) > 1:
+                plt.plot(data[:, 0], data[:, 1], "o", color=color[i], label=name)
 
         plt.xscale("log")
         plt.xlabel("Stellar Mass [M$_{\odot}$]")
@@ -441,14 +445,14 @@ def plot_axis_ratios(output_path, name_list):
         ax = plt.subplot(1, 3, 2)
         plt.grid("True")
 
-        i = 0
-        color = ["tab:blue", "tab:orange"]
-        for name in name_list:
+        for i, name in enumerate(name_list):
             data = np.loadtxt(
                 f"{output_path}/Axis_ratios_parttype_%i_" % (parttype) + name + ".txt"
             )
-            plt.plot(data[:, 0], data[:, 2], "o", color=color[i], label=name)
-            i += 1
+
+            # In case of no objects len(shape) = 1
+            if len(np.shape(data)) > 1:
+                plt.plot(data[:, 0], data[:, 2], "o", color=color[i], label=name)
 
         plt.xscale("log")
         plt.xlabel("Stellar Mass [M$_{\odot}$]")
@@ -461,14 +465,14 @@ def plot_axis_ratios(output_path, name_list):
         ax = plt.subplot(1, 3, 3)
         plt.grid("True")
 
-        i = 0
-        color = ["tab:blue", "tab:orange"]
-        for name in name_list:
+        for i, name in enumerate(name_list):
             data = np.loadtxt(
                 f"{output_path}/Axis_ratios_parttype_%i_" % (parttype) + name + ".txt"
             )
-            plt.plot(data[:, 0], data[:, 3], "o", color=color[i], label=name)
-            i += 1
+
+            # In case of no objects len(shape) = 1
+            if len(np.shape(data)) > 1:
+                plt.plot(data[:, 0], data[:, 3], "o", color=color[i], label=name)
 
         plt.xscale("log")
         plt.xlabel("Stellar Mass [M$_{\odot}$]")

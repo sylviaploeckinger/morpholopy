@@ -240,7 +240,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
-        if plot=="gas":
+        if plot == "gas":
             plt.xlabel(
                 "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
             )
@@ -266,7 +266,9 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         cb.set_label(label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
         ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
         plt.savefig(
-            f"{output_path}/combined_surface_density_{plot}_" + simulation_name + ".png",
+            f"{output_path}/combined_surface_density_{plot}_"
+            + simulation_name
+            + ".png",
             dpi=200,
         )
         plt.close()
@@ -352,9 +354,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
                 "log $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
             )
         else:
-            plt.xlabel(
-                "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
-            )
+            plt.xlabel("log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
             plt.ylabel(
                 "log $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
             )
@@ -375,7 +375,9 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         cb.set_label(label="log Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
         ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
         plt.savefig(
-            f"{output_path}/depletion_time_combined_surface_density_{plot}_" + simulation_name + ".png",
+            f"{output_path}/depletion_time_combined_surface_density_{plot}_"
+            + simulation_name
+            + ".png",
             dpi=200,
         )
         plt.close()
