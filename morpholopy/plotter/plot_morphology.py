@@ -1,4 +1,5 @@
-from pylab import *
+import matplotlib.pylab as plt
+from matplotlib.pylab import rcParams
 import numpy as np
 
 color = ["tab:blue", "tab:orange"]
@@ -193,7 +194,7 @@ def plot_surface_densities(
     }
     rcParams.update(params)
 
-    fig = figure()
+    fig = plt.figure()
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
@@ -233,6 +234,7 @@ def plot_surface_densities(
     plt.savefig(f"{output_path}/surface_density_gas.png", dpi=200)
     plt.close()
 
+    title = "$\\Sigma_{H_2}$ vs $\\Sigma_{\\rm SFR}$"
     caption = "Integrated surface densities of H2 gas and star-forming gas for each individual galaxy. "
     caption += "Quantities are calculated summing up all gas (and SFR) within the galaxies' stellar half mass radius."
     filename = "surface_density_gas.png"
@@ -241,7 +243,7 @@ def plot_surface_densities(
     MorphologyPlotsInWeb.load_plots(title, caption, filename, id)
 
     #######
-    fig = figure()
+    fig = plt.figure()
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
@@ -316,7 +318,7 @@ def plot_momentum(output_path, name_list):
 
     for parttype in parttype_list:
 
-        figure()
+        plt.figure()
         ax = plt.subplot(1, 1, 1)
         if parttype == 4:
             ax.set_title("Stellar component")
@@ -369,7 +371,7 @@ def plot_kappa(output_path, name_list):
     parttype_list = [0, 4]
     for parttype in parttype_list:
 
-        figure()
+        plt.figure()
         ax = plt.subplot(1, 1, 1)
         if parttype == 4:
             ax.set_title("Stellar component")
@@ -420,7 +422,7 @@ def plot_axis_ratios(output_path, name_list):
     for title, parttype in zip(["HI+H2 gas", "Stellar component"], [0, 4]):
 
         ########
-        figure()
+        plt.figure()
         ax = plt.subplot(1, 3, 1)
         ax.set_title(title)
         plt.grid("True")

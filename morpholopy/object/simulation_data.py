@@ -4,15 +4,17 @@ import numpy as np
 import glob
 
 from .unitilies import constants
-from .unitilies.helper_functions import calculate_kappa_co, AxialRatios
+from .unitilies.helper_functions import (
+    calculate_kappa_co,
+    AxialRatios,
+    cosmic_time_approx_Gyr,
+)
 from .unitilies import luminosities as lum
 
 from .halo_catalogue import HaloCatalogue
 from .particle_ids import ParticleIds
 
-from swiftsimio import load, SWIFTDataset
-from astropy.cosmology import WMAP9 as cosmo
-
+from swiftsimio import load
 
 class SimInfo(ParticleIds):
 
@@ -94,6 +96,13 @@ class SimInfo(ParticleIds):
 
         # Cosmic scale factor
         self.a = self.snapshot.metadata.scale_factor
+
+        self.hubble_time_Gyr = self.snapshot.metadata.cosmology.hubble_time.value
+
+        self.Omega_m = self.snapshot.metadata.cosmology.Om0
+
+        # No curvature
+        self.Omega_l = self.Omega_m
 
         # Maximum softening for baryons
         self.baryon_max_soft = (
@@ -234,7 +243,11 @@ class SimInfo(ParticleIds):
         )
 
         if len(stars_birthz) > 1:
-            stars_age = cosmo.age(0.0).value - cosmo.age(stars_birthz).value  # in Gyr
+            stars_age = cosmic_time_approx_Gyr(
+                z=0.0, Omega_L=self.Omega_l, Hubble_time=self.hubble_time_Gyr
+            ) - cosmic_time_approx_Gyr(
+                z=stars_birthz, Omega_L=self.Omega_l, Hubble_time=self.hubble_time_Gyr
+            )
         else:
             stars_age = 0.0
 

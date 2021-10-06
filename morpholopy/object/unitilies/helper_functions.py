@@ -5,6 +5,52 @@ The routines that calculate disc fractions, circularities and axis ratios have b
 
 import numpy as np
 from scipy.interpolate import interp1d
+from typing import Union
+
+
+def cosmic_time_approx_Gyr(
+    z: Union[float, np.ndarray], Omega_L: float, Hubble_time: float
+) -> Union[float, np.ndarray]:
+    """
+    Converts redshift to cosmic time in Gyr using an approximate, analytical
+    expression from 2018PASP..130g3001C, equation A10
+
+    The fractional errors are < 10-2 for all z < 25
+
+    Assumes a flat universe.
+
+    Parameters
+    ----------
+    z: Union[float, np.ndarray]
+    Array with redshifts to convert to cosmic time
+
+    Omega_L: float
+    Density parameter of the cosmologial constant today
+
+    Hubble_time: float
+    Hubble time in units of Gyr
+
+    Returns
+    -------
+    Output: Union[float, np.ndarray]
+    Cosmic times in units of Gyr
+
+    """
+
+    Ol_over_1_minus_Ol = Omega_L / (1.0 - Omega_L)
+
+    cosmic_times = (
+        Hubble_time
+        * 2.0
+        / 3.0
+        / np.sqrt(Omega_L)
+        * np.log(
+            np.sqrt(Ol_over_1_minus_Ol / np.power(1.0 + z, 3))
+            + np.sqrt(Ol_over_1_minus_Ol / np.power(1.0 + z, 3) + 1.0)
+        )
+    )
+
+    return cosmic_times
 
 
 def calculate_kappa_co(halo_data, partsDATA, box_size, halo_index):

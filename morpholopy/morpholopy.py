@@ -96,7 +96,6 @@ def main(config: ArgumentParser):
     time_start = time()
     output_name_list = []
     output_number_of_galaxies_list = []
-    make_plots = True
     web = None
 
     # Loop over simulation list

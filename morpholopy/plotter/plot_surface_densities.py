@@ -1,4 +1,5 @@
-from pylab import *
+import matplotlib.pylab as plt
+from matplotlib.pylab import rcParams
 from .KS_relation import median_relations
 import numpy as np
 
@@ -6,14 +7,6 @@ import numpy as np
 def plot_integrated_surface_densities(
     sigma_SFR, sigma_gas, sigma_H2, stellar_mass, output_path, simulation_name
 ):
-
-    # Get the default KS relation for correct IMF
-    def KS(sigma_g, n, A):
-        return A * sigma_g ** n
-
-    Sigma_g = np.logspace(-2, 3, 1000)
-    Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-
     # Plot parameters
     params = {
         "font.size": 12,
@@ -27,9 +20,17 @@ def plot_integrated_surface_densities(
         "lines.markersize": 4,
         "lines.linewidth": 2.0,
     }
+
+    # Get the default KS relation for correct IMF
+    def KS(sigma_g, n, A):
+        return A * sigma_g ** n
+
+    Sigma_g = np.logspace(-2, 3, 1000)
+    Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+
     rcParams.update(params)
 
-    fig = figure()
+    fig = plt.figure()
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
@@ -72,7 +73,7 @@ def plot_integrated_surface_densities(
     plt.close()
 
     #######
-    fig = figure()
+    fig = plt.figure()
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
@@ -148,7 +149,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
     for plot in ["gas", "H2"]:
 
         # star formation rate surgface density vs surface density
-        fig = figure()
+        fig = plt.figure()
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
 
@@ -274,7 +275,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         plt.close()
 
         # Depletion time vs surface density
-        fig = figure()
+        fig = plt.figure()
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
 
@@ -383,7 +384,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         plt.close()
 
     #######
-    fig = figure()
+    fig = plt.figure()
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 

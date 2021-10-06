@@ -1,15 +1,32 @@
-from pylab import *
+import matplotlib.pylab as plt
+from matplotlib.pylab import rcParams
 from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
-from numpy import matmul
+import numpy as np
+
+# Plot parameters
+params = {
+    "font.size": 11,
+    "font.family": "Times",
+    "text.usetex": True,
+    "figure.figsize": (7.5, 4),
+    "figure.subplot.left": 0.1,
+    "figure.subplot.right": 0.85,
+    "figure.subplot.bottom": 0.15,
+    "figure.subplot.top": 0.8,
+    "figure.subplot.wspace": 0.3,
+    "figure.subplot.hspace": 0.3,
+    "lines.markersize": 0.5,
+    "lines.linewidth": 0.2,
+}
 
 
-def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
+def rotation_matrix(vector: np.float64, pos_parts: np.float64, axis: str = "z"):
     normed_vector = vector.copy()
-    normed_vector /= norm(vector)
+    normed_vector /= np.norm(vector)
 
     # Directional vector describing the axis we wish to look 'down'
-    original_direction = array([0.0, 0.0, 0.0], dtype=float64)
+    original_direction = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     switch = {"x": 0, "y": 1, "z": 2}
 
     try:
@@ -19,19 +36,19 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
             f"Parameter axis must be one of x, y, or z. You supplied {axis}."
         )
 
-    dot_product = dot(original_direction, normed_vector)
-    cross_product = cross(original_direction, normed_vector)
-    mod_cross_product = norm(cross_product)
+    dot_product = np.dot(original_direction, normed_vector)
+    cross_product = np.cross(original_direction, normed_vector)
+    mod_cross_product = np.norm(cross_product)
     cross_product /= mod_cross_product
-    theta = arccos(dot_product)
+    theta = np.arccos(dot_product)
 
-    q0 = cos(theta / 2)
-    q1 = sin(theta / 2) * cross_product[0]
-    q2 = sin(theta / 2) * cross_product[1]
-    q3 = sin(theta / 2) * cross_product[2]
+    q0 = np.cos(theta / 2)
+    q1 = np.sin(theta / 2) * cross_product[0]
+    q2 = np.sin(theta / 2) * cross_product[1]
+    q3 = np.sin(theta / 2) * cross_product[2]
 
     # Skew symmetric matrix for cross product
-    Q = array(
+    Q = np.array(
         [
             [
                 q0 ** 2 + q1 ** 2 - q2 ** 2 - q3 ** 2,
@@ -55,14 +72,14 @@ def rotation_matrix(vector: float64, pos_parts: float64, axis: str = "z"):
     j = np.array([0, 1, 0])
     k = np.array([0, 0, 1])
 
-    u = matmul(Q, i)
-    v = matmul(Q, j)
-    w = matmul(Q, k)
+    u = np.matmul(Q, i)
+    v = np.matmul(Q, j)
+    w = np.matmul(Q, k)
 
     pos_face_on = pos_parts.copy()
-    pos_face_on[:, 0] = dot(pos_parts, u)
-    pos_face_on[:, 1] = dot(pos_parts, v)
-    pos_face_on[:, 2] = dot(pos_parts, w)
+    pos_face_on[:, 0] = np.dot(pos_parts, u)
+    pos_face_on[:, 1] = np.dot(pos_parts, v)
+    pos_face_on[:, 2] = np.dot(pos_parts, w)
     return pos_face_on
 
 
@@ -84,9 +101,9 @@ def plot_galaxy_parts(
     face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="z")
     edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="y")
 
-    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = np.matmul(face_on_rotation_matrix, pos_parts.T)
     pos_face_on = pos_face_on.T
-    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = np.matmul(edge_on_rotation_matrix, pos_parts.T)
     pos_edge_on = pos_edge_on.T
 
     if parttype == 0:
@@ -103,29 +120,15 @@ def plot_galaxy_parts(
     denmin = np.min(density)
     denmax = np.max(density)
 
-    # Plot parameters
-    params = {
-        "font.size": 11,
-        "font.family": "Times",
-        "text.usetex": True,
-        "figure.figsize": (7.5, 4),
-        "figure.subplot.left": 0.1,
-        "figure.subplot.right": 0.85,
-        "figure.subplot.bottom": 0.15,
-        "figure.subplot.top": 0.8,
-        "figure.subplot.wspace": 0.3,
-        "figure.subplot.hspace": 0.3,
-        "lines.markersize": 0.2,
-        "lines.linewidth": 0.2,
-    }
     rcParams.update(params)
-
     fig = plt.figure()
     ax = plt.subplot(1, 2, 1)
+
     if parttype == 4:
         title = "Stellar component"
     if parttype == 0:
         title = "Gas component"
+
     ax.set_title(title)
     ax.tick_params(labelleft=True, labelbottom=True, length=0)
     plt.xlabel("x [kpc]")
@@ -237,9 +240,9 @@ def plot_galaxy(
     face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="z")
     edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="y")
 
-    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = np.matmul(face_on_rotation_matrix, pos_parts.T)
     pos_face_on = pos_face_on.T
-    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = np.matmul(edge_on_rotation_matrix, pos_parts.T)
     pos_edge_on = pos_edge_on.T
 
     hsml_parts = parts_data[:, 7]
@@ -254,24 +257,10 @@ def plot_galaxy(
     xmax = r_img
     ymax = r_img
 
-    # Plot parameters
-    params = {
-        "font.size": 11,
-        "font.family": "Times",
-        "text.usetex": True,
-        "figure.figsize": (7.5, 4),
-        "figure.subplot.left": 0.1,
-        "figure.subplot.right": 0.85,
-        "figure.subplot.bottom": 0.15,
-        "figure.subplot.top": 0.8,
-        "figure.subplot.wspace": 0.3,
-        "figure.subplot.hspace": 0.3,
-        "lines.markersize": 0.5,
-        "lines.linewidth": 0.2,
-    }
     rcParams.update(params)
     fig = plt.figure()
     ax = plt.subplot(1, 2, 1)
+
     if parttype == 4:
         title = "Stellar component"
     if parttype == 0:
@@ -385,9 +374,9 @@ def render_luminosity_map(
     face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum)
     edge_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="y")
 
-    pos_face_on = matmul(face_on_rotation_matrix, pos_parts.T)
+    pos_face_on = np.matmul(face_on_rotation_matrix, pos_parts.T)
     pos_face_on = pos_face_on.T
-    pos_edge_on = matmul(edge_on_rotation_matrix, pos_parts.T)
+    pos_edge_on = np.matmul(edge_on_rotation_matrix, pos_parts.T)
     pos_edge_on = pos_edge_on.T
 
     hsml_parts = parts_data[:, 7]
@@ -401,21 +390,6 @@ def render_luminosity_map(
     xmax = r_img
     ymax = r_img
 
-    # Plot parameters
-    params = {
-        "font.size": 11,
-        "font.family": "Times",
-        "text.usetex": True,
-        "figure.figsize": (7.5, 4),
-        "figure.subplot.left": 0.1,
-        "figure.subplot.right": 0.85,
-        "figure.subplot.bottom": 0.15,
-        "figure.subplot.top": 0.8,
-        "figure.subplot.wspace": 0.3,
-        "figure.subplot.hspace": 0.3,
-        "lines.markersize": 0.5,
-        "lines.linewidth": 0.2,
-    }
     rcParams.update(params)
     fig = plt.figure()
     ax = plt.subplot(1, 2, 1)

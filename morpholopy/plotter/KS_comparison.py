@@ -1,7 +1,22 @@
-from pylab import *
+import matplotlib.pylab as plt
+from matplotlib.pylab import rcParams
 import numpy as np
 from .loadObservationalData import read_obs_data
 from .KS_relation import median_relations, Krumholz_eq39
+
+# Plot parameters
+params = {
+    "font.size": 12,
+    "font.family": "Times",
+    "text.usetex": True,
+    "figure.figsize": (5, 4),
+    "figure.subplot.left": 0.15,
+    "figure.subplot.right": 0.95,
+    "figure.subplot.bottom": 0.18,
+    "figure.subplot.top": 0.9,
+    "lines.markersize": 2,
+    "lines.linewidth": 1.0,
+}
 
 
 def KS_relation_plots(output_path, index, name_list):
@@ -13,25 +28,12 @@ def KS_relation_plots(output_path, index, name_list):
     def KS(sigma_g, n, A):
         return A * sigma_g ** n
 
-    # Plot parameters
-    params = {
-        "font.size": 12,
-        "font.family": "Times",
-        "text.usetex": True,
-        "figure.figsize": (5, 4),
-        "figure.subplot.left": 0.15,
-        "figure.subplot.right": 0.95,
-        "figure.subplot.bottom": 0.18,
-        "figure.subplot.top": 0.9,
-        "lines.markersize": 2,
-        "lines.linewidth": 1.0,
-    }
     rcParams.update(params)
     methods = ["grid", "radii"]
     for method in methods:
 
         for mode in range(2):
-            figure()
+            plt.figure()
             ax = plt.subplot(1, 1, 1)
 
             Sigma_g = np.logspace(-1, 4, 1000)
@@ -200,25 +202,13 @@ def depletion_time_plots(output_path, index, name_list):
     def KS(sigma_g, n, A):
         return A * sigma_g ** n
 
-    # Plot parameters
-    params = {
-        "font.size": 12,
-        "font.family": "Times",
-        "text.usetex": True,
-        "figure.figsize": (5, 4),
-        "figure.subplot.left": 0.15,
-        "figure.subplot.right": 0.95,
-        "figure.subplot.bottom": 0.18,
-        "figure.subplot.top": 0.9,
-        "lines.markersize": 2,
-        "lines.linewidth": 1.0,
-    }
     rcParams.update(params)
     methods = ["grid", "radii"]
+
     for method in methods:
 
         for mode in range(2):
-            figure()
+            plt.figure()
             ax = plt.subplot(1, 1, 1)
 
             Sigma_g = np.logspace(-1, 4, 1000)
@@ -389,24 +379,12 @@ def surface_ratios_plots(output_path, index, name_list):
     x_Schruba = np.log10(Schruba_H1 + Schruba_H2)
     y_Schruba = np.log10(Schruba_H2 / (Schruba_H1 + Schruba_H2))
 
-    # Plot parameters
-    params = {
-        "font.size": 12,
-        "font.family": "Times",
-        "text.usetex": True,
-        "figure.figsize": (5, 4),
-        "figure.subplot.left": 0.15,
-        "figure.subplot.right": 0.95,
-        "figure.subplot.bottom": 0.18,
-        "figure.subplot.top": 0.9,
-        "lines.markersize": 2,
-        "lines.linewidth": 1.0,
-    }
     rcParams.update(params)
 
     methods = ["grid", "radii"]
     for method in methods:
-        figure()
+
+        plt.figure()
         ax = plt.subplot(1, 1, 1)
 
         # Krumholz 2009 lines
