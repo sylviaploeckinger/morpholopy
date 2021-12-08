@@ -2,61 +2,81 @@
 Functions that aid in the production of the HTML webpages.
 """
 
-from swiftpipeline import __version__ as pipeline_version
 from velociraptor import __version__ as velociraptor_version
-
-from jinja2 import Environment, PackageLoader, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from time import strftime
 import unyt
+from swiftsimio import SWIFTDataset
 
-from swiftsimio import load
 
 class PlotsInPipeline:
     def __init__(self):
         self.plots_details = []
 
     def load_plots(self, title, caption, filename, id):
-        some_details = dict(title=title, caption=caption, filename=filename, hash=id,)
+        some_details = dict(
+            title=title,
+            caption=caption,
+            filename=filename,
+            hash=id,
+        )
         self.plots_details.append(some_details)
 
     def reset_plots_list(self):
         self.plots_details = []
 
-def add_metadata_to_web(web, siminfo):
-    data = load(siminfo.snapshot)
+
+def add_metadata_to_web(web, snapshot: SWIFTDataset):
 
     TEMPLATE_FILE = "description.html"
     description_template = web.environment.get_template(TEMPLATE_FILE)
-    web.variables["runs"].append(dict(description=description_template.render(data=data), ))
+    web.variables["runs"].append(
+        dict(
+            description=description_template.render(data=snapshot),
+        )
+    )
     return
 
-def make_web(siminfo):
-    data = load(siminfo.snapshot)
+
+def make_web(snapshot: SWIFTDataset):
     web = WebpageCreator()
-    web.add_run_metadata(data=data)
+    web.add_run_metadata(data=snapshot)
+
     return web
 
-def add_web_section(web,title,caption,id,plots):
-    web.variables["sections"].append(dict(title=title, caption=caption, id=id, plots=plots,))
+
+def add_web_section(web, title, caption, id, plots):
+    web.variables["sections"].append(
+        dict(
+            title=title,
+            caption=caption,
+            id=id,
+            plots=plots,
+        )
+    )
     return
 
-def render_web(web,output_path):
+
+def render_web(web, output_path):
     web.add_metadata(page_name="MorpholoPy Page")
     web.render_webpage()
     web.save_html(f"{output_path}/index.html")
     return
 
-def render_population_web(web,output_path):
+
+def render_population_web(web, output_path):
     web.add_metadata(page_name="MorpholoPy Page")
     web.render_webpage()
     web.save_html(f"{output_path}/population.html")
     return
 
-def render_abundance_web(web,output_path):
+
+def render_abundance_web(web, output_path):
     web.add_metadata(page_name="MorpholoPy Page")
     web.render_webpage()
     web.save_html(f"{output_path}/abundance.html")
     return
+
 
 def format_number(number):
     """
@@ -81,7 +101,7 @@ def format_number(number):
 def get_if_present_float(dictionary, value: str, input_unit=None, output_unit=None):
     """
     A replacement for .get() that also formats the number if present.
-    
+
     Assumes data should be a float.
     """
 
@@ -102,7 +122,7 @@ def get_if_present_float(dictionary, value: str, input_unit=None, output_unit=No
 def get_if_present_int(dictionary, value: str, input_unit=None, output_unit=None):
     """
     A replacement for .get() that also formats the number if present.
-    
+
     Assumes data should be an integer.
     """
 
@@ -134,14 +154,15 @@ class WebpageCreator(object):
         """
         Sets up the ``jinja`` templating system.
         """
-        
+
         self.loader = FileSystemLoader(searchpath="./plotter/templates/")
-        self.environment = Environment(loader=self.loader,autoescape=select_autoescape(["js"]))
+        self.environment = Environment(
+            loader=self.loader, autoescape=select_autoescape(["js"])
+        )
 
         # Initialise empty variables dictionary, with the versions of
         # this package and the velociraptor package used.
         self.variables = dict(
-            pipeline_version=pipeline_version,
             velociraptor_version=velociraptor_version,
             creation_date=strftime(r"%Y-%m-%d"),
             sections=[],
@@ -174,16 +195,16 @@ class WebpageCreator(object):
         self.html = template.render(**self.variables)
 
         return self.html
-    
+
     def add_run_metadata(self, data):
         """
-            Adds the "run" metadata (using the user-defined description.html).
-            
-            Parameters
-            ----------
-            
-            """
-        
+        Adds the "run" metadata (using the user-defined description.html).
+
+        Parameters
+        ----------
+
+        """
+
         TEMPLATE_FILE = "description.html"
 
         self.environment.filters["format_number"] = format_number
@@ -191,10 +212,13 @@ class WebpageCreator(object):
         self.environment.filters["get_if_present_int"] = get_if_present_int
 
         description_template = self.environment.get_template(TEMPLATE_FILE)
-        self.variables["runs"] = [dict(description=description_template.render(data=data),)]
-        
-        return
+        self.variables["runs"] = [
+            dict(
+                description=description_template.render(data=data),
+            )
+        ]
 
+        return
 
     def add_metadata(self, page_name: str):
         """
@@ -208,7 +232,6 @@ class WebpageCreator(object):
         """
 
         self.variables.update(dict(page_name=page_name))
-
 
     def save_html(self, filename: str):
         """

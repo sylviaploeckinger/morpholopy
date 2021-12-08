@@ -16,22 +16,29 @@ The morpholopy package requires:
 + `python3.6` or above
 + see requirements.txt
 
-How to use it
+Usage
 ---------------
 
-Specify in the file run.sh the folder where your simulation is stored (-d), the simulation
-snapshot (e.g. -s) and the folder (-o) where plots will be stored.
-
-Then type `bash run.sh` or `bash runcomparison.sh` or alternatively run it as
-
+To run the script in the _single-run_ mode use
 ```bash
-python morpholopy.py \
-  -d /cosma7/data/Simulation1 /cosma7/data/Simulation2 ... \ # These are directories where sims outputs are
-  -s 23 23 ... \ # Snapshot numbers from the different sims
-  -n name_one name_two ... \ # Names for different sims (for legend)
-  -z no no ... \ # Additional option for zooms set it to yes
-  -g 20 20 ... \ # Additional option to set number of morphology plots for 20 most massive galaxies, (default 10)
-  -o output_directory
+ python3 morpholopy.py -d run_directory \
+                       -s snapshot_name \
+                       -c catalogue_name \
+                       -n name_of_the_run \
+                       -g number_of_individual_galaxies_to_show \
+                       -o path_to_output_directory \
+                       -m minimal_stellar_mass_for_galaxies_to_be_analysed
+```
+
+To run the script in the _comparison_ mode use
+```bash
+ python3 morpholopy.py -d directory_of_run1 directory_of_run2 \
+                       -s snapshot_name_run1 snapshot_name_run2 \
+                       -c catalogue_name_run1 catalogue_name_run2 \
+                       -n name_of_the_run1 name_of_the_run2 \
+                       -g number_of_individual_galaxies_to_show \
+                       -o path_to_output_directory \
+                       -m minimal_stellar_mass_for_galaxies_to_be_analysed
 ```
 
 
