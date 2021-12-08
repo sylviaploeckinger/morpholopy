@@ -185,8 +185,8 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
 
 def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
-    select_MW_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 10.0) &
-                              (sim_info.halo_data.log10_stellar_mass <= 12.2))[0]
+    select_MW_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 9.0) &
+                              (sim_info.halo_data.log10_stellar_mass <= 10.5))[0]
     select_centrals = np.where(sim_info.halo_data.type[select_MW_mass] == 10)[0]
 
     sample = select_MW_mass[select_centrals]
@@ -221,7 +221,7 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
 def calculate_abundaces_from_satellite_galaxies(sim_info):
 
     select_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 6.) &
-                              (sim_info.halo_data.log10_stellar_mass <= 10.5))[0]
+                           (sim_info.halo_data.log10_stellar_mass <= 10.))[0]
 
     select_satellites = np.where(sim_info.halo_data.type[select_mass] > 10)[0]
 
@@ -332,7 +332,7 @@ def plot_stellar_abundances(sim_info, output_path):
     plt.legend(loc=[0.0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=2,
                columnspacing=0.02)
 
-    plt.savefig(f"{output_path}/O_Fe" + sim_info.simulation_name + ".png", dpi=200)
+    plt.savefig(f"{output_path}/O_Fe_" + sim_info.simulation_name + ".png", dpi=200)
 
     # New plot. Now turn Magnesium / Fe --------------------------------
 
@@ -388,4 +388,4 @@ def plot_stellar_abundances(sim_info, output_path):
     plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=2,
                columnspacing=0.02)
 
-    plt.savefig(f"{output_path}/Mg_Fe" + sim_info.simulation_name + ".png", dpi=200)
+    plt.savefig(f"{output_path}/Mg_Fe_" + sim_info.simulation_name + ".png", dpi=200)
