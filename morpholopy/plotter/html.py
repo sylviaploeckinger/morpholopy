@@ -155,7 +155,13 @@ class WebpageCreator(object):
         Sets up the ``jinja`` templating system.
         """
 
-        self.loader = FileSystemLoader(searchpath="./plotter/templates/")
+        self.loader = FileSystemLoader(
+            searchpath=[
+                "./plotter/templates/",
+                "./morpholopy/plotter/templates/",
+                "./templates/",
+            ]
+        )
         self.environment = Environment(
             loader=self.loader, autoescape=select_autoescape(["js"])
         )
