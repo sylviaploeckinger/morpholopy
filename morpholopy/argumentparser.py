@@ -78,7 +78,7 @@ class ArgumentParser(object):
             "this threshold won't be processed.",
             type=float,
             required=False,
-            default=1e7,
+            default=1e6,
         )
 
         parser.add_argument(

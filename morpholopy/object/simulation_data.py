@@ -257,7 +257,7 @@ class SimInfo(ParticleIds):
         )
 
         stars_n_parts = len(stars_mass)
-        stars_data = np.zeros((stars_n_parts, 12))
+        stars_data = np.zeros((stars_n_parts, 16))
         stars_data[:, 0:3] = (
             self.snapshot.stars.coordinates[mask_stars].value
             * self.a
@@ -272,6 +272,12 @@ class SimInfo(ParticleIds):
         stars_data[:, 9] = stars_age
         stars_data[:, 10] = stars_Z
         stars_data[:, 11] = stars_initmass
+
+        stars_data[:, 12] = self.snapshot.stars.element_mass_fractions.oxygen[mask_stars].value
+        stars_data[:, 13] = self.snapshot.stars.element_mass_fractions.iron[mask_stars].value
+        stars_data[:, 14] = self.snapshot.stars.element_mass_fractions.magnesium[mask_stars].value
+        stars_data[:, 15] = self.snapshot.stars.element_mass_fractions.hydrogen[mask_stars].value
+
 
         return gas_data, stars_data
 

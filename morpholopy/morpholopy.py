@@ -4,16 +4,17 @@ Description here
 
 from argumentparser import ArgumentParser
 
-from plotter.plot_galaxy import visualize_galaxy
-from plotter.KS_relation import make_KS_plots, calculate_surface_densities
-from plotter.KS_comparison import make_comparison_plots
-from plotter.plot_morphology import write_morphology_data_to_file, plot_morphology
-from plotter.plot_surface_densities import plot_surface_densities
+# from plotter.plot_galaxy import visualize_galaxy
+# from plotter.KS_relation import make_KS_plots, calculate_surface_densities
+# from plotter.KS_comparison import make_comparison_plots
+# from plotter.plot_morphology import write_morphology_data_to_file, plot_morphology
+# from plotter.plot_surface_densities import plot_surface_densities
+from plotter.stellar_abundances import plot_stellar_abundances
 from object import simulation_data
-from plotter.loadplots import loadGalaxyPlots
-from plotter import html
+# from plotter.loadplots import loadGalaxyPlots
+# from plotter import html
+# from tqdm import tqdm
 from time import time
-from tqdm import tqdm
 
 
 def compute_galaxy_morpholopy(
@@ -116,73 +117,75 @@ def main(config: ArgumentParser):
             galaxy_min_stellar_mass=config.min_stellar_mass,
         )
 
-        output_name_list.append(sim_info.simulation_name)
+        #output_name_list.append(sim_info.simulation_name)
 
         # Make initial part of the webpage
-        if sim == 0:
-            web = html.make_web(sim_info.snapshot)
-        elif web is not None:
-            html.add_metadata_to_web(web, sim_info.snapshot)
+        # if sim == 0:
+        #     web = html.make_web(sim_info.snapshot)
+        # elif web is not None:
+        #     html.add_metadata_to_web(web, sim_info.snapshot)
+        #
+        # # Load luminosity tables
+        # simulation_data.SimInfo.load_photometry_grid()
+        #
+        # # The actual number of galaxies to visualise for this run
+        # output_number_of_galaxies_list.append(
+        #     min(sim_info.halo_data.number_of_haloes, config.number_of_galaxies)
+        # )
 
-        # Load luminosity tables
-        simulation_data.SimInfo.load_photometry_grid()
+        # print(
+        #     f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
+        # )
 
-        # The actual number of galaxies to visualise for this run
-        output_number_of_galaxies_list.append(
-            min(sim_info.halo_data.number_of_haloes, config.number_of_galaxies)
-        )
+        plot_stellar_abundances(sim_info=sim_info, output_path=config.output_directory)
 
-        print(
-            f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
-        )
+        # # Compute morphological properties (loop over haloes)
+        # print("Computing morphological properties...")
+        #
+        # for i in tqdm(range(sim_info.halo_data.number_of_haloes)):
+        #     compute_galaxy_morpholopy(
+        #         sim_info=sim_info,
+        #         num_galaxies=config.number_of_galaxies,
+        #         output_path=config.output_directory,
+        #         halo_counter=i,
+        #     )
 
-        # Compute morphological properties (loop over haloes)
-        print("Computing morphological properties...")
-
-        for i in tqdm(range(sim_info.halo_data.number_of_haloes)):
-            compute_galaxy_morpholopy(
-                sim_info=sim_info,
-                num_galaxies=config.number_of_galaxies,
-                output_path=config.output_directory,
-                halo_counter=i,
-            )
-
-        write_morphology_data_to_file(
-            sim_info.halo_data,
-            sim_info.combined_data,
-            config.output_directory,
-            sim_info.simulation_name,
-        )
-        plot_surface_densities(
-            sim_info.halo_data,
-            sim_info.combined_data,
-            config.output_directory,
-            sim_info.simulation_name,
-        )
-        sim_info.write_galaxy_data_to_file(output_path=config.output_directory)
-
-    num_galaxies_to_show = min(output_number_of_galaxies_list)
-
-    make_comparison_plots(
-        output_path=config.output_directory,
-        name_list=output_name_list,
-        num_of_galaxies_to_show=num_galaxies_to_show,
-    )
-    plot_morphology(
-        output_path=config.output_directory,
-        name_list=output_name_list,
-    )
-
-    # Load galaxy plots
-    loadGalaxyPlots(
-        web,
-        config.output_directory,
-        num_galaxies_to_show,
-        output_name_list,
-    )
-
-    # Finish and output html file
-    html.render_web(web, config.output_directory)
+    #     write_morphology_data_to_file(
+    #         sim_info.halo_data,
+    #         sim_info.combined_data,
+    #         config.output_directory,
+    #         sim_info.simulation_name,
+    #     )
+    #     plot_surface_densities(
+    #         sim_info.halo_data,
+    #         sim_info.combined_data,
+    #         config.output_directory,
+    #         sim_info.simulation_name,
+    #     )
+    #     sim_info.write_galaxy_data_to_file(output_path=config.output_directory)
+    #
+    # num_galaxies_to_show = min(output_number_of_galaxies_list)
+    #
+    # make_comparison_plots(
+    #     output_path=config.output_directory,
+    #     name_list=output_name_list,
+    #     num_of_galaxies_to_show=num_galaxies_to_show,
+    # )
+    # plot_morphology(
+    #     output_path=config.output_directory,
+    #     name_list=output_name_list,
+    # )
+    #
+    # # Load galaxy plots
+    # loadGalaxyPlots(
+    #     web,
+    #     config.output_directory,
+    #     num_galaxies_to_show,
+    #     output_name_list,
+    # )
+    #
+    # # Finish and output html file
+    # html.render_web(web, config.output_directory)
 
     # Compute how much time it took to run the script
     time_end = time()

@@ -29,14 +29,20 @@ class HaloCatalogue:
 
         # Selecting central galaxies whose stellar mass is larger than
         # 'galaxy_min_stellar_mass'
+        # mask = np.logical_and(
+        #     catalogue.apertures.mass_star_30_kpc >= galaxy_min_stellar_mass,
+        #     catalogue.structure_type.structuretype == 10,
+        # )
+        # They also need to contain at least one gas particle
+        # mask = np.logical_and(
+        #     mask, catalogue.apertures.mass_gas_30_kpc > unyt.unyt_quantity(0.0, "Msun")
+        # )
+
         mask = np.logical_and(
             catalogue.apertures.mass_star_30_kpc >= galaxy_min_stellar_mass,
-            catalogue.structure_type.structuretype == 10,
+            catalogue.apertures.mass_gas_30_kpc > unyt.unyt_quantity(0.0, "Msun")
         )
-        # They also need to contain at least one gas particle
-        mask = np.logical_and(
-            mask, catalogue.apertures.mass_gas_30_kpc > unyt.unyt_quantity(0.0, "Msun")
-        )
+
         # Compute the number of haloes following the selection mask
         self.number_of_haloes = mask.sum()
 
@@ -52,6 +58,9 @@ class HaloCatalogue:
         self.log10_halo_mass = np.log10(
             catalogue.masses.mass_200crit.to("Msun").value[mask]
         )
+
+        # Galaxy type, either central (=10) or satellite (>10)
+        self.type = catalogue.structure_type.structuretype.value[mask]
 
         # Half mass radius in units of kpc (stars)
         self.half_mass_radius_star = catalogue.radii.r_halfmass_star.to("kpc").value[
