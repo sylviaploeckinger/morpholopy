@@ -185,7 +185,7 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
 
 def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
-    select_MW_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 9.0) &
+    select_MW_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 9.5) &
                               (sim_info.halo_data.log10_stellar_mass <= 10.5))[0]
     select_centrals = np.where(sim_info.halo_data.type[select_MW_mass] == 10)[0]
 
@@ -220,7 +220,7 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
 def calculate_abundaces_from_satellite_galaxies(sim_info):
 
-    select_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 6.) &
+    select_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 7.) &
                            (sim_info.halo_data.log10_stellar_mass <= 10.))[0]
 
     select_satellites = np.where(sim_info.halo_data.type[select_mass] > 10)[0]
@@ -376,9 +376,9 @@ def plot_stellar_abundances(sim_info, output_path):
     plt.plot(FeH_sagittarius, MgFe_sagittarius, '*', ms=4, color='lightblue', label='Sagittarius')
 
     bins = np.arange(-7.2, 1, 0.2)
-    ind = np.digitize(Fe_H, bins)
-    xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
-    ym = [np.median(Mg_Fe[ind == i]) for i in range(1, len(bins)) if len(Mg_Fe[ind == i]) > 10]
+    ind = np.digitize(Fe_H_sat, bins)
+    xm = [np.median(Fe_H_sat[ind == i]) for i in range(1, len(bins)) if len(Fe_H_sat[ind == i]) > 10]
+    ym = [np.median(Mg_Fe_sat[ind == i]) for i in range(1, len(bins)) if len(Mg_Fe_sat[ind == i]) > 10]
     plt.plot(xm, ym, '-', lw=1.5, color='black')
 
     plt.text(-3.8,1.2,"Satellite galaxies")
