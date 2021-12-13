@@ -138,8 +138,6 @@ class SimInfo(ParticleIds):
         """
 
         catalogue_num = "".join([s for s in self.catalogue_name.split('.')[0] if s.isdigit()])
-        # if self.catalogue_name[-1].isdigit():
-        #     catalogue_num = catalogue_num[:-1]
         catalogue_groups_paths: List[str] = glob.glob(
             f"{self.directory}/*{catalogue_num}.catalog_groups*"
         )
@@ -147,7 +145,6 @@ class SimInfo(ParticleIds):
             f"{self.directory}/*{catalogue_num}.catalog_particles*"
         )
 
-        print(catalogue_num, catalogue_particles_paths, catalogue_particles_paths, f"{self.directory}/*{catalogue_num}.catalog_groups*")
         # We expect one file for particle groups
         if len(catalogue_groups_paths) == 1:
             self.catalogue_groups = catalogue_groups_paths[0].split("/")[-1]
