@@ -102,7 +102,7 @@ class SimInfo(ParticleIds):
         self.Omega_m = self.snapshot.metadata.cosmology.Om0
 
         # No curvature
-        self.Omega_l = self.Omega_m
+        self.Omega_l = 1.0 - self.Omega_m
 
         # Maximum softening for baryons
         self.baryon_max_soft = (
