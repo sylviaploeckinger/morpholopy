@@ -159,7 +159,8 @@ def plot_GALAH_data(element, galah_edges, galah_data):
                                  galah_edges[0], galah_edges[-1]],
                           zorder=100,
                           cmap='winter')
-    contour.collections[0].set_label('GALAH DR3')
+    #contour.collections[0].set_label(['GALAH DR3'])
+
 
 
 def load_MW_data_with_Mg_Fe():
@@ -230,7 +231,7 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
 
 def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
-    select_MW_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 9.5) &
+    select_MW_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 9.0) &
                               (sim_info.halo_data.log10_stellar_mass <= 10.5))[0]
     select_centrals = np.where(sim_info.halo_data.type[select_MW_mass] == 10)[0]
 
@@ -257,6 +258,7 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
         C_stars = stars_data[:, 16]
         Si_stars = stars_data[:, 17]
         Eu_stars = stars_data[:, 18]
+        halo_stars = np.where(stars_data[:, 19] == 1)[0]
 
         Oxygen_fraction = np.append(Oxygen_fraction, O_stars)
         Iron_fraction = np.append(Iron_fraction, Fe_stars)
@@ -270,12 +272,12 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
                             Oxygen_fraction, Iron_fraction,
                             Carbon_fraction, Silicon_fraction,
                             Europium_fraction)
-    return ratios
+    return ratios, halo_stars
 
 
 def calculate_abundaces_from_satellite_galaxies(sim_info):
 
-    select_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 7.) &
+    select_mass = np.where((sim_info.halo_data.log10_stellar_mass >= 6.) &
                            (sim_info.halo_data.log10_stellar_mass <= 10.))[0]
 
     select_satellites = np.where(sim_info.halo_data.type[select_mass] > 10)[0]
@@ -321,10 +323,11 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
 def plot_stellar_abundances(sim_info, output_path):
 
     # Look for abundance ratios from COLIBRE snaps:
-    ratios_MW = calculate_abundaces_from_MW_type_galaxies(sim_info)
+    ratios_MW, halo_stars = calculate_abundaces_from_MW_type_galaxies(sim_info)
     O_Fe = ratios_MW['O_Fe']
     Mg_Fe = ratios_MW['Mg_Fe']
     Fe_H = ratios_MW['Fe_H']
+    print(len(O_Fe), len(halo_stars))
     
     # Load MW data:
     FeH_MW, OFe_MW = load_MW_data()
@@ -365,7 +368,8 @@ def plot_stellar_abundances(sim_info, output_path):
     ax = plt.subplot(1, 2, 1)
     plt.grid("True")
 
-    plt.plot(Fe_H, O_Fe, 'o', ms=0.2, color='grey')
+    plt.plot(Fe_H, O_Fe, 'o', ms=0.2, color='grey', alpha=0.2)
+    plt.plot(Fe_H[halo_stars], O_Fe[halo_stars], 'o', ms=0.5, color='black')
 
     plt.plot(FeH_MW, OFe_MW, '+', color='tab:blue', ms=4, label='MW')
 
@@ -375,6 +379,7 @@ def plot_stellar_abundances(sim_info, output_path):
     ind = np.digitize(Fe_H, bins)
     xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
     ym = [np.median(O_Fe[ind == i]) for i in range(1, len(bins)) if len(O_Fe[ind == i]) > 10]
+    plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
     plt.plot(xm, ym, '-', lw=1.5, color='black', label=sim_info.simulation_name)
 
     plt.text(-3.8, 1.3, "MW-type galaxies")
@@ -401,6 +406,7 @@ def plot_stellar_abundances(sim_info, output_path):
     ind = np.digitize(Fe_H_sat, bins)
     xm = [np.median(Fe_H_sat[ind == i]) for i in range(1, len(bins)) if len(Fe_H_sat[ind == i]) > 10]
     ym = [np.median(O_Fe_sat[ind == i]) for i in range(1, len(bins)) if len(O_Fe_sat[ind == i]) > 10]
+    plt.plot(xm, ym, '-', lw=0.5, color='tab:blue',label='GALAH DR3')
     plt.plot(xm, ym, '-', lw=1.5, color='black')
 
     plt.text(-3.8, 1.3, "Satellite galaxies")
@@ -434,6 +440,7 @@ def plot_stellar_abundances(sim_info, output_path):
     ind = np.digitize(Fe_H, bins)
     xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
     ym = [np.median(Mg_Fe[ind == i]) for i in range(1, len(bins)) if len(Mg_Fe[ind == i]) > 10]
+    plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
     plt.plot(xm, ym, '-', lw=1.5, color='black',label=sim_info.simulation_name)
 
     plt.xlabel("[Fe/H]", labelpad=2)
@@ -460,6 +467,7 @@ def plot_stellar_abundances(sim_info, output_path):
     ind = np.digitize(Fe_H_sat, bins)
     xm = [np.median(Fe_H_sat[ind == i]) for i in range(1, len(bins)) if len(Fe_H_sat[ind == i]) > 10]
     ym = [np.median(Mg_Fe_sat[ind == i]) for i in range(1, len(bins)) if len(Mg_Fe_sat[ind == i]) > 10]
+    plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
     plt.plot(xm, ym, '-', lw=1.5, color='black')
 
     plt.text(-3.8,1.2,"Satellite galaxies")
@@ -484,6 +492,7 @@ def plot_stellar_abundances(sim_info, output_path):
         ind = np.digitize(Fe_H, bins)
         xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
         ym = [np.median(ratios_MW[f'{el}_Fe'][ind == i]) for i in range(1, len(bins)) if len(ratios_MW[f'{el}_Fe'][ind == i]) > 10]
+        plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
         plt.plot(xm, ym, '-', lw=1.5, color='black',label=sim_info.simulation_name)
 
         plt.xlabel("[Fe/H]", labelpad=2)

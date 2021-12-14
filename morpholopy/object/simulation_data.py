@@ -257,7 +257,7 @@ class SimInfo(ParticleIds):
         )
 
         stars_n_parts = len(stars_mass)
-        stars_data = np.zeros((stars_n_parts, 19))
+        stars_data = np.zeros((stars_n_parts, 20))
         stars_data[:, 0:3] = (
             self.snapshot.stars.coordinates[mask_stars].value
             * self.a
@@ -280,7 +280,15 @@ class SimInfo(ParticleIds):
         stars_data[:, 16] = self.snapshot.stars.element_mass_fractions.carbon[mask_stars].value
         stars_data[:, 17] = self.snapshot.stars.element_mass_fractions.silicon[mask_stars].value
         stars_data[:, 18] = self.snapshot.stars.element_mass_fractions.europium[mask_stars].value
+        stars_data[:, 19] = np.zeros(stars_n_parts)
 
+        indx = self.halo_data.halo_ids == halo_id
+        x = stars_data[:, 0] - self.halo_data.xminpot[indx]
+        y = stars_data[:, 1] - self.halo_data.yminpot[indx]
+        z = stars_data[:, 2] - self.halo_data.zminpot[indx]
+        r = x**2 + y**2 + z**2
+        halo_stars = np.where(r > 10**2)[0] #further than 8kpc?
+        stars_data[halo_stars, 19] = np.ones(len(halo_stars))
 
         return gas_data, stars_data
 
