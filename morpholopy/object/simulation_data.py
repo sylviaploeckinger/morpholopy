@@ -137,7 +137,7 @@ class SimInfo(ParticleIds):
         Finds paths to the fields with particles catalogue and groups catalogue
         """
 
-        catalogue_num = "".join([s for s in self.catalogue_name if s.isdigit()])
+        catalogue_num = "".join([s for s in self.catalogue_name.split('.')[0] if s.isdigit()])
         catalogue_groups_paths: List[str] = glob.glob(
             f"{self.directory}/*{catalogue_num}.catalog_groups*"
         )
@@ -257,7 +257,7 @@ class SimInfo(ParticleIds):
         )
 
         stars_n_parts = len(stars_mass)
-        stars_data = np.zeros((stars_n_parts, 16))
+        stars_data = np.zeros((stars_n_parts, 19))
         stars_data[:, 0:3] = (
             self.snapshot.stars.coordinates[mask_stars].value
             * self.a
@@ -277,6 +277,9 @@ class SimInfo(ParticleIds):
         stars_data[:, 13] = self.snapshot.stars.element_mass_fractions.iron[mask_stars].value
         stars_data[:, 14] = self.snapshot.stars.element_mass_fractions.magnesium[mask_stars].value
         stars_data[:, 15] = self.snapshot.stars.element_mass_fractions.hydrogen[mask_stars].value
+        stars_data[:, 16] = self.snapshot.stars.element_mass_fractions.carbon[mask_stars].value
+        stars_data[:, 17] = self.snapshot.stars.element_mass_fractions.silicon[mask_stars].value
+        stars_data[:, 18] = self.snapshot.stars.element_mass_fractions.europium[mask_stars].value
 
 
         return gas_data, stars_data
