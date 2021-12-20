@@ -327,24 +327,22 @@ def plot_stellar_abundances(sim_info, output_path):
     O_Fe = ratios_MW['O_Fe']
     Mg_Fe = ratios_MW['Mg_Fe']
     Fe_H = ratios_MW['Fe_H']
-    print(len(O_Fe), len(halo_stars))
-    
+
     # Load MW data:
     FeH_MW, OFe_MW = load_MW_data()
 
-    # Load MW data
+    # Load MW data:
     GALAHdata =  load_GALAH_data()
     galah_edges = np.array(GALAHdata["abundance_bin_edges"])
     
-    # Load MW data:
+    # Load Satellite data:
     ratios_sat = calculate_abundaces_from_satellite_galaxies(sim_info)
     Fe_H_sat = ratios_sat['Fe_H']
     O_Fe_sat = ratios_sat['O_Fe']
     Mg_Fe_sat = ratios_sat['Mg_Fe']
+
     # Load Satellite data:
     FeH_fornax, OFe_fornax, FeH_sg, OFe_sg, FeH_ca, OFe_ca, FeH_scu, OFe_scu = load_satellites_data()
-
-    # Plot the interesting quantities
 
     # Plot parameters
     params = {
