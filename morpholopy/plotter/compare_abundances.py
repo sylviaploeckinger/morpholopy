@@ -1,51 +1,14 @@
 import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
 import numpy as np
-#from loadSimulationData import SimInfo
-from .stellar_abundances import calculate_abundaces_from_MW_type_galaxies, \
-    load_MW_data, load_GALAH_data, plot_GALAH_data, load_MW_data_with_Mg_Fe
+from .stellar_abundances import load_MW_data, load_GALAH_data, plot_GALAH_data, load_MW_data_with_Mg_Fe
 
 def compare_stellar_abundances(sims_data, output_name_list, output_path):
 
-
-    # bins = np.arange(-7.2, 1, 0.2)
     O_Fe_all = sims_data['O_Fe']
     Fe_H_all = sims_data['Fe_H']
     Mg_Fe_all = sims_data['Mg_Fe']
     counter = sims_data['counter']
-    # output_name_list = []
-
-    # Loop over simulation list
-    # for sim in range(sims_data, output_name_list,output_path):
-
-        # # Fetch relevant input parameters from lists
-        # directory = config.directory_list[sim]
-        # snapshot = config.snapshot_list[sim]
-        # catalogue = config.catalogue_list[sim]
-        # sim_name = config.name_list[sim]
-        #
-        # sim_info = SimInfo(directory=directory,
-        #                    snapshot=snapshot,
-        #                    catalogue=catalogue,
-        #                    name=sim_name,)
-        #
-        # output_name_list.append(sim_info.simulation_name)
-        #
-        # # Look for abundance ratios from COLIBRE snaps:
-        # ratios_MW, halo_stars = calculate_abundaces_from_MW_type_galaxies(sim_info)
-        # O_Fe = ratios_MW['O_Fe']
-        # Mg_Fe = ratios_MW['Mg_Fe']
-        # Fe_H = ratios_MW['Fe_H']
-        #
-        # ind = np.digitize(Fe_H, bins)
-        # xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
-        # ym = [np.median(O_Fe[ind == i]) for i in range(1, len(bins)) if len(O_Fe[ind == i]) > 10]
-        # zm = [np.median(Mg_Fe[ind == i]) for i in range(1, len(bins)) if len(Mg_Fe[ind == i]) > 10]
-        #
-        # O_Fe_all = np.append(O_Fe_all, ym)
-        # Fe_H_all = np.append(Fe_H_all, xm)
-        # Mg_Fe_all = np.append(Mg_Fe_all, zm)
-        # counter = np.append(counter, len(xm))
 
     # Load MW data:
     FeH_MW, OFe_MW = load_MW_data()
@@ -60,7 +23,7 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
         "font.family": "Times",
         "text.usetex": True,
         "figure.figsize": (4, 3),
-        "figure.subplot.left": 0.1,
+        "figure.subplot.left": 0.18,
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.15,
         "figure.subplot.top": 0.95,

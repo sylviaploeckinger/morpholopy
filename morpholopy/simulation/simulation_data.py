@@ -16,6 +16,8 @@ from .particle_ids import ParticleIds
 
 from swiftsimio import load
 
+from .particle_data import GasParticleData, StarParticleData
+
 class SimInfo(ParticleIds):
 
     # Solar metallicity
@@ -128,6 +130,9 @@ class SimInfo(ParticleIds):
         # Contained with spatially resolved data for combined plots
         self.combined_data = CombinedData()
 
+        self.gas_data = None
+        self.star_data = None
+
         print(f"Data from run '{self.simulation_name}' has been loaded! \n")
 
         return
@@ -199,102 +204,103 @@ class SimInfo(ParticleIds):
         Arrays with gas and stellar properties
         """
 
-        mask_gas, mask_stars = self.make_masks_gas_and_stars(halo_id=halo_id)
+        self.gas = GasParticleData(self,halo_id)
+        self.stars = StarParticleData(self,halo_id)
 
-        gas_mass = self.snapshot.gas.masses[mask_gas].value * self.to_Msun_units
-        gas_n_parts = len(gas_mass)
-        gas_data = np.zeros((gas_n_parts, 13))
+        # mask_gas, mask_stars = self.make_masks_gas_and_stars(halo_id=halo_id)
+        #
+        # gas_mass = self.snapshot.gas.masses[mask_gas].value * self.to_Msun_units
+        # gas_n_parts = len(gas_mass)
+        # gas_data = np.zeros((gas_n_parts, 13))
+        #
+        # gas_data[:, 0:3] = (
+        #     self.snapshot.gas.coordinates[mask_gas].value * self.a * self.to_kpc_units
+        # )
+        #
+        # gas_data[:, 3] = gas_mass
+        # gas_data[:, 4:7] = self.snapshot.gas.velocities[mask_gas].value  # km/s
+        # gas_data[:, 7] = (
+        #     self.snapshot.gas.smoothing_lengths[mask_gas].value
+        #     * self.a
+        #     * self.to_kpc_units
+        # )
+        #
+        # XH = self.snapshot.gas.element_mass_fractions.hydrogen[mask_gas].value
+        # gas_HI = self.snapshot.gas.species_fractions.HI[mask_gas].value
+        # gas_H2 = self.snapshot.gas.species_fractions.H2[mask_gas].value * 2.0
+        #
+        # gas_data[:, 8] = gas_HI * XH * gas_mass
+        # gas_data[:, 9] = gas_H2 * XH * gas_mass
+        #
+        # gas_data[:, 10] = (
+        #     self.snapshot.gas.star_formation_rates[mask_gas].value
+        #     * self.to_Msun_units
+        #     / self.to_yr_units
+        # )
+        # gas_data[:, 11] = (
+        #     self.snapshot.gas.densities[mask_gas].value
+        #     * (self.a * self.to_Msun_units / self.to_kpc_units) ** 3
+        # )
+        # gas_data[:, 12] = (
+        #     self.snapshot.gas.metal_mass_fractions[mask_gas].value / self.Zsolar
+        # )
 
-        gas_data[:, 0:3] = (
-            self.snapshot.gas.coordinates[mask_gas].value * self.a * self.to_kpc_units
-        )
+        # stars_mass = self.snapshot.stars.masses[mask_stars].value * self.to_Msun_units
+        # stars_birthz = (
+        #     1.0 / self.snapshot.stars.birth_scale_factors[mask_stars].value - 1.0
+        # )
+        #
+        # if len(stars_birthz) > 1:
+        #     stars_age = cosmic_time_approx_Gyr(
+        #         z=0.0, Omega_L=self.Omega_l, Hubble_time=self.hubble_time_Gyr
+        #     ) - cosmic_time_approx_Gyr(
+        #         z=stars_birthz, Omega_L=self.Omega_l, Hubble_time=self.hubble_time_Gyr
+        #     )
+        # else:
+        #     stars_age = 0.0
+        #
+        # stars_Z = self.snapshot.stars.metal_mass_fractions[mask_stars].value
+        # stars_initmass = (
+        #     self.snapshot.stars.initial_masses[mask_stars].value * self.to_Msun_units
+        # )
+        #
+        # stars_n_parts = len(stars_mass)
+        # stars_data = np.zeros((stars_n_parts, 20))
+        # stars_data[:, 0:3] = (
+        #     self.snapshot.stars.coordinates[mask_stars].value
+        #     * self.a
+        #     * self.to_kpc_units
+        # )
+        # stars_data[:, 3] = stars_mass
+        # stars_data[:, 4:7] = self.snapshot.stars.velocities[
+        #     mask_stars
+        # ].value  # km/s  # km/s
+        # stars_data[:, 7] = 0.5 * self.baryon_max_soft * np.ones(stars_mass.size)
+        # stars_data[:, 8] = stars_mass * (1.2348 / stars_data[:, 7]) ** 3
+        # stars_data[:, 9] = stars_age
+        # stars_data[:, 10] = stars_Z
+        # stars_data[:, 11] = stars_initmass
+        #
+        # stars_data[:, 12] = self.snapshot.stars.element_mass_fractions.oxygen[mask_stars].value
+        # stars_data[:, 13] = self.snapshot.stars.element_mass_fractions.iron[mask_stars].value
+        # stars_data[:, 14] = self.snapshot.stars.element_mass_fractions.magnesium[mask_stars].value
+        # stars_data[:, 15] = self.snapshot.stars.element_mass_fractions.hydrogen[mask_stars].value
+        # stars_data[:, 16] = self.snapshot.stars.element_mass_fractions.carbon[mask_stars].value
+        # stars_data[:, 17] = self.snapshot.stars.element_mass_fractions.silicon[mask_stars].value
+        # stars_data[:, 18] = self.snapshot.stars.element_mass_fractions.europium[mask_stars].value
+        # stars_data[:, 19] = np.zeros(stars_n_parts)
+        #
+        # indx = self.halo_data.halo_ids == halo_id
+        # x = stars_data[:, 0] - self.halo_data.xminpot[indx]
+        # y = stars_data[:, 1] - self.halo_data.yminpot[indx]
+        # z = stars_data[:, 2] - self.halo_data.zminpot[indx]
+        # r = x**2 + y**2 + z**2
+        # halo_stars = np.where(r > 10**2)[0] #further than 8kpc?
+        # stars_data[halo_stars, 19] = np.ones(len(halo_stars))
+        #
+        # return gas_data, stars_data
 
-        gas_data[:, 3] = gas_mass
-        gas_data[:, 4:7] = self.snapshot.gas.velocities[mask_gas].value  # km/s
-        gas_data[:, 7] = (
-            self.snapshot.gas.smoothing_lengths[mask_gas].value
-            * self.a
-            * self.to_kpc_units
-        )
-
-        XH = self.snapshot.gas.element_mass_fractions.hydrogen[mask_gas].value
-        gas_HI = self.snapshot.gas.species_fractions.HI[mask_gas].value
-        gas_H2 = self.snapshot.gas.species_fractions.H2[mask_gas].value * 2.0
-
-        gas_data[:, 8] = gas_HI * XH * gas_mass
-        gas_data[:, 9] = gas_H2 * XH * gas_mass
-
-        gas_data[:, 10] = (
-            self.snapshot.gas.star_formation_rates[mask_gas].value
-            * self.to_Msun_units
-            / self.to_yr_units
-        )
-        gas_data[:, 11] = (
-            self.snapshot.gas.densities[mask_gas].value
-            * (self.a * self.to_Msun_units / self.to_kpc_units) ** 3
-        )
-        gas_data[:, 12] = (
-            self.snapshot.gas.metal_mass_fractions[mask_gas].value / self.Zsolar
-        )
-
-        stars_mass = self.snapshot.stars.masses[mask_stars].value * self.to_Msun_units
-        stars_birthz = (
-            1.0 / self.snapshot.stars.birth_scale_factors[mask_stars].value - 1.0
-        )
-
-        if len(stars_birthz) > 1:
-            stars_age = cosmic_time_approx_Gyr(
-                z=0.0, Omega_L=self.Omega_l, Hubble_time=self.hubble_time_Gyr
-            ) - cosmic_time_approx_Gyr(
-                z=stars_birthz, Omega_L=self.Omega_l, Hubble_time=self.hubble_time_Gyr
-            )
-        else:
-            stars_age = 0.0
-
-        stars_Z = self.snapshot.stars.metal_mass_fractions[mask_stars].value
-        stars_initmass = (
-            self.snapshot.stars.initial_masses[mask_stars].value * self.to_Msun_units
-        )
-
-        stars_n_parts = len(stars_mass)
-        stars_data = np.zeros((stars_n_parts, 20))
-        stars_data[:, 0:3] = (
-            self.snapshot.stars.coordinates[mask_stars].value
-            * self.a
-            * self.to_kpc_units
-        )
-        stars_data[:, 3] = stars_mass
-        stars_data[:, 4:7] = self.snapshot.stars.velocities[
-            mask_stars
-        ].value  # km/s  # km/s
-        stars_data[:, 7] = 0.5 * self.baryon_max_soft * np.ones(stars_mass.size)
-        stars_data[:, 8] = stars_mass * (1.2348 / stars_data[:, 7]) ** 3
-        stars_data[:, 9] = stars_age
-        stars_data[:, 10] = stars_Z
-        stars_data[:, 11] = stars_initmass
-
-        stars_data[:, 12] = self.snapshot.stars.element_mass_fractions.oxygen[mask_stars].value
-        stars_data[:, 13] = self.snapshot.stars.element_mass_fractions.iron[mask_stars].value
-        stars_data[:, 14] = self.snapshot.stars.element_mass_fractions.magnesium[mask_stars].value
-        stars_data[:, 15] = self.snapshot.stars.element_mass_fractions.hydrogen[mask_stars].value
-        stars_data[:, 16] = self.snapshot.stars.element_mass_fractions.carbon[mask_stars].value
-        stars_data[:, 17] = self.snapshot.stars.element_mass_fractions.silicon[mask_stars].value
-        stars_data[:, 18] = self.snapshot.stars.element_mass_fractions.europium[mask_stars].value
-        stars_data[:, 19] = np.zeros(stars_n_parts)
-
-        indx = self.halo_data.halo_ids == halo_id
-        x = stars_data[:, 0] - self.halo_data.xminpot[indx]
-        y = stars_data[:, 1] - self.halo_data.yminpot[indx]
-        z = stars_data[:, 2] - self.halo_data.zminpot[indx]
-        r = x**2 + y**2 + z**2
-        halo_stars = np.where(r > 10**2)[0] #further than 8kpc?
-        stars_data[halo_stars, 19] = np.ones(len(halo_stars))
-
-        return gas_data, stars_data
-
-    def calculate_morphology(
-        self, part_data: np.ndarray, halo_index: int, parttype: int
-    ):
+    def calculate_morphology(self, halo_index: int):
         """
         Computes morphological properties of a given halo
 

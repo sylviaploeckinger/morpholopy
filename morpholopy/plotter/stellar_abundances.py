@@ -162,6 +162,12 @@ def plot_GALAH_data(element, galah_edges, galah_data):
     #contour.collections[0].set_label(['GALAH DR3'])
 
 
+def load_strontium_data():
+    file = './plotter/obs_data/Buder21_Strontium.txt'
+    data = np.loadtxt(file)
+    FeH_mw = data[:, 0]
+    SrFe_mw = data[:, 1]
+    return FeH_mw, SrFe_mw
 
 def load_MW_data_with_Mg_Fe():
     file = './plotter/obs_data/MW.txt'
@@ -171,7 +177,7 @@ def load_MW_data_with_Mg_Fe():
     return FeH_mw, MgFe_mw
 
 def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_fraction,
-                   Carbon_fraction, Silicon_fraction, Europium_fraction):
+                   Carbon_fraction, Silicon_fraction, Europium_fraction, Barium_fraction, Strontium_fraction):
     
     mp_in_cgs = 1.6737236e-24
     mH_in_cgs = 1.00784 * mp_in_cgs
@@ -181,7 +187,8 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
     mC_in_cgs =  12.0107 * mp_in_cgs
     mSi_in_cgs = 28.0855 * mp_in_cgs
     mEu_in_cgs = 151.964 * mp_in_cgs
-                
+    mBa_in_cgs = 137.327 * mp_in_cgs
+    mSr_in_cgs = 87.62 * mp_in_cgs
 
     # Asplund et al. (2009)
     Fe_H_Sun = 7.5
@@ -190,12 +197,16 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
     C_H_Sun = 8.43
     Si_H_Sun = 7.51
     Eu_H_Sun = 0.52
+    Ba_H_Sun = 2.18
+    Sr_H_Sun = 2.87
 
     O_Fe_Sun = O_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mO_in_cgs)
     Mg_Fe_Sun = Mg_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mMg_in_cgs)
     C_Fe_Sun = C_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mC_in_cgs)
     Si_Fe_Sun = Si_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mSi_in_cgs)
     Eu_Fe_Sun = Eu_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mEu_in_cgs)
+    Ba_Fe_Sun = Ba_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mBa_in_cgs)
+    Sr_Fe_Sun = Sr_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mSr_in_cgs)
     Fe_H_Sun = Fe_H_Sun - 12.0 - np.log10(mH_in_cgs / mFe_in_cgs)
 
     Fe_H = np.log10(Iron_fraction / Hydrogen_fraction) - Fe_H_Sun
@@ -204,9 +215,9 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
     C_Fe = np.log10(Carbon_fraction / Iron_fraction) - C_Fe_Sun
     Si_Fe = np.log10(Silicon_fraction / Iron_fraction) - Si_Fe_Sun
     Eu_Fe = np.log10(Europium_fraction / Iron_fraction) - Eu_Fe_Sun
+    Ba_Fe = np.log10(Barium_fraction / Iron_fraction) - Ba_Fe_Sun
+    Sr_Fe = np.log10(Strontium_fraction / Iron_fraction) - Sr_Fe_Sun
 
-    # print(C_Fe, Si_Fe, Eu_Fe)
-    
     # Let's set lower and upper limits:
     Fe_H[Iron_fraction == 0] = -7  # set lower limit
     Fe_H[Fe_H < -7] = -7  # set lower limit
@@ -225,9 +236,16 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
     Eu_Fe[Iron_fraction == 0] = -2  # set lower limit
     Eu_Fe[Europium_fraction == 0] = -2  # set lower limit
     Eu_Fe[Eu_Fe < -2] = -2  # set lower limit
+    Ba_Fe[Iron_fraction == 0] = -2  # set lower limit
+    Ba_Fe[Barium_fraction == 0] = -2  # set lower limit
+    Ba_Fe[Ba_Fe < -2] = -2  # set lower limit
+    Sr_Fe[Iron_fraction == 0] = -2  # set lower limit
+    Sr_Fe[Strontium_fraction == 0] = -2  # set lower limit
+    Sr_Fe[Sr_Fe < -2] = -2  # set lower limit
 
     return {'Fe_H':Fe_H, 'O_Fe':O_Fe, 'Mg_Fe':Mg_Fe,
-            'C_Fe':C_Fe, 'Si_Fe':Si_Fe, 'Eu_Fe':Eu_Fe}
+            'C_Fe':C_Fe, 'Si_Fe':Si_Fe, 'Eu_Fe':Eu_Fe,
+            'Ba_Fe':Ba_Fe, 'Sr_Fe':Sr_Fe}
 
 def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
@@ -247,18 +265,16 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
     for i in tqdm(range(len(sample))):
 
-        gas_data, stars_data = sim_info.make_particle_data(
-            halo_id=sim_info.halo_data.halo_ids[sample[i]]
-        )
-        
-        O_stars = stars_data[:, 12]
-        Fe_stars = stars_data[:, 13]
-        Mg_stars = stars_data[:, 14]
-        H_stars = stars_data[:, 15]
-        C_stars = stars_data[:, 16]
-        Si_stars = stars_data[:, 17]
-        Eu_stars = stars_data[:, 18]
-        halo_stars = np.where(stars_data[:, 19] == 1)[0]
+        sim_info.make_particle_data(halo_id=sim_info.halo_data.halo_ids[sample[i]])
+
+        O_stars = sim_info.stars.oxygen
+        Fe_stars = sim_info.stars.iron
+        Mg_stars = sim_info.stars.magnesium
+        H_stars = sim_info.stars.hydrogen
+        C_stars = sim_info.stars.carbon
+        Si_stars = sim_info.stars.silicon
+        Eu_stars = sim_info.stars.europium
+        halo_stars = np.where(sim_info.stars.in_halo == 1)[0]
 
         Oxygen_fraction = np.append(Oxygen_fraction, O_stars)
         Iron_fraction = np.append(Iron_fraction, Fe_stars)
@@ -291,19 +307,21 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
     Carbon_fraction = []
     Silicon_fraction = []
     Europium_fraction = []
+    Strontium_fraction = []
+    Barium_fraction = []
 
     for i in tqdm(range(len(sample))):
-        gas_data, stars_data = sim_info.make_particle_data(
-            halo_id=sim_info.halo_data.halo_ids[sample[i]]
-        )
+        sim_info.make_particle_data(halo_id=sim_info.halo_data.halo_ids[sample[i]])
 
-        O_stars = stars_data[:, 12]
-        Fe_stars = stars_data[:, 13]
-        Mg_stars = stars_data[:, 14]
-        H_stars = stars_data[:, 15]
-        C_stars = stars_data[:, 16]
-        Si_stars = stars_data[:, 17]
-        Eu_stars = stars_data[:, 18]
+        O_stars = sim_info.stars.oxygen
+        Fe_stars = sim_info.stars.iron
+        Mg_stars = sim_info.stars.magnesium
+        H_stars = sim_info.stars.hydrogen
+        C_stars = sim_info.stars.carbon
+        Si_stars = sim_info.stars.silicon
+        Eu_stars = sim_info.stars.europium
+        Ba_stars = sim_info.stars.barium
+        Sr_stars = sim_info.stars.strontium
 
         Oxygen_fraction = np.append(Oxygen_fraction, O_stars)
         Iron_fraction = np.append(Iron_fraction, Fe_stars)
@@ -312,11 +330,13 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
         Carbon_fraction = np.append(Carbon_fraction, C_stars)
         Silicon_fraction = np.append(Silicon_fraction, Si_stars)
         Europium_fraction = np.append(Europium_fraction, Eu_stars)
+        Barium_fraction = np.append(Barium_fraction, Ba_stars)
+        Strontium_fraction = np.append(Strontium_fraction, Sr_stars)
 
     ratios = compute_ratios(Hydrogen_fraction, Magnesium_fraction, 
                             Oxygen_fraction, Iron_fraction,
                             Carbon_fraction, Silicon_fraction,
-                            Europium_fraction)
+                            Europium_fraction, Barium_fraction, Strontium_fraction)
     return ratios
 
 
@@ -482,7 +502,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     plt.savefig(f"{output_path}/Mg_Fe_" + sim_info.simulation_name + ".png", dpi=200)
 
     # make remaining plots with just GALAH data (Buder+21)
-    for el in ['C','Si','Eu']:
+    for el in ['C','Si','Eu','Ba']:
         fig = plt.figure(figsize=(3.8,3))
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
@@ -505,6 +525,32 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
                    columnspacing=0.02)
         plt.tight_layout()
         plt.savefig(f"{output_path}/{el}_Fe_" + sim_info.simulation_name + ".png", dpi=200)
+
+    ######
+    FeH_MW, SrFe_MW = load_strontium_data()
+
+    fig = plt.figure(figsize=(3.8, 3))
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plt.plot(Fe_H, ratios_MW['Sr_Fe'], 'o', ms=0.5, color='grey')
+    plt.plot(FeH_MW, SrFe_MW, '+', color='tab:red', ms=4, label='MW/GALAH DR3')
+
+    bins = np.arange(-7.2, 1, 0.2)
+    ind = np.digitize(Fe_H, bins)
+    xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
+    ym = [np.median(ratios_MW['Sr_Fe'][ind == i]) for i in range(1, len(bins)) if
+          len(ratios_MW['Sr_Fe'][ind == i]) > 10]
+    plt.plot(xm, ym, '-', lw=1.5, color='black', label=sim_info.simulation_name)
+
+    plt.xlabel("[Fe/H]", labelpad=2)
+    plt.ylabel("[Sr/Fe]", labelpad=2)
+    plt.text(-3.8, 1.2, "MW-type galaxies")
+    plt.axis([-4, 1, -2, 1.5])
+    plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               columnspacing=0.02)
+    plt.tight_layout()
+    plt.savefig(f"{output_path}/Sr_Fe_" + sim_info.simulation_name + ".png", dpi=200)
 
     if abundance_data == None:
         abundance_data = {'Fe_H': Fe_H_median, 'O_Fe': O_Fe_median, 'Mg_Fe': Mg_Fe_median, 'counter':counter}

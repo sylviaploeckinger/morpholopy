@@ -34,7 +34,40 @@ class ParticleIds:
         particles_file.close()
         snapshot_file.close()
 
-    def make_masks_gas_and_stars(self, halo_id: int) -> Tuple[np.ndarray, np.ndarray]:
+    def make_mask_gas(self, halo_id: int) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Find gas and stellar particle ids that belong to a halo with the provided id
+
+        Parameters
+        ----------
+        halo_id: int
+        Halo id from the catalogue
+
+        Returns
+        -------
+        Output: Tuple[np.ndarray, np.ndarray]
+        A tuple containing ids of the stellar particles and gas particles
+        """
+
+        halo_start_position = self.halo_ids[halo_id]
+        halo_end_position = self.halo_ids[halo_id + 1]
+        particle_ids_in_halo = self.particle_ids_in_haloes[
+            halo_start_position:halo_end_position
+        ]
+
+        _, _, mask_gas = np.intersect1d(
+            particle_ids_in_halo,
+            self.gas_ids,
+            assume_unique=True,
+            return_indices=True,
+        )
+
+        # Ensure that there are no negative indices
+        mask_gas = mask_gas[mask_gas > 0]
+
+        return mask_gas
+
+    def make_mask_stars(self, halo_id: int) -> Tuple[np.ndarray, np.ndarray]:
         """
         Find gas and stellar particle ids that belong to a halo with the provided id
 
@@ -62,15 +95,8 @@ class ParticleIds:
             return_indices=True,
         )
 
-        _, _, mask_gas = np.intersect1d(
-            particle_ids_in_halo,
-            self.gas_ids,
-            assume_unique=True,
-            return_indices=True,
-        )
-
         # Ensure that there are no negative indices
-        mask_gas = mask_gas[mask_gas > 0]
         mask_stars = mask_stars[mask_stars > 0]
 
-        return mask_gas, mask_stars
+        return mask_stars
+

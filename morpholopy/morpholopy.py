@@ -11,7 +11,7 @@ from argumentparser import ArgumentParser
 # from plotter.plot_surface_densities import plot_surface_densities
 from plotter.stellar_abundances import plot_stellar_abundances
 from plotter.compare_abundances import compare_stellar_abundances
-from object import simulation_data
+from simulation import simulation_data
 # from plotter.loadplots import loadGalaxyPlots
 # from plotter import html
 # from tqdm import tqdm
@@ -42,53 +42,53 @@ def compute_galaxy_morpholopy(
     """
 
     # Read particle data for a specific halo
-    gas_data, stars_data = sim_info.make_particle_data(
-        halo_id=sim_info.halo_data.halo_ids[halo_counter]
-    )
+    # gas_data, stars_data = sim_info.make_particle_data(
+    #     halo_id=sim_info.halo_data.halo_ids[halo_counter]
+    # )
+    sim_info.make_particle_data(halo_id=sim_info.halo_data.halo_ids[halo_counter])
 
-    if len(gas_data) == 0:
+    if sim_info.gas.n_parts == 0:
         return
 
     # Calculate morphology estimators: kappa, axial ratios for stars ..
-    stars_ang_momentum, stars_data = sim_info.calculate_morphology(
-        stars_data, halo_counter, 4
-    )
+    # also, kappa, axial ratios for HI+H2 gas ..
+    # stars_ang_momentum, stars_data, gas_ang_momentum, gas_data = sim_info.calculate_morphology(
+    #     halo_counter, 4
+    # )
 
-    # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
-    gas_ang_momentum, gas_data = sim_info.calculate_morphology(
-        gas_data, halo_counter, 0
-    )
+    # # Calculate morphology estimators: kappa, axial ratios for HI+H2 gas ..
+    # gas_ang_momentum, gas_data = sim_info.calculate_morphology(
+    #     halo_counter, 0
+    # )
 
     # Calculate stellar luminosities
-    star_abmags = sim_info.calculate_luminosities(stars_data)
+    # star_abmags = sim_info.calculate_luminosities()
 
     # Calculate surface densities for HI+H2 gas ..
-    calculate_surface_densities(
-        gas_data, gas_ang_momentum, sim_info.halo_data, halo_counter
-    )
+    # calculate_surface_densities(sim_info, gas_ang_momentum, halo_counter)
 
     # Make plots for individual galaxies, perhaps.. only first 10
-    if halo_counter < num_galaxies:
-        visualize_galaxy(
-            stars_data,
-            gas_data,
-            star_abmags,
-            stars_ang_momentum,
-            gas_ang_momentum,
-            sim_info.halo_data,
-            halo_counter,
-            output_path,
-            sim_info.simulation_name,
-        )
-
-        make_KS_plots(
-            gas_data,
-            stars_ang_momentum,
-            halo_counter,
-            output_path,
-            sim_info.simulation_name,
-            sim_info.combined_data,
-        )
+    # if halo_counter < num_galaxies:
+    #     visualize_galaxy(
+    #         stars_data,
+    #         gas_data,
+    #         star_abmags,
+    #         stars_ang_momentum,
+    #         gas_ang_momentum,
+    #         sim_info.halo_data,
+    #         halo_counter,
+    #         output_path,
+    #         sim_info.simulation_name,
+    #     )
+    #
+    #     make_KS_plots(
+    #         gas_data,
+    #         stars_ang_momentum,
+    #         halo_counter,
+    #         output_path,
+    #         sim_info.simulation_name,
+    #         sim_info.combined_data,
+    #     )
 
     return
 
