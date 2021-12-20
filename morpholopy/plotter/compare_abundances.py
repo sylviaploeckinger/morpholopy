@@ -1,7 +1,7 @@
 import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
 import numpy as np
-from simulation_data import simulation_data
+from loadSimulationData import SimInfo
 from .stellar_abundances import calculate_abundaces_from_MW_type_galaxies, \
     load_MW_data, load_GALAH_data, plot_GALAH_data, load_MW_data_with_Mg_Fe
 
@@ -23,10 +23,10 @@ def compare_stellar_abundances(config):
         catalogue = config.catalogue_list[sim]
         sim_name = config.name_list[sim]
 
-        sim_info = simulation_data.SimInfo(directory=directory,
-                                           snapshot=snapshot,
-                                           catalogue=catalogue,
-                                           name=sim_name,)
+        sim_info = SimInfo(directory=directory,
+                           snapshot=snapshot,
+                           catalogue=catalogue,
+                           name=sim_name,)
 
         output_name_list.append(sim_info.simulation_name)
 
