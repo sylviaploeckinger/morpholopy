@@ -138,7 +138,7 @@ def main(config: ArgumentParser):
         #     f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
         # )
 
-        plot_stellar_abundances(sim_info=sim_info, output_path=config.output_directory)
+        #plot_stellar_abundances(sim_info=sim_info, output_path=config.output_directory)
 
         # # Compute morphological properties (loop over haloes)
         # print("Computing morphological properties...")

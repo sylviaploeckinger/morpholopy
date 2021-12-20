@@ -1,8 +1,14 @@
 #!/bin/bash
 
-python morpholopy.py -d ../../ \
-                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
-                     -o ../../Morpholopy_Plots/
+python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Test_yield_tables/L12N188_newAGB_oldSNII_SNIa2Gyr/ \
+                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/EAGLE_SNIa_Fe_05_Mg_2_L012N188/ \
+                     -s colibre_0036.hdf5 colibre_0036.hdf5 -c halo_0036.properties halo_0036.properties \
+                     -n L12newAGB L12oldyields \
+                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/
+
+#python morpholopy.py -d ../../ \
+#                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
+#                     -o ../../Morpholopy_Plots/
 
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-chai1/HAWK/123b2_121b2_SNII_Mg_2_Fe_1_L012N188/ \
