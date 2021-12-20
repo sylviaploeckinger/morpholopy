@@ -1,7 +1,7 @@
 import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
 import numpy as np
-from loadSimulationData import SimInfo
+#from loadSimulationData import SimInfo
 from .stellar_abundances import calculate_abundaces_from_MW_type_galaxies, \
     load_MW_data, load_GALAH_data, plot_GALAH_data, load_MW_data_with_Mg_Fe
 

@@ -99,7 +99,7 @@ def main(config: ArgumentParser):
     output_name_list = []
     output_number_of_galaxies_list = []
     web = None
-    abundance_data = []
+    abundance_data = None
 
     # Loop over simulation list
     for sim in range(config.number_of_inputs):
@@ -152,7 +152,7 @@ def main(config: ArgumentParser):
         #         halo_counter=i,
         #     )
 
-    if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_path)
+    if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
 
     #     write_morphology_data_to_file(
     #         sim_info.halo_data,

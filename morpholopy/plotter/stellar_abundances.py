@@ -514,7 +514,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         O_Fe = abundance_data['O_Fe']
         O_Fe = np.append(O_Fe,O_Fe_median)
         Mg_Fe = abundance_data['Mg_Fe']
-        Mg_Fe = np.append(Fe_H,Mg_Fe_median)
+        Mg_Fe = np.append(Mg_Fe,Mg_Fe_median)
         counter_sim = abundance_data['counter']
         counter_sim = np.append(counter_sim, counter)
         abundance_data = {'Fe_H': Fe_H, 'O_Fe': O_Fe, 'Mg_Fe': Mg_Fe, 'counter': counter_sim}
