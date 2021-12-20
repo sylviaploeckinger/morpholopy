@@ -10,6 +10,7 @@ from argumentparser import ArgumentParser
 # from plotter.plot_morphology import write_morphology_data_to_file, plot_morphology
 # from plotter.plot_surface_densities import plot_surface_densities
 from plotter.stellar_abundances import plot_stellar_abundances
+from plotter.compare_abundances import compare_stellar_abundances
 from object import simulation_data
 # from plotter.loadplots import loadGalaxyPlots
 # from plotter import html
@@ -117,7 +118,7 @@ def main(config: ArgumentParser):
             galaxy_min_stellar_mass=config.min_stellar_mass,
         )
 
-        #output_name_list.append(sim_info.simulation_name)
+        output_name_list.append(sim_info.simulation_name)
 
         # Make initial part of the webpage
         # if sim == 0:
@@ -149,6 +150,8 @@ def main(config: ArgumentParser):
         #         output_path=config.output_directory,
         #         halo_counter=i,
         #     )
+
+    if len(output_name_list) > 1: compare_stellar_abundances(config)
 
     #     write_morphology_data_to_file(
     #         sim_info.halo_data,
