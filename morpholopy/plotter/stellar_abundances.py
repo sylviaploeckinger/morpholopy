@@ -320,7 +320,7 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
     return ratios
 
 
-def plot_stellar_abundances(sim_info, output_path):
+def plot_stellar_abundances(sim_info, output_path, abundance_data):
 
     # Look for abundance ratios from COLIBRE snaps:
     ratios_MW, halo_stars = calculate_abundaces_from_MW_type_galaxies(sim_info)
@@ -379,6 +379,9 @@ def plot_stellar_abundances(sim_info, output_path):
     ym = [np.median(O_Fe[ind == i]) for i in range(1, len(bins)) if len(O_Fe[ind == i]) > 10]
     plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
     plt.plot(xm, ym, '-', lw=1.5, color='black', label=sim_info.simulation_name)
+    Fe_H_median = xm.copy()
+    O_Fe_median = ym.copy()
+    counter = len(xm)
 
     plt.text(-3.8, 1.3, "MW-type galaxies")
     plt.xlabel("[Fe/H]", labelpad=2)
@@ -440,6 +443,7 @@ def plot_stellar_abundances(sim_info, output_path):
     ym = [np.median(Mg_Fe[ind == i]) for i in range(1, len(bins)) if len(Mg_Fe[ind == i]) > 10]
     plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
     plt.plot(xm, ym, '-', lw=1.5, color='black',label=sim_info.simulation_name)
+    Mg_Fe_median = ym.copy()
 
     plt.xlabel("[Fe/H]", labelpad=2)
     plt.ylabel("[Mg/Fe]", labelpad=2)
@@ -501,4 +505,19 @@ def plot_stellar_abundances(sim_info, output_path):
                    columnspacing=0.02)
         plt.tight_layout()
         plt.savefig(f"{output_path}/{el}_Fe_" + sim_info.simulation_name + ".png", dpi=200)
+
+    if abundance_data == None:
+        abundance_data = {'Fe_H': Fe_H_median, 'O_Fe': O_Fe_median, 'Mg_Fe': Mg_Fe_median, 'counter':counter}
+    else:
+        Fe_H = abundance_data['Fe_H']
+        Fe_H = np.append(Fe_H,Fe_H_median)
+        O_Fe = abundance_data['O_Fe']
+        O_Fe = np.append(O_Fe,O_Fe_median)
+        Mg_Fe = abundance_data['Mg_Fe']
+        Mg_Fe = np.append(Fe_H,Mg_Fe_median)
+        counter_sim = abundance_data['counter']
+        counter_sim = np.append(counter_sim, counter)
+        abundance_data = {'Fe_H': Fe_H, 'O_Fe': O_Fe, 'Mg_Fe': Mg_Fe, 'counter': counter_sim}
+
+    return abundance_data
 
