@@ -262,6 +262,8 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
     Carbon_fraction = []
     Silicon_fraction = []
     Europium_fraction = []
+    Strontium_fraction = []
+    Barium_fraction = []
 
     for i in tqdm(range(len(sample))):
 
@@ -274,6 +276,8 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
         C_stars = sim_info.stars.carbon
         Si_stars = sim_info.stars.silicon
         Eu_stars = sim_info.stars.europium
+        Ba_stars = sim_info.stars.barium
+        Sr_stars = sim_info.stars.strontium
         halo_stars = np.where(sim_info.stars.in_halo == 1)[0]
 
         Oxygen_fraction = np.append(Oxygen_fraction, O_stars)
@@ -283,11 +287,14 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
         Carbon_fraction = np.append(Carbon_fraction, C_stars)
         Silicon_fraction = np.append(Silicon_fraction, Si_stars)
         Europium_fraction = np.append(Europium_fraction, Eu_stars)
+        Barium_fraction = np.append(Barium_fraction, Ba_stars)
+        Strontium_fraction = np.append(Strontium_fraction, Sr_stars)
 
     ratios = compute_ratios(Hydrogen_fraction, Magnesium_fraction, 
                             Oxygen_fraction, Iron_fraction,
                             Carbon_fraction, Silicon_fraction,
-                            Europium_fraction)
+                            Europium_fraction, Barium_fraction, Strontium_fraction)
+    
     return ratios, halo_stars
 
 
