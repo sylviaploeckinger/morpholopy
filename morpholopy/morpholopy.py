@@ -140,7 +140,7 @@ def main(config: ArgumentParser):
         #     f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
         # )
 
-        # abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
+        abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
 
         # # Compute morphological properties (loop over haloes)
         # print("Computing morphological properties...")
@@ -153,7 +153,7 @@ def main(config: ArgumentParser):
         #         halo_counter=i,
         #     )
 
-    # if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
+    if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
 
     #     write_morphology_data_to_file(
     #         sim_info.halo_data,
