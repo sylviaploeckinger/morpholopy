@@ -389,3 +389,191 @@ def loadGalaxyPlots(
         plots = PlotsInWeb.plots_details
         add_web_section(web, title, caption, id, plots)
         PlotsInWeb.reset_plots_list()
+
+
+def loadAbundancePlots(
+    web, output_path: str, name_list: List[int]
+):
+    """
+    @TODO Create separate .yaml config containing all necessary information about the plots
+    """
+
+    PlotsInWeb = PlotsInPipeline()
+
+    num_sims = len(name_list)
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Carbon abundance [C/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Grey dots correspond to individual stars in MW-type haloes, solid line shows the median relation. "
+        caption += "Contours corresponds to GALAH DR3 data (Buder+21) and are constructed from histogram of star counts "
+        caption += "using a log scale with a minimum star count of 10."
+        filename = "C_Fe_"+name_list[i]+".png"
+        id = abs(hash("Carbon %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [C/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "C_Fe_comparison.png"
+        id = abs(hash("Carbon comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    title = "Carbon"
+    id = abs(hash("Carbon section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Magensium abundance [Mg/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Left panel shows the stellar abundance of MW-type haloes, whereas right panel shows the abundance of satellites. "
+        caption += "Grey dots correspond to individual stars, solid line shows the median relation. "
+        caption += "Contours corresponds to GALAH DR3 data (Buder+21) and are constructed from histogram of star counts "
+        caption += "using a log scale with a minimum star count of 10. "
+        caption += "The observational data for MW, Carina, Fornax, Sculptor and Sagittarious, corresponds to a data compilation presented by Tolstoy, Hill & Tosi (2009)"
+        filename = "Mg_Fe_"+name_list[i]+".png"
+        id = abs(hash("Magnesium %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [Mg/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "Mg_Fe_comparison.png"
+        id = abs(hash("Magnesium comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    title = "Magnesium"
+    id = abs(hash("Magnesium section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Oxygen abundance [O/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Left panel shows the stellar abundance of MW-type haloes, whereas right panel shows the abundance of satellites. "
+        caption += "Grey dots correspond to individual stars, solid line shows the median relation. "
+        caption += "Contours corresponds to GALAH DR3 data (Buder+21) and are constructed from histogram of star counts "
+        caption += "using a log scale with a minimum star count of 10. "
+        caption += "The observational data for MW, Carina, Fornax, Sculptor and Sagittarious, corresponds to a data compilation presented by Tolstoy, Hill & Tosi (2009)"
+        filename = "O_Fe_"+name_list[i]+".png"
+        id = abs(hash("Magnesium %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [O/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "O_Fe_comparison.png"
+        id = abs(hash("Oxygen comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    title = "Oxygen"
+    id = abs(hash("Oxygen section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Silicon abundance [Si/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Grey dots correspond to individual stars within MW-type haloes, the solid line shows the median relation. "
+        caption += "Contours corresponds to GALAH DR3 data (Buder+21) and are constructed from histogram of star counts "
+        caption += "using a log scale with a minimum star count of 10. "
+        filename = "Si_Fe_"+name_list[i]+".png"
+        id = abs(hash("Silicon %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [Si/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "Si_Fe_comparison.png"
+        id = abs(hash("Silicon comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    title = "Silicon"
+    id = abs(hash("Silicon section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Strontium abundance [Sr/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Grey dots correspond to individual stars within MW-type haloes, the solid line shows the median relation. "
+        caption += "Coloured symbols correspond to observational data from Roederer et al. (2014) and Spite et al. (2018)."
+        filename = "Sr_Fe_"+name_list[i]+".png"
+        id = abs(hash("Strontium %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [Sr/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "Sr_Fe_comparison.png"
+        id = abs(hash("Strontium_comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    title = "Strontium"
+    id = abs(hash("Strontium section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Barium abundance [Ba/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Grey dots correspond to individual stars within MW-type haloes, the solid line shows the median relation. "
+        caption += "Contours corresponds to GALAH DR3 data (Buder+21) and are constructed from histogram of star counts "
+        caption += "using a log scale with a minimum star count of 10. "
+        filename = "Ba_Fe_"+name_list[i]+".png"
+        id = abs(hash("Barium %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [Ba/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "Ba_Fe_comparison.png"
+        id = abs(hash("Barium comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Barium"
+    id = abs(hash("Barium section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Eruopium abundance [Eu/Fe] as a function of Iron abundance [Fe/H]. "
+        caption += "Grey dots correspond to individual stars within MW-type haloes, the solid line shows the median relation. "
+        caption += "Contours corresponds to GALAH DR3 data (Buder+21) and are constructed from histogram of star counts "
+        caption += "using a log scale with a minimum star count of 10. "
+        filename = "Eu_Fe_"+name_list[i]+".png"
+        id = abs(hash("Europium %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Comparison"
+        caption = "Comparison between the [Eu/Fe]-[Fe/H] median relations from each simulation listed in this catalogue."
+        filename = "Eu_Fe_comparison.png"
+        id = abs(hash("Europium comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Europium"
+    id = abs(hash("Europium section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()

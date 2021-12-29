@@ -162,12 +162,38 @@ def plot_GALAH_data(element, galah_edges, galah_data):
     #contour.collections[0].set_label(['GALAH DR3'])
 
 
-def load_strontium_data():
-    file = './plotter/obs_data/Buder21_Strontium.txt'
+def load_strontium_data_Roeder():
+    file = './plotter/obs_data/Roeder_2014.txt'
+    # Roeder are calculated wrt to Asplund+ solar metallicity
     data = np.loadtxt(file)
-    FeH_mw = data[:, 0]
-    SrFe_mw = data[:, 1]
-    return FeH_mw, SrFe_mw
+    FeH= data[:, 0]
+    SrFe = data[:, 1]
+    return FeH, SrFe
+
+def load_strontium_data_Spite():
+    file = './plotter/obs_data/Spite_2018.txt'
+    # Roeder are calculated wrt to Lodder+ solar metallicity
+    Fe_H_Sun = 7.50
+    Eu_H_Sun = 0.53
+    Ba_H_Sun = 2.18
+    Sr_H_Sun = 2.9
+    Sr_Fe_Sun = Sr_H_Sun - Fe_H_Sun
+
+    # Asplund et al. (2009)
+    Fe_H_Sun_As09 = 7.50
+    Eu_H_Sun_As09 = 0.52
+    Ba_H_Sun_As09 = 2.18
+    Sr_H_Sun_As09 = 2.87
+
+    Eu_Fe_Sun_As09 = Eu_H_Sun_As09 - Fe_H_Sun_As09
+    Ba_Fe_Sun_As09 = Ba_H_Sun_As09 - Fe_H_Sun_As09
+    Sr_Fe_Sun_As09 = Sr_H_Sun_As09 - Fe_H_Sun_As09
+
+    data = np.loadtxt(file)
+    FeH = data[:, 0]
+    SrFe = data[:, 1] + Sr_Fe_Sun - Sr_Fe_Sun_As09
+
+    return FeH, SrFe
 
 def load_MW_data_with_Mg_Fe():
     file = './plotter/obs_data/MW.txt'
@@ -523,6 +549,10 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         ym = [np.median(ratios_MW[f'{el}_Fe'][ind == i]) for i in range(1, len(bins)) if len(ratios_MW[f'{el}_Fe'][ind == i]) > 10]
         plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
         plt.plot(xm, ym, '-', lw=1.5, color='black',label=sim_info.simulation_name)
+        if el == 'C': C_Fe_median = ym.copy()
+        if el == 'Si': Si_Fe_median = ym.copy()
+        if el == 'Eu': Eu_Fe_median = ym.copy()
+        if el == 'Ba': Ba_Fe_median = ym.copy()
 
         plt.xlabel("[Fe/H]", labelpad=2)
         plt.ylabel(f"[{el}/Fe]", labelpad=2)
@@ -534,14 +564,16 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         plt.savefig(f"{output_path}/{el}_Fe_" + sim_info.simulation_name + ".png", dpi=200)
 
     ######
-    FeH_MW, SrFe_MW = load_strontium_data()
+    FeH_Ro, SrFe_Ro = load_strontium_data_Roeder()
+    FeH_Sp, SrFe_Sp = load_strontium_data_Spite()
 
     fig = plt.figure(figsize=(3.8, 3))
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
     plt.plot(Fe_H, ratios_MW['Sr_Fe'], 'o', ms=0.5, color='grey')
-    plt.plot(FeH_MW, SrFe_MW, '+', color='tab:red', ms=4, label='MW/GALAH DR3')
+    plt.plot(FeH_Ro, SrFe_Ro, '+', color='crimson', ms=4, label='Roederer et al. (2014)')
+    plt.plot(FeH_Sp, SrFe_Sp, 'o', color='blue', ms=4, label='Spite et al. (2018)')
 
     bins = np.arange(-7.2, 1, 0.2)
     ind = np.digitize(Fe_H, bins)
@@ -549,6 +581,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     ym = [np.median(ratios_MW['Sr_Fe'][ind == i]) for i in range(1, len(bins)) if
           len(ratios_MW['Sr_Fe'][ind == i]) > 10]
     plt.plot(xm, ym, '-', lw=1.5, color='black', label=sim_info.simulation_name)
+    Sr_Fe_median = ym.copy()
 
     plt.xlabel("[Fe/H]", labelpad=2)
     plt.ylabel("[Sr/Fe]", labelpad=2)
@@ -560,7 +593,15 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     plt.savefig(f"{output_path}/Sr_Fe_" + sim_info.simulation_name + ".png", dpi=200)
 
     if abundance_data == None:
-        abundance_data = {'Fe_H': Fe_H_median, 'O_Fe': O_Fe_median, 'Mg_Fe': Mg_Fe_median, 'counter':counter}
+        abundance_data = {'Fe_H': Fe_H_median,
+                          'O_Fe': O_Fe_median,
+                          'Mg_Fe': Mg_Fe_median,
+                          'C_Fe': C_Fe_median,
+                          'Ba_Fe': Ba_Fe_median,
+                          'Sr_Fe': Sr_Fe_median,
+                          'Si_Fe': Si_Fe_median,
+                          'Eu_Fe': Eu_Fe_median,
+                          'counter':counter}
     else:
         Fe_H = abundance_data['Fe_H']
         Fe_H = np.append(Fe_H,Fe_H_median)
@@ -568,9 +609,27 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         O_Fe = np.append(O_Fe,O_Fe_median)
         Mg_Fe = abundance_data['Mg_Fe']
         Mg_Fe = np.append(Mg_Fe,Mg_Fe_median)
+        C_Fe = abundance_data['C_Fe']
+        C_Fe = np.append(C_Fe, C_Fe_median)
+        Ba_Fe = abundance_data['Ba_Fe']
+        Ba_Fe = np.append(Ba_Fe, Ba_Fe_median)
+        Sr_Fe = abundance_data['Sr_Fe']
+        Sr_Fe = np.append(Sr_Fe, Sr_Fe_median)
+        Si_Fe = abundance_data['Si_Fe']
+        Si_Fe = np.append(Si_Fe, Si_Fe_median)
+        Eu_Fe = abundance_data['Eu_Fe']
+        Eu_Fe = np.append(Eu_Fe, Eu_Fe_median)
         counter_sim = abundance_data['counter']
         counter_sim = np.append(counter_sim, counter)
-        abundance_data = {'Fe_H': Fe_H, 'O_Fe': O_Fe, 'Mg_Fe': Mg_Fe, 'counter': counter_sim}
+        abundance_data = {'Fe_H': Fe_H,
+                          'O_Fe': O_Fe,
+                          'Mg_Fe': Mg_Fe,
+                          'C_Fe': C_Fe,
+                          'Ba_Fe': Ba_Fe,
+                          'Sr_Fe': Sr_Fe,
+                          'Eu_Fe': Eu_Fe,
+                          'Si_Fe': Si_Fe,
+                          'counter': counter_sim}
 
     return abundance_data
 

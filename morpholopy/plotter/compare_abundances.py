@@ -1,7 +1,9 @@
 import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
 import numpy as np
-from .stellar_abundances import load_MW_data, load_GALAH_data, plot_GALAH_data, load_MW_data_with_Mg_Fe
+from .stellar_abundances import load_MW_data, load_GALAH_data, \
+    plot_GALAH_data, load_MW_data_with_Mg_Fe, \
+    load_strontium_data_Roeder, load_strontium_data_Spite
 
 def compare_stellar_abundances(sims_data, output_name_list, output_path):
 
@@ -85,3 +87,65 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
     plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
                columnspacing=0.02)
     plt.savefig(f"{output_path}/Mg_Fe_comparison.png", dpi=200)
+
+    ########################
+    # Load data:
+    C_Fe_all = sims_data['C_Fe']
+    Ba_Fe_all = sims_data['Ba_Fe']
+    Sr_Fe_all = sims_data['Sr_Fe']
+    Eu_Fe_all = sims_data['Eu_Fe']
+    Si_Fe_all = sims_data['Si_Fe']
+
+    # make remaining plots with just GALAH data (Buder+21)
+    for el in ['C', 'Si', 'Eu', 'Ba']:
+        fig = plt.figure(figsize=(3.8, 3))
+        ax = plt.subplot(1, 1, 1)
+        plt.grid("True")
+
+        count = 0
+        color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
+        for i in range(len(output_name_list)):
+            xm = Fe_H_all[count:count + counter[i]]
+            if el == 'C': ym = C_Fe_all[count:count + counter[i]]
+            if el == 'Ba': ym = Ba_Fe_all[count:count + counter[i]]
+            if el == 'Eu': ym = Eu_Fe_all[count:count + counter[i]]
+            if el == 'Si': ym = Si_Fe_all[count:count + counter[i]]
+            count += counter[i]
+
+            if i == 0: plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
+            plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+        plot_GALAH_data(el, galah_edges, GALAHdata)
+        plt.xlabel("[Fe/H]", labelpad=2)
+        plt.ylabel(f"[{el}/Fe]", labelpad=2)
+        plt.text(-3.8, 1.2, "MW-type galaxies")
+        plt.axis([-4, 1, -2, 1.5])
+        plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+                   columnspacing=0.02)
+        plt.tight_layout()
+        plt.savefig(f"{output_path}/{el}_Fe_comparison.png", dpi=200)
+
+    FeH_Ro, SrFe_Ro = load_strontium_data_Roeder()
+    FeH_Sp, SrFe_Sp = load_strontium_data_Spite()
+
+    fig = plt.figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    count = 0
+    for i in range(len(output_name_list)):
+        xm = Fe_H_all[count:count + counter[i]]
+        ym = Sr_Fe_all[count:count + counter[i]]
+        count += counter[i]
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.plot(FeH_Ro, SrFe_Ro, '+', color='crimson', ms=4, label='Roederer et al. (2014)')
+    plt.plot(FeH_Sp, SrFe_Sp, 'o', color='blue', ms=4, label='Spite et al. (2018)')
+
+    plt.xlabel("[Fe/H]", labelpad=2)
+    plt.ylabel("[Sr/Fe]", labelpad=2)
+    plt.text(-3.8, 1.2, "MW-type galaxies")
+    plt.axis([-4, 1, -2, 1.5])
+    plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               columnspacing=0.02)
+    plt.savefig(f"{output_path}/Sr_Fe_comparison.png", dpi=200)

@@ -13,7 +13,8 @@ from plotter.stellar_abundances import plot_stellar_abundances
 from plotter.compare_abundances import compare_stellar_abundances
 from simulation import simulation_data
 # from plotter.loadplots import loadGalaxyPlots
-# from plotter import html
+from plotter.loadplots import loadAbundancePlots
+from plotter import html
 # from tqdm import tqdm
 from time import time
 
@@ -122,11 +123,11 @@ def main(config: ArgumentParser):
         output_name_list.append(sim_info.simulation_name)
 
         # Make initial part of the webpage
-        # if sim == 0:
-        #     web = html.make_web(sim_info.snapshot)
-        # elif web is not None:
-        #     html.add_metadata_to_web(web, sim_info.snapshot)
-        #
+        if sim == 0:
+            web = html.make_web(sim_info.snapshot)
+        elif web is not None:
+            html.add_metadata_to_web(web, sim_info.snapshot)
+
         # # Load luminosity tables
         # simulation_data.SimInfo.load_photometry_grid()
         #
@@ -139,7 +140,7 @@ def main(config: ArgumentParser):
         #     f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
         # )
 
-        abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
+        # abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
 
         # # Compute morphological properties (loop over haloes)
         # print("Computing morphological properties...")
@@ -152,7 +153,7 @@ def main(config: ArgumentParser):
         #         halo_counter=i,
         #     )
 
-    if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
+    # if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
 
     #     write_morphology_data_to_file(
     #         sim_info.halo_data,
@@ -187,9 +188,11 @@ def main(config: ArgumentParser):
     #     num_galaxies_to_show,
     #     output_name_list,
     # )
-    #
-    # # Finish and output html file
-    # html.render_web(web, config.output_directory)
+
+    loadAbundancePlots(web, config.output_directory, output_name_list)
+
+    # Finish and output html file
+    html.render_web(web, config.output_directory)
 
     # Compute how much time it took to run the script
     time_end = time()
