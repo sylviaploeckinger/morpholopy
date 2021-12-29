@@ -463,7 +463,7 @@ def loadAbundancePlots(
         caption += "using a log scale with a minimum star count of 10. "
         caption += "The observational data for MW, Carina, Fornax, Sculptor and Sagittarious, corresponds to a data compilation presented by Tolstoy, Hill & Tosi (2009)"
         filename = "O_Fe_"+name_list[i]+".png"
-        id = abs(hash("Magnesium %i" %i))
+        id = abs(hash("Oxygen %i" %i))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     if num_sims > 1:
