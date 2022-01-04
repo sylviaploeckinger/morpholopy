@@ -159,9 +159,32 @@ def plot_GALAH_data(element, galah_edges, galah_data):
                                  galah_edges[0], galah_edges[-1]],
                           zorder=100,
                           cmap='winter',
-                          linewidths=1)
+                          linewidths=0.5)
     #contour.collections[0].set_label(['GALAH DR3'])
 
+def load_strontium_data_Zhao():
+    file = './plotter/obs_data/Zhao_2016.txt'
+    # Roeder are calculated wrt to Lodder+ solar metallicity
+    Fe_H_Sun = 7.50
+    Eu_H_Sun = 0.53
+    Ba_H_Sun = 2.18
+    Sr_H_Sun = 2.9
+    Sr_Fe_Sun = Sr_H_Sun - Fe_H_Sun
+
+    # Asplund et al. (2009)
+    Fe_H_Sun_As09 = 7.50
+    Eu_H_Sun_As09 = 0.52
+    Ba_H_Sun_As09 = 2.18
+    Sr_H_Sun_As09 = 2.87
+
+    Eu_Fe_Sun_As09 = Eu_H_Sun_As09 - Fe_H_Sun_As09
+    Ba_Fe_Sun_As09 = Ba_H_Sun_As09 - Fe_H_Sun_As09
+    Sr_Fe_Sun_As09 = Sr_H_Sun_As09 - Fe_H_Sun_As09
+
+    data = np.loadtxt(file)
+    FeH= data[:, 0]
+    SrFe = data[:, 1] + Sr_Fe_Sun - Sr_Fe_Sun_As09
+    return FeH, SrFe
 
 def load_strontium_data_Roeder():
     file = './plotter/obs_data/Roeder_2014.txt'
@@ -567,14 +590,16 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     ######
     FeH_Ro, SrFe_Ro = load_strontium_data_Roeder()
     FeH_Sp, SrFe_Sp = load_strontium_data_Spite()
+    FeH_Zh, SrFe_Zh = load_strontium_data_Zhao()
 
     fig = plt.figure(figsize=(3.8, 3))
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
-    plt.plot(Fe_H, ratios_MW['Sr_Fe'], 'o', ms=0.5, color='grey')
+    plt.plot(Fe_H, ratios_MW['Sr_Fe'], 'o', ms=0.5, color='grey',alpha=0.2)
     plt.plot(FeH_Ro, SrFe_Ro, '+', color='crimson', ms=4, label='Roederer et al. (2014)')
-    plt.plot(FeH_Sp, SrFe_Sp, 'o', color='blue', ms=4, label='Spite et al. (2018)')
+    plt.plot(FeH_Sp, SrFe_Sp, 'x', color='tab:blue', ms=4, label='Spite et al. (2018)')
+    plt.plot(FeH_Zh, SrFe_Zh, 'o', color='tab:orange', ms=3, label='Zhao et al. (2016)')
 
     bins = np.arange(-7.2, 1, 0.2)
     ind = np.digitize(Fe_H, bins)

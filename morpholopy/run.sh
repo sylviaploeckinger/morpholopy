@@ -42,14 +42,14 @@
 #                     -n SNIINewYieldsSNIapowerlaw05 SNIINewYieldsSNIapowerlaw15 \
 #                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/NomotoYieldsSNIaPowerLaw/
 
-python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_1 \
-                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_2 \
-                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_3 \
-                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_4 \
-                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
-                     -c halo_0036.properties halo_0036.properties halo_0036.properties halo_0036.properties \
-                     -n SNIIYieldsMmin13Mmax40 SNIIYieldsMmin10Mmax40 SNIIYieldsMmin7Mmax40 SNIIYieldsMmin13Mmax100 \
-                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/NomotoYieldsMassLimitTest/
+#python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_1 \
+#                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_2 \
+#                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_3 \
+#                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/New_yields_Model_limit_Mass_4 \
+#                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
+#                     -c halo_0036.properties halo_0036.properties halo_0036.properties halo_0036.properties \
+#                     -n SNIIYieldsMmin13Mmax40 SNIIYieldsMmin10Mmax40 SNIIYieldsMmin7Mmax40 SNIIYieldsMmin13Mmax100 \
+#                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/NomotoYieldsMassLimitTest/
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/L006N094_New_yields_Model_1 \
 #                      /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/L006N094_New_yields_Model_2 \
@@ -91,9 +91,9 @@ python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLI
 #                     -n L12newAGB L12oldyields \
 #                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/
 
-#python morpholopy.py -d ../../ \
-#                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
-#                     -o ../../Morpholopy_Plots/
+python morpholopy.py -d ../../ \
+                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
+                     -o ../../Morpholopy_Plots/
 
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-chai1/HAWK/123b2_121b2_SNII_Mg_2_Fe_1_L012N188/ \
