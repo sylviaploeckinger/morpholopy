@@ -158,7 +158,8 @@ def plot_GALAH_data(element, galah_edges, galah_data):
                          extent=[galah_edges[0], galah_edges[-1],
                                  galah_edges[0], galah_edges[-1]],
                           zorder=100,
-                          cmap='winter')
+                          cmap='winter',
+                          linewidths=1)
     #contour.collections[0].set_label(['GALAH DR3'])
 
 
@@ -485,7 +486,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     ax = plt.subplot(1, 2, 1)
     plt.grid("True")
 
-    plt.plot(Fe_H, Mg_Fe, 'o', ms=0.5, color='grey')
+    plt.plot(Fe_H, Mg_Fe, 'o', ms=0.5, color='grey',alpha=0.5)
 
     plt.plot(FeH_MW, MgFe_MW, '+', color='orange', ms=4, label='MW')
     plot_GALAH_data('Mg', galah_edges, GALAHdata)
@@ -540,7 +541,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
 
-        plt.plot(Fe_H, ratios_MW[f'{el}_Fe'], 'o', ms=0.5, color='grey')
+        plt.plot(Fe_H, ratios_MW[f'{el}_Fe'], 'o', ms=0.5, color='grey',alpha=0.5)
         plot_GALAH_data(el, galah_edges, GALAHdata)
 
         bins = np.arange(-7.2, 1, 0.2)
