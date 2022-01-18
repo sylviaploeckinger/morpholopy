@@ -95,6 +95,8 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
     Sr_Fe_all = sims_data['Sr_Fe']
     Eu_Fe_all = sims_data['Eu_Fe']
     Si_Fe_all = sims_data['Si_Fe']
+    N_Fe_all = sims_data['N_Fe']
+    Ne_Fe_all = sims_data['Ne_Fe']
 
     # make remaining plots with just GALAH data (Buder+21)
     for el in ['C', 'Si', 'Eu', 'Ba']:
@@ -116,6 +118,30 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
             plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
         plot_GALAH_data(el, galah_edges, GALAHdata)
+        plt.xlabel("[Fe/H]", labelpad=2)
+        plt.ylabel(f"[{el}/Fe]", labelpad=2)
+        plt.text(-3.8, 1.2, "MW-type galaxies")
+        plt.axis([-4, 1, -2, 1.5])
+        plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+                   columnspacing=0.02)
+        plt.tight_layout()
+        plt.savefig(f"{output_path}/{el}_Fe_comparison.png", dpi=200)
+
+    for el in ['N', 'Ne']:
+        fig = plt.figure(figsize=(3.8, 3))
+        ax = plt.subplot(1, 1, 1)
+        plt.grid("True")
+
+        count = 0
+        color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
+        for i in range(len(output_name_list)):
+            xm = Fe_H_all[count:count + counter[i]]
+            if el == 'N': ym = N_Fe_all[count:count + counter[i]]
+            if el == 'Ne': ym = Ne_Fe_all[count:count + counter[i]]
+            count += counter[i]
+            plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+        #plot_GALAH_data(el, galah_edges, GALAHdata)
         plt.xlabel("[Fe/H]", labelpad=2)
         plt.ylabel(f"[{el}/Fe]", labelpad=2)
         plt.text(-3.8, 1.2, "MW-type galaxies")
