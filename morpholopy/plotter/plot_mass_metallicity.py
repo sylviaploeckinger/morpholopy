@@ -293,6 +293,33 @@ def plot_gallazzi():
                  ls='none',color='purple',lw=1,ms=1,label='Gallazzi et al. (2021)')
 
 
+def plot_gallazzi_2005():
+    # Cosmology
+    h_sim = 0.6777
+    h_obs = 0.7
+    Z_solar_obs = 0.02
+    kroupa_to_chabrier_mass = 0.912
+    solar_metallicity = 0.0126
+
+    input_filename = "./plotter/obs_data/Gallazzi_2005_ascii.txt"
+    delimiter = "\t"
+
+    # Read the data
+    raw = np.loadtxt(input_filename, delimiter=delimiter)
+    M_star = (
+            10 ** raw[:, 0] * (h_sim / h_obs) ** -2 * kroupa_to_chabrier_mass
+    )
+    Z_median = 10 ** raw[:, 1] * Z_solar_obs / solar_metallicity
+    Z_lo = 10 ** raw[:, 2] * Z_solar_obs / solar_metallicity
+    Z_hi = 10 ** raw[:, 3] * Z_solar_obs / solar_metallicity
+
+    # Define the scatter as offset from the mean value
+    y_scatter = np.array((Z_median - Z_lo, Z_hi - Z_median))
+
+    plt.errorbar(M_star, Z_median, yerr= y_scatter, fmt='o',
+                 ls='none',color='grey',lw=1,ms=1,label='Gallazzi et al. (2005)')
+
+
 def compute_metallicity_relation(sim_info, metallicity_data):
 
     # Look for abundance ratios from COLIBRE snaps:
