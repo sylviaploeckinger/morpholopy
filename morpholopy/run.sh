@@ -1,12 +1,20 @@
 #!/bin/bash
 
-python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_1 \
-                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_2 \
-                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoostTest_newSNIIform \
-                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/L012NewSNIIFormComparison \
-                     -c halo_0036.properties.0 halo_0036.properties.0 halo_0036.properties.0 \
-                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
-                     -n NomotoYieldsO05Fe1 NomotoYieldsO05Fe05 KobayashiNewFormO05Fe05
+python morpholopy.py -d /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_40_SNIaNu_1p6_tau_3p5/proc/ \
+                        /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_70_SNIaNu_1p6_tau_3p5/proc/ \
+                        /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_100_SNIaNu_1p6_tau_3p5/proc/ \
+                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/JamesProduction/L06_SNII_limit_comparison \
+                     -c velociraptor_0034.properties.0 velociraptor_0034.properties.0 velociraptor_0034.properties.0 \
+                     -s colibre_0034.hdf5 colibre_0034.hdf5 colibre_0034.hdf5 \
+                     -n KobayashiYieldslo8hi40 KobayashiYieldslo8hi70 KobayashiYieldslo8hi100
+
+#python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_1 \
+#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_2 \
+#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoostTest_newSNIIform \
+#                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/L012NewSNIIFormComparison \
+#                     -c halo_0036.properties.0 halo_0036.properties.0 halo_0036.properties.0 \
+#                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
+#                     -n NomotoYieldsO05Fe1 NomotoYieldsO05Fe05 KobayashiNewFormO05Fe05
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-chai1/HAWK/prediction2_full_noZ \
 #                     /cosma7/data/dp004/dc-chai1/HAWK/prediction1 \
