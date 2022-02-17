@@ -80,6 +80,8 @@ class HaloCatalogue:
         # Metallicity of all gas
         self.metallicity_gas = catalogue.apertures.zmet_gas_30_kpc.value[mask]
 
+        self.metallicity = catalogue.apertures.zmet_star_30_kpc.value[mask]
+
         # Ids of haloes satisfying the selection criterion
         self.halo_ids = np.array([i for i in range(len(mask)) if mask[i] == True])
 

@@ -617,3 +617,55 @@ def loadAbundancePlots(
     caption = " "
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
+
+    title = "Stellar Mass - [Fe/H] relation (median-of-log, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Fe/H] are obtained by selecting star particles with (log of) ratio > -3 and calculating the median."
+    filename = "Mstellar_Fe_H_comparison.png"
+    id = abs(hash("Mstellar FeH comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Fe/H] relation (average)"
+    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Fe/H] are obtained by computing the (log of) ratio between the total Iron mass in stars and "
+    caption += "the total Hydrogen mass in stars, and then normalising it by the corresponding solar abundances."
+    filename = "Mstellar_Fe_H_total_comparison.png"
+    id = abs(hash("Mstellar FeH total comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [O/Fe] relation (median-of-log, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[O/Fe] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [O/Fe] are obtained by selecting star particles with (log of) ratio of [Fe/H] > -3 and calculating the median."
+    filename = "Mstellar_O_Fe_comparison.png"
+    id = abs(hash("Mstellar OFe comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [O/Fe] relation (average)"
+    caption = "Comparison between the Stellar mass-[O/Fe] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [O/Fe] are obtained by computing the (log of) ratio between the total Oxygen mass in stars and "
+    caption += "the total Iron mass in stars, and then normalising it by the corresponding solar abundances."
+    filename = "Mstellar_O_Fe_total_comparison.png"
+    id = abs(hash("Mstellar OFe total comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Mg/Fe] relation (median-of-log, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[Mg/Fe] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Mg/Fe] are obtained by selecting star particles with (log of) ratio of [Fe/H] > -3 and calculating the median."
+    filename = "Mstellar_Mg_Fe_comparison.png"
+    id = abs(hash("Mstellar MgFe comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Mg/Fe] relation (average)"
+    caption = "Comparison between the Stellar mass-[Mg/Fe] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Mg/Fe] are obtained by computing the (log of) ratio between the total Magnesium mass in stars and "
+    caption += "the total Iron mass in stars, and then normalising it by the corresponding solar abundances."
+    filename = "Mstellar_Mg_Fe_total_comparison.png"
+    id = abs(hash("Mstellar MgFe total comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Metallicity"
+    id = abs(hash("Stellar Metallicity section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()

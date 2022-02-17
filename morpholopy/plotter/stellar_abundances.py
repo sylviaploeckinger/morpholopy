@@ -632,7 +632,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
         ym = [np.median(ratios_MW[f'{el}_Fe'][ind == i]) for i in range(1, len(bins)) if
               len(ratios_MW[f'{el}_Fe'][ind == i]) > 10]
-        #plt.plot(xm, ym, '-', lw=0.5, color='tab:blue', label='GALAH DR3')
+        #plt.plot(xm, ym, '-', lw=0.5, color=   'tab:blue', label='GALAH DR3')
         plt.plot(xm, ym, '-', lw=1.5, color='black', label=sim_info.simulation_name)
         if el == 'N': N_Fe_median = ym.copy()
         if el == 'Ne': Ne_Fe_median = ym.copy()
