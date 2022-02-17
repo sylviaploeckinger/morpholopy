@@ -226,15 +226,16 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ind = np.digitize(xm, bins)
         ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.plot(xm, ym, '-', lw=0.5, color=color[i], label=output_name_list[i])
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
-    plt.ylabel("[Fe/H]", labelpad=2)
+    plt.ylabel("Stellar $10^{[\mathrm{Fe/H}]}$", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
     plt.yscale('log')
-    plt.axis([1e4, 1e12, 1e-3, 1e1])
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.axis([1e5, 1e12, 1e-3, 1e1])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_Fe_H_comparison.png", dpi=200)
 
@@ -262,14 +263,14 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ind = np.digitize(xm, bins)
         ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.plot(xm, ym, '-', lw=0.5, color=color[i], label=output_name_list[i])
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
     plt.ylabel("[Mg/Fe]", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
-    plt.axis([1e6, 1e12, -0.2, 0.5])
+    plt.axis([1e8, 1e12, -0.2, 0.6])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_Mg_Fe_comparison.png", dpi=200)
 
@@ -296,14 +297,14 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ind = np.digitize(xm, bins)
         ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.plot(xm, ym, '-', lw=0.5, color=color[i], label=output_name_list[i])
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
     plt.ylabel("[O/Fe]", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
-    plt.axis([1e6, 1e12, 0.0, 0.5])
+    plt.axis([1e8, 1e12, 0.0, 0.6])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_O_Fe_comparison.png", dpi=200)
 
@@ -338,15 +339,16 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ind = np.digitize(xm, bins)
         ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.plot(xm, ym, '-', lw=0.5, color=color[i], label=output_name_list[i])
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
-    plt.ylabel("[Fe/H]", labelpad=2)
+    plt.ylabel("Stellar $10^{[\mathrm{Fe/H}]}$", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
     plt.yscale('log')
-    plt.axis([1e4, 1e12, 1e-3, 1e1])
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.axis([1e5, 1e12, 1e-3, 1e1])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_Fe_H_total_comparison.png", dpi=200)
 
@@ -374,14 +376,14 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ind = np.digitize(xm, bins)
         ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.plot(xm, ym, '-', lw=0.5, color=color[i], label=output_name_list[i])
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
     plt.ylabel("[Mg/Fe]", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
-    plt.axis([1e6, 1e12, -0.2, 0.5])
+    plt.axis([1e8, 1e12, -0.2, 0.6])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_Mg_Fe_total_comparison.png", dpi=200)
 
@@ -408,13 +410,13 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ind = np.digitize(xm, bins)
         ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.plot(xm, ym, '-', lw=0.5, color=color[i], label=output_name_list[i])
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
     plt.ylabel("[O/Fe]", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
-    plt.axis([1e6, 1e12, 0.0, 0.5])
+    plt.axis([1e8, 1e12, 0.0, 0.6])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_O_Fe_total_comparison.png", dpi=200)

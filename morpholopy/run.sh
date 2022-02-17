@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_1 \
-#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_2 \
-#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoostTest_newSNIIform \
-#                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/L012NewSNIIFormComparison \
-#                     -c halo_0036.properties.0 halo_0036.properties.0 halo_0036.properties.0 \
-#                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
-#                     -n NomotoYieldsO05Fe1 NomotoYieldsO05Fe05 KobayashiNewFormO05Fe05
+python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_1 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_2 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoostTest_newSNIIform \
+                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/L012NewSNIIFormComparison \
+                     -c halo_0036.properties.0 halo_0036.properties.0 halo_0036.properties.0 \
+                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
+                     -n NomotoYieldsO05Fe1 NomotoYieldsO05Fe05 KobayashiNewFormO05Fe05
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-chai1/HAWK/prediction2_full_noZ \
 #                     /cosma7/data/dp004/dc-chai1/HAWK/prediction1 \
@@ -84,9 +84,9 @@
 #                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/
 #
 
-python morpholopy.py -d ../../ \
-                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
-                     -o ../../Morpholopy_Plots/
+#python morpholopy.py -d ../../ \
+#                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
+#                     -o ../../Morpholopy_Plots/
 
 #
 #python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Test_yield_tables/L12N188_newAGB_oldSNII_SNIa2Gyr/ \

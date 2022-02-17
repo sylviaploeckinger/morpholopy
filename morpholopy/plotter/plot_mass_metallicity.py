@@ -256,7 +256,7 @@ def plot_gallazzi():
     h_obs = 0.704  # WMAP7
     Z_solar_obs = 0.02
 
-    input_filename = "./plotter/obs_data/Gallazzi_2021_ascii.txt"
+    input_filename = "./plotter/obs_data/gallazzi_2021_ascii.txt"
     delimiter = "\t"
 
     # Read the data
