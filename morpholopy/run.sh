@@ -1,12 +1,31 @@
 #!/bin/bash
 
-python morpholopy.py -d /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_40_SNIaNu_1p6_tau_3p5/proc/ \
-                        /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_70_SNIaNu_1p6_tau_3p5/proc/ \
-                        /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_100_SNIaNu_1p6_tau_3p5/proc/ \
-                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/JamesProduction/L06_SNII_limit_comparison \
-                     -c velociraptor_0034.properties.0 velociraptor_0034.properties.0 velociraptor_0034.properties.0 \
-                     -s colibre_0034.hdf5 colibre_0034.hdf5 colibre_0034.hdf5 \
-                     -n KobayashiYieldslo8hi40 KobayashiYieldslo8hi70 KobayashiYieldslo8hi100
+python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau2nu1p2 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau2nu1p4 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau2nu1p6 \
+                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
+                     -c halo_0036.properties halo_0036.properties halo_0036.properties \
+                     -n NewYieldsSNIILinlo8hi100Tau2Nu1p2 NewYieldsSNIILinlo8hi100Tau2Nu1p4 NewYieldsSNIILinlo8hi100Tau2Nu1p6 \
+                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/abundance_plots/L025N188_NewYields_SNIILinlo8hi100_DTDnu_comparison \
+                     -m 1e8
+
+python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau1p5nu1p4 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau2nu1p4 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau3nu1p4 \
+                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/L025N188_NewYields_SNIILinlo8hi100_DTDtau4nu1p4 \
+                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
+                     -c halo_0036.properties halo_0036.properties halo_0036.properties halo_0036.properties \
+                     -n NewYieldsSNIILinlo8hi100Tau1p5Nu1p4 NewYieldsSNIILinlo8hi100Tau2Nu1p4 NewYieldsSNIILinlo8hi100Tau3Nu1p4 NewYieldsSNIILinlo8hi100Tau4Nu1p4 \
+                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_02_COLIBRE/abundance_plots/L025N188_NewYields_SNIILinlo8hi100_DTDtau_comparison \
+                     -m 1e8
+
+#python morpholopy.py -d /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_40_SNIaNu_1p6_tau_3p5/proc/ \
+#                        /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_70_SNIaNu_1p6_tau_3p5/proc/ \
+#                        /cosma6/data/dp004/Eagle/wmfw23/snap_bkp/newchem/volumes/chem_6s/L06N094_SNIIlin_lo_8_hi_100_SNIaNu_1p6_tau_3p5/proc/ \
+#                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/Morpholopy_plots/JamesProduction/L06_SNII_limit_comparison \
+#                     -c velociraptor_0034.properties.0 velociraptor_0034.properties.0 velociraptor_0034.properties.0 \
+#                     -s colibre_0034.hdf5 colibre_0034.hdf5 colibre_0034.hdf5 \
+#                     -n KobayashiYieldslo8hi40 KobayashiYieldslo8hi70 KobayashiYieldslo8hi100
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_1 \
 #                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_01_COLIBRE/L012N188_SNIIBoost_2 \

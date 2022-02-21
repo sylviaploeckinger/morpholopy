@@ -145,7 +145,7 @@ def main(config: ArgumentParser):
 
         metallicity_data = compute_metallicity_relation(sim_info, metallicity_data)
 
-        #plot_Kirby_distributions(config.output_directory)
+        # plot_Kirby_distributions(config.output_directory)
 
         abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
 

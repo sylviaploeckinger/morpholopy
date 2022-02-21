@@ -156,6 +156,7 @@ def plot_Kirby_distributions(output_path):
     rcParams.update(params)
 
     plt.figure()
+    ax = plt.subplot(1, 1, 1)
     plt.grid(True)
 
     for i in range(num_galaxies):
@@ -176,10 +177,11 @@ def plot_Kirby_distributions(output_path):
     plt.ylabel("PDF", labelpad=2)
     plt.xscale('log')
     plt.yscale('log')
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.axis([2e-4, 2e0, 1e-3, 1e0])
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5,
                handletextpad=0.1, frameon=False, ncol=2,
-               columnspacing=0.02)
+               fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Kirby_distribution.png", dpi=200)
 
