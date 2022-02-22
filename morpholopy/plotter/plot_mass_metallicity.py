@@ -322,6 +322,37 @@ def plot_gallazzi_2005():
                  ls='none',color='grey',lw=1,ms=1,label='Gallazzi et al. (2005)')
 
 
+def plot_Zahid_2017():
+
+    mass_bins = np.array([8.55, 8.65, 8.75, 8.85, 8.95, 9.05, 9.15, 9.25, 9.35, 9.45, 9.55, 9.65, 9.75, 9.85,
+                          9.95, 10.05, 10.15, 10.25, 10.35, 10.45, 10.55, 10.65, 10.75, 10.85])
+
+    input_filename = "./plotter/obs_data/Zahid_2017.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = raw[:, 1]
+    Z_star = 10 ** raw[:, 3]
+
+    Z_median = np.zeros(len(mass_bins))
+    for i in range(len(mass_bins)):
+        select = np.where(M_star == mass_bins[i])[0]
+        Z_median[i] = np.median(Z_star[select])
+
+    plt.plot(10**mass_bins, Z_median, '+',color='purple',ms=5,label='Zahid et al. (2017)')
+
+
+def plot_Kudritzki_2016():
+
+    input_filename = "./plotter/obs_data/Kudritzki_2016.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = 10 ** raw[:, 0]
+    Z_median = 10 ** raw[:, 1]
+
+    plt.plot(M_star, Z_median, 'v',color='black',ms=3,label='Kudritzki et al. (2016)')
+
 def compute_metallicity_relation(sim_info, metallicity_data):
 
     # Look for abundance ratios from COLIBRE snaps:

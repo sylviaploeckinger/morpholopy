@@ -4,7 +4,8 @@ import numpy as np
 from .stellar_abundances import load_MW_data, load_GALAH_data, \
     plot_GALAH_data, load_MW_data_with_Mg_Fe, \
     load_strontium_data_Roeder, load_strontium_data_Spite
-from .plot_mass_metallicity import plot_Kirby_data, plot_Kirby_analysed, plot_gallazzi, plot_gallazzi_2005
+from .plot_mass_metallicity import plot_Kirby_data, plot_Kirby_analysed, \
+    plot_gallazzi, plot_gallazzi_2005, plot_Kudritzki_2016, plot_Zahid_2017
 
 
 def compare_stellar_abundances(sims_data, output_name_list, output_path):
@@ -213,6 +214,8 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Kirby_data()
     plot_Kirby_analysed()
     plot_gallazzi_2005()
+    plot_Kudritzki_2016()
+    plot_Zahid_2017()
 
     count = 0
     color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
@@ -261,7 +264,7 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         ym = Mg_Fe_all[count:count + counter[i]]
         count += counter[i]
 
-        plt.plot(10**xm, ym, 'o', ms=0.5, color=color[i])
+        #plt.plot(10**xm, ym, 'o', ms=0.5, color=color[i])
 
         bins = np.arange(6, 12, 0.2)
         ind = np.digitize(xm, bins)
@@ -338,6 +341,8 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Kirby_data()
     plot_Kirby_analysed()
     plot_gallazzi_2005()
+    plot_Kudritzki_2016()
+    plot_Zahid_2017()
 
     count = 0
     color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
