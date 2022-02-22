@@ -100,3 +100,5 @@ class StarParticleData:
         r = x ** 2 + y ** 2 + z ** 2
         halo_stars = np.where(r > 10 ** 2)[0]  # further than 8kpc?
         self.in_halo[halo_stars] = np.ones(len(halo_stars))
+
+        #self.luminosity = sim_info.snapshot.stars.luminosity.rband[mask_stars].value

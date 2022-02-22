@@ -132,7 +132,7 @@ def main(config: ArgumentParser):
             html.add_metadata_to_web(web, sim_info.snapshot)
 
         # # Load luminosity tables
-        # simulation_data.SimInfo.load_photometry_grid()
+        simulation_data.SimInfo.load_photometry_grid()
         #
         # # The actual number of galaxies to visualise for this run
         # output_number_of_galaxies_list.append(

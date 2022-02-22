@@ -374,7 +374,7 @@ class SimInfo(ParticleIds):
             print("Photometry tables have been loaded! \n")
 
     @classmethod
-    def calculate_luminosities(cls, spart_data: np.ndarray):
+    def calculate_luminosities(cls, stars_age, stars_Z, stars_initmass):
         """
         Computes stellar luminosities
         Parameters
@@ -398,8 +398,8 @@ class SimInfo(ParticleIds):
         for filt in cls.pgrids.keys():
             grid, Z_p, t_p = cls.pgrids[filt]
             fluxes = (
-                lum.BiPowInterp(t_p, Z_p, grid, spart_data[:, 9], spart_data[:, 10])
-                * spart_data[:, 11]
+                lum.BiPowInterp(t_p, Z_p, grid, stars_age, stars_Z)
+                * stars_initmass
             )
             star_abmags[filt] = -2.5 * np.log10(fluxes * lum.magfac)
         return star_abmags

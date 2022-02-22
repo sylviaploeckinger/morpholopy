@@ -618,6 +618,34 @@ def loadAbundancePlots(
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
 
+    title = "Stellar Mass - Z/Zsun relation (mass-weighted, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-Z/Zsun median relations from each simulation listed in this catalogue. "
+    caption += "The values of Z/Zsun are obtained by calculated the mass-weighted average of the stars total metallicity."
+    filename = "Mstellar_Z_mass_weighted_comparison.png"
+    id = abs(hash("Mstellar Z mass weighted comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - Z/Zsun relation (light-weighted, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-Z/Zsun median relations from each simulation listed in this catalogue. "
+    caption += "The values of Z/Zsun are obtained by calculated the light-weighted average (using r-band) of the stars total metallicity."
+    filename = "Mstellar_Z_light_weighted_comparison.png"
+    id = abs(hash("Mstellar Z light weighted comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Fe/H] relation (mass-weighted, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Fe/H] are obtained by calculated the mass-weighted average of log[Fe/H]."
+    filename = "Mstellar_Fe_H_mass_weighted_comparison.png"
+    id = abs(hash("Mstellar FeH mass weighted comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Fe/H] relation (light-weighted, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Fe/H] are obtained by calculated the light-weighted average (using r-band) of log[Fe/H]."
+    filename = "Mstellar_Fe_H_light_weighted_comparison.png"
+    id = abs(hash("Mstellar FeH light weighted comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
     title = "Stellar Mass - [Fe/H] relation (median-of-log, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
     caption += "The values of [Fe/H] are obtained by selecting star particles with (log of) ratio > -3 and calculating the median."
