@@ -456,13 +456,13 @@ def compute_metallicity_relation(sim_info, metallicity_data):
         counter_sim = metallicity_data['counter']
         counter_sim = np.append(counter_sim, counter)
 
-        Fe_H_mw = data['Fe_H_mass_weighted']
+        Fe_H_mw = metallicity_data['Fe_H_mass_weighted']
         Fe_H_mw = np.append(Fe_H_mw, Fe_H_mass_weighted)
-        Fe_H_lw = data['Fe_H_light_weighted']
+        Fe_H_lw = metallicity_data['Fe_H_light_weighted']
         Fe_H_lw = np.append(Fe_H_lw, Fe_H_light_weighted)
-        Z_mw = data['Z_mass_weighted']
+        Z_mw = metallicity_data['Z_mass_weighted']
         Z_mw = np.append(Z_mw, Z_mass_weighted)
-        Z_lw = data['Z_light_weighted']
+        Z_lw = metallicity_data['Z_light_weighted']
         Z_lw = np.append(Z_lw, Z_light_weighted)
 
         metallicity_data = {

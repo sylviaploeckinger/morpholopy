@@ -394,6 +394,7 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Mg_Fe_all[count:count + counter[i]]
+
         count += counter[i]
 
         bins = np.arange(6, 12, 0.2)
