@@ -114,6 +114,9 @@ def main(config: ArgumentParser):
         catalogue = config.catalogue_list[sim]
         sim_name = config.name_list[sim]
 
+        if sim == 0: metal_boost = 1.3
+        else: metal_boost = 1.6
+
         # Load all data and save it in SimInfo class
         sim_info = simulation_data.SimInfo(
             directory=directory,
@@ -121,6 +124,7 @@ def main(config: ArgumentParser):
             catalogue=catalogue,
             name=sim_name,
             galaxy_min_stellar_mass=config.min_stellar_mass,
+            metal_boost=metal_boost,
         )
 
         output_name_list.append(sim_info.simulation_name)

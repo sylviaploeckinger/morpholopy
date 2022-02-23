@@ -649,7 +649,7 @@ def loadAbundancePlots(
     title = "Stellar Mass - [Fe/H] relation (mass-weighted, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
     caption += "The values of [Fe/H] are obtained by calculated the mass-weighted average of [Fe/H]."
-    filename = "Mstellar_Fe_H_mass_weighted_comparison.png"
+    filename = "Mstellar_Fe_H_total_comparison.png"
     id = abs(hash("Mstellar FeH mass weighted comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 

@@ -33,6 +33,7 @@ class SimInfo(ParticleIds):
         catalogue: str,
         name: Union[str, None],
         galaxy_min_stellar_mass: unyt.array.unyt_quantity,
+        metal_boost,
     ):
         """
         Parameters
@@ -68,6 +69,8 @@ class SimInfo(ParticleIds):
             self.simulation_name = name
         else:
             self.simulation_name = self.snapshot.metadata.run_name
+
+        self.metal_boost = metal_boost
 
         # Conversion from internal units to kpc
         self.to_kpc_units = (

@@ -84,6 +84,8 @@ class StarParticleData:
         self.nitrogen = sim_info.snapshot.stars.element_mass_fractions.nitrogen[mask_stars].value
         self.neon = sim_info.snapshot.stars.element_mass_fractions.neon[mask_stars].value
 
+        self.iron *= sim_info.metal_boost
+
         if (hasattr(sim_info.snapshot.stars.element_mass_fractions, 'barium')):
             self.barium = sim_info.snapshot.stars.element_mass_fractions.barium[mask_stars].value
             self.strontium = sim_info.snapshot.stars.element_mass_fractions.strontium[mask_stars].value
