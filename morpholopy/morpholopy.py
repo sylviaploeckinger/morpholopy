@@ -114,8 +114,8 @@ def main(config: ArgumentParser):
         catalogue = config.catalogue_list[sim]
         sim_name = config.name_list[sim]
 
-        if sim == 0: metal_boost = 1.3
-        else: metal_boost = 1.6
+        if sim == 0: metal_boost = 1.0
+        else: metal_boost = 1.0
 
         # Load all data and save it in SimInfo class
         sim_info = simulation_data.SimInfo(
