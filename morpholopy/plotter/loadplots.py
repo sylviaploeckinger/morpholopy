@@ -625,25 +625,53 @@ def loadAbundancePlots(
     id = abs(hash("Mstellar Z mass weighted comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
-    title = "Stellar Mass - Z/Zsun relation (light-weighted, 100 kpc aperture)"
+    title = "Stellar Mass - Z/Zsun relation (light-weighted r-band, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-Z/Zsun median relations from each simulation listed in this catalogue. "
-    caption += "The values of Z/Zsun are obtained by calculated the light-weighted average (using r-band) of the stars total metallicity."
-    filename = "Mstellar_Z_light_weighted_comparison.png"
-    id = abs(hash("Mstellar Z light weighted comparison %i" % i))
+    caption += "The values of Z/Zsun are obtained by calculated the light-weighted r-band average of the stars metallicity."
+    filename = "Mstellar_Z_light_weighted_r_band_comparison.png"
+    id = abs(hash("Mstellar Z light weighted r band comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - Z/Zsun relation (light-weighted i-band, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-Z/Zsun median relations from each simulation listed in this catalogue. "
+    caption += "The values of Z/Zsun are obtained by calculated the light-weighted i-band average of the stars metallicity."
+    filename = "Mstellar_Z_light_weighted_i_band_comparison.png"
+    id = abs(hash("Mstellar Z light weighted i band comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - Z/Zsun relation (light-weighted z-band, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-Z/Zsun median relations from each simulation listed in this catalogue. "
+    caption += "The values of Z/Zsun are obtained by calculated the light-weighted z-band average of the stars metallicity."
+    filename = "Mstellar_Z_light_weighted_z_band_comparison.png"
+    id = abs(hash("Mstellar Z light weighted z band comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = "Stellar Mass - [Fe/H] relation (mass-weighted, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
-    caption += "The values of [Fe/H] are obtained by calculated the mass-weighted average of log[Fe/H]."
+    caption += "The values of [Fe/H] are obtained by calculated the mass-weighted average of [Fe/H]."
     filename = "Mstellar_Fe_H_mass_weighted_comparison.png"
     id = abs(hash("Mstellar FeH mass weighted comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
-    title = "Stellar Mass - [Fe/H] relation (light-weighted, 100 kpc aperture)"
+    title = "Stellar Mass - [Fe/H] relation (light-weighted r-band, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
-    caption += "The values of [Fe/H] are obtained by calculated the light-weighted average (using r-band) of log[Fe/H]."
-    filename = "Mstellar_Fe_H_light_weighted_comparison.png"
-    id = abs(hash("Mstellar FeH light weighted comparison %i" % i))
+    caption += "The values of [Fe/H] are obtained by calculated the light-weighted r-band average of [Fe/H]."
+    filename = "Mstellar_Fe_H_light_weighted_r_band_comparison.png"
+    id = abs(hash("Mstellar FeH light weighted r band comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Fe/H] relation (light-weighted i-band, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Fe/H] are obtained by calculated the light-weighted i-band average of [Fe/H]."
+    filename = "Mstellar_Fe_H_light_weighted_i_band_comparison.png"
+    id = abs(hash("Mstellar FeH light weighted i band comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Stellar Mass - [Fe/H] relation (light-weighted z-band, 100 kpc aperture)"
+    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
+    caption += "The values of [Fe/H] are obtained by calculated the light-weighted z-band average of [Fe/H]."
+    filename = "Mstellar_Fe_H_light_weighted_z_band_comparison.png"
+    id = abs(hash("Mstellar FeH light weighted z band comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = "Stellar Mass - [Fe/H] relation (median-of-log, 100 kpc aperture)"
@@ -653,14 +681,6 @@ def loadAbundancePlots(
     id = abs(hash("Mstellar FeH comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
-    title = "Stellar Mass - [Fe/H] relation (average)"
-    caption = "Comparison between the Stellar mass-[Fe/H] median relations from each simulation listed in this catalogue. "
-    caption += "The values of [Fe/H] are obtained by computing the (log of) ratio between the total Iron mass in stars and "
-    caption += "the total Hydrogen mass in stars, and then normalising it by the corresponding solar abundances."
-    filename = "Mstellar_Fe_H_total_comparison.png"
-    id = abs(hash("Mstellar FeH total comparison %i" % i))
-    PlotsInWeb.load_plots(title, caption, filename, id)
-
     title = "Stellar Mass - [O/Fe] relation (median-of-log, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-[O/Fe] median relations from each simulation listed in this catalogue. "
     caption += "The values of [O/Fe] are obtained by selecting star particles with (log of) ratio of [Fe/H] > -3 and calculating the median."
@@ -668,7 +688,7 @@ def loadAbundancePlots(
     id = abs(hash("Mstellar OFe comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
-    title = "Stellar Mass - [O/Fe] relation (average)"
+    title = "Stellar Mass - [O/Fe] relation (mass-weighted)"
     caption = "Comparison between the Stellar mass-[O/Fe] median relations from each simulation listed in this catalogue. "
     caption += "The values of [O/Fe] are obtained by computing the (log of) ratio between the total Oxygen mass in stars and "
     caption += "the total Iron mass in stars, and then normalising it by the corresponding solar abundances."
@@ -683,7 +703,7 @@ def loadAbundancePlots(
     id = abs(hash("Mstellar MgFe comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
-    title = "Stellar Mass - [Mg/Fe] relation (average)"
+    title = "Stellar Mass - [Mg/Fe] relation (mass-weighted)"
     caption = "Comparison between the Stellar mass-[Mg/Fe] median relations from each simulation listed in this catalogue. "
     caption += "The values of [Mg/Fe] are obtained by computing the (log of) ratio between the total Magnesium mass in stars and "
     caption += "the total Iron mass in stars, and then normalising it by the corresponding solar abundances."
