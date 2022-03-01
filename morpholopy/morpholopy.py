@@ -16,6 +16,7 @@ from plotter.plot_mass_metallicity import compute_metallicity_relation
 from simulation import simulation_data
 # from plotter.loadplots import loadGalaxyPlots
 from plotter.loadplots import loadAbundancePlots
+from plotter.plot_SNIa_rates import read_SNIa_rates, plot_SNIa_rates
 from plotter import html
 # from tqdm import tqdm
 from time import time
@@ -104,6 +105,7 @@ def main(config: ArgumentParser):
     web = None
     abundance_data = None
     metallicity_data = None
+    SNIa_data = None
 
     # Loop over simulation list
     for sim in range(config.number_of_inputs):
@@ -147,11 +149,13 @@ def main(config: ArgumentParser):
         #     f"Total number of haloes to analyse: {sim_info.halo_data.number_of_haloes}"
         # )
 
-        metallicity_data = compute_metallicity_relation(sim_info, metallicity_data)
+        #metallicity_data = compute_metallicity_relation(sim_info, metallicity_data)
 
         # plot_Kirby_distributions(config.output_directory)
 
-        abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
+        #abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
+
+        SNIa_data = read_SNIa_rates(sim_info, SNIa_data)
 
         # # Compute morphological properties (loop over haloes)
         # print("Computing morphological properties...")
@@ -164,9 +168,11 @@ def main(config: ArgumentParser):
         #         halo_counter=i,
         #     )
 
-    if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
+    #if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
 
-    compare_mass_metallicity_relations(metallicity_data, output_name_list, config.output_directory)
+    #compare_mass_metallicity_relations(metallicity_data, output_name_list, config.output_directory)
+
+    plot_SNIa_rates(SNIa_data, output_name_list, config.output_directory)
 
     #     write_morphology_data_to_file(
     #         sim_info.halo_data,

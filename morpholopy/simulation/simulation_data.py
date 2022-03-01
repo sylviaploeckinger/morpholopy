@@ -136,6 +136,8 @@ class SimInfo(ParticleIds):
         self.gas_data = None
         self.star_data = None
 
+        self.SNIa_output = f"{self.directory}/SNIa.txt"
+
         print(f"Data from run '{self.simulation_name}' has been loaded! \n")
 
         return

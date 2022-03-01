@@ -690,6 +690,19 @@ def loadAbundancePlots(
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
 
+    title = "SNIa Rates"
+    caption = "Comparison between the SNIa rates from each simulation listed in this catalogue. "
+    filename = "SNIa_rates_comparison.png"
+    id = abs(hash("SNIa rates comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "SNIa Rates"
+    id = abs(hash("SNIa rates section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
     title = "Stellar Mass - Z/Zsun relation (light-weighted i-band, 100 kpc aperture)"
     caption = "Comparison between the Stellar mass-Z/Zsun median relations from each simulation listed in this catalogue. "
     caption += "The values of Z/Zsun are obtained by calculated the light-weighted i-band average of the stars metallicity."
