@@ -132,7 +132,7 @@ def plot_SNIa_models():
     # Calculate the functional form of the SNIa rate
     for i in tqdm(range(0, len(values[:, 0]))):
         # Let's do the integral for the power law function
-        integral = sci.quad(function2, t_init, time[i], args=(time[i], 1.0), epsrel=1e-4)[0]
+        #integral = sci.quad(function2, t_init, time[i], args=(time[i], 1.0), epsrel=1e-4)[0]
 
         # tau = 2.0
         # beta = 1.0394117647058825
@@ -142,6 +142,7 @@ def plot_SNIa_models():
         beta = 0.5
         nu = 0.001
         tau = 1.0
+        integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
         values[i, 1] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
 
         tau = 2.0
@@ -157,6 +158,7 @@ def plot_SNIa_models():
         beta = 0.8
         nu = 0.001
         tau = 1.0
+        integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
         values[i, 4] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
         zvalues[i] = z_at_value(cosmo.age, time[i] * u.Gyr)
 
@@ -225,7 +227,7 @@ def plot_SNIa_rates(sim_data, output_name_list, output_path):
     ax.tick_params(direction='in', axis='both', which='both')
 
     plt.xlim(1.02, 0.07)
-    plt.ylim(1e-5, 2e-4)
+    plt.ylim(1e-5, 1e-3)
 
     # handles, labels = plt.gca().get_legend_handles_labels()
     # order = np.arange(len(handles)-2)+2
