@@ -228,7 +228,7 @@ def load_MW_data_with_Mg_Fe():
 
 def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_fraction,
                    Carbon_fraction, Silicon_fraction, Europium_fraction, Barium_fraction,
-                   Strontium_fraction, Nitrogen_fraction, Neon_fraction):
+                   Strontium_fraction, Nitrogen_fraction, Neon_fraction, Iron_fraction_SNIa):
     
     mp_in_cgs = 1.6737236e-24
     mH_in_cgs = 1.00784 * mp_in_cgs
@@ -276,6 +276,7 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
     Sr_Fe = np.log10(Strontium_fraction / Iron_fraction) - Sr_Fe_Sun
     N_Fe = np.log10(Nitrogen_fraction / Iron_fraction) - N_Fe_Sun
     Ne_Fe = np.log10(Neon_fraction / Iron_fraction) - Ne_Fe_Sun
+    FeSNIa_Fe = Iron_fraction_SNIa / Iron_fraction
 
     # Let's set lower and upper limits:
     Fe_H[Iron_fraction == 0] = -7  # set lower limit
@@ -310,7 +311,8 @@ def compute_ratios(Hydrogen_fraction, Magnesium_fraction, Oxygen_fraction, Iron_
 
     return {'Fe_H':Fe_H, 'O_Fe':O_Fe, 'Mg_Fe':Mg_Fe,
             'C_Fe':C_Fe, 'Si_Fe':Si_Fe, 'Eu_Fe':Eu_Fe,
-            'Ba_Fe':Ba_Fe, 'Sr_Fe':Sr_Fe, 'N_Fe':N_Fe, 'Ne_Fe':Ne_Fe}
+            'Ba_Fe':Ba_Fe, 'Sr_Fe':Sr_Fe, 'N_Fe':N_Fe,
+            'Ne_Fe':Ne_Fe, 'FeSNIa_Fe': FeSNIa_Fe}
 
 def calculate_abundaces_from_MW_type_galaxies(sim_info):
 
@@ -331,6 +333,7 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
     Barium_fraction = []
     Nitrogen_fraction = []
     Neon_fraction = []
+    Iron_fraction_SNIa = []
 
     for i in tqdm(range(len(sample))):
 
@@ -347,6 +350,7 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
         Sr_stars = sim_info.stars.strontium
         N_stars = sim_info.stars.nitrogen
         Ne_stars = sim_info.stars.neon
+        FeSNIa_Fe = sim_info.stars.iron_SNIa_fraction
         halo_stars = np.where(sim_info.stars.in_halo == 1)[0]
 
         Oxygen_fraction = np.append(Oxygen_fraction, O_stars)
@@ -360,13 +364,14 @@ def calculate_abundaces_from_MW_type_galaxies(sim_info):
         Strontium_fraction = np.append(Strontium_fraction, Sr_stars)
         Nitrogen_fraction = np.append(Nitrogen_fraction, N_stars)
         Neon_fraction = np.append(Neon_fraction, Ne_stars)
+        Iron_fraction_SNIa = np.append(Iron_fraction_SNIa, FeSNIa_Fe)
 
     ratios = compute_ratios(Hydrogen_fraction, Magnesium_fraction, 
                             Oxygen_fraction, Iron_fraction,
                             Carbon_fraction, Silicon_fraction,
                             Europium_fraction, Barium_fraction,
                             Strontium_fraction, Nitrogen_fraction,
-                            Neon_fraction)
+                            Neon_fraction, Iron_fraction_SNIa)
     
     return ratios, halo_stars
 
@@ -391,6 +396,7 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
     Barium_fraction = []
     Nitrogen_fraction = []
     Neon_fraction = []
+    Iron_fraction_SNIa = []
 
     for i in tqdm(range(len(sample))):
         sim_info.make_particle_data(halo_id=sim_info.halo_data.halo_ids[sample[i]])
@@ -406,6 +412,7 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
         Sr_stars = sim_info.stars.strontium
         N_stars = sim_info.stars.nitrogen
         Ne_stars = sim_info.stars.neon
+        FeSNIa_Fe = sim_info.stars.iron_SNIa_fraction
 
         Oxygen_fraction = np.append(Oxygen_fraction, O_stars)
         Iron_fraction = np.append(Iron_fraction, Fe_stars)
@@ -418,13 +425,14 @@ def calculate_abundaces_from_satellite_galaxies(sim_info):
         Strontium_fraction = np.append(Strontium_fraction, Sr_stars)
         Nitrogen_fraction = np.append(Nitrogen_fraction, N_stars)
         Neon_fraction = np.append(Neon_fraction, Ne_stars)
+        Iron_fraction_SNIa = np.append(Iron_fraction_SNIa, FeSNIa_Fe)
 
     ratios = compute_ratios(Hydrogen_fraction, Magnesium_fraction, 
                             Oxygen_fraction, Iron_fraction,
                             Carbon_fraction, Silicon_fraction,
                             Europium_fraction, Barium_fraction,
                             Strontium_fraction, Nitrogen_fraction,
-                            Neon_fraction)
+                            Neon_fraction, Iron_fraction_SNIa)
     return ratios
 
 
@@ -435,6 +443,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     O_Fe = ratios_MW['O_Fe']
     Mg_Fe = ratios_MW['Mg_Fe']
     Fe_H = ratios_MW['Fe_H']
+    FeSNIa_Fe = ratios_MW['FeSNIa_Fe']
 
     # Load MW data:
     FeH_MW, OFe_MW = load_MW_data()
@@ -677,6 +686,30 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
     plt.tight_layout()
     plt.savefig(f"{output_path}/Sr_Fe_" + sim_info.simulation_name + ".png", dpi=200)
 
+    ########
+    fig = plt.figure(figsize=(3.8, 3))
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plt.plot(Fe_H, FeSNIa_Fe, 'o', ms=0.5, color='grey', alpha=0.5)
+
+    bins = np.arange(-7.2, 1, 0.2)
+    ind = np.digitize(Fe_H, bins)
+    xm = [np.median(Fe_H[ind == i]) for i in range(1, len(bins)) if len(Fe_H[ind == i]) > 10]
+    ym = [np.median(FeSNIa_Fe[ind == i]) for i in range(1, len(bins)) if len(FeSNIa_Fe[ind == i]) > 10]
+    FeSNIa_Fe_median = ym.copy()
+    plt.plot(xm, ym, '-', lw=1.5, color='black', label=sim_info.simulation_name)
+
+    plt.xlabel("[Fe/H]", labelpad=2)
+    plt.ylabel("Fe(SNIa)/Fe", labelpad=2)
+    plt.yscale('log')
+    plt.axis([-4, 1, 1e-2,2])
+    ax.tick_params(direction='in', axis='both', which='both')
+    plt.legend(loc=[0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               columnspacing=0.02)
+    plt.tight_layout()
+    plt.savefig(f"{output_path}/FeSNIa_Fe_" + sim_info.simulation_name + ".png", dpi=200)
+
     if abundance_data == None:
         abundance_data = {'Fe_H': Fe_H_median,
                           'O_Fe': O_Fe_median,
@@ -688,6 +721,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
                           'Eu_Fe': Eu_Fe_median,
                           'N_Fe': N_Fe_median,
                           'Ne_Fe': Ne_Fe_median,
+                          'FeSNIa_Fe':FeSNIa_Fe_median,
                           'counter':counter}
     else:
         Fe_H = abundance_data['Fe_H']
@@ -710,6 +744,9 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
         N_Fe = np.append(N_Fe, N_Fe_median)
         Ne_Fe = abundance_data['Ne_Fe']
         Ne_Fe = np.append(Ne_Fe, Ne_Fe_median)
+        FeSNIa_Fe = abundance_data['FeSNIa_Fe']
+        FeSNIa_Fe = np.append(FeSNIa_Fe,FeSNIa_Fe_median)
+
         counter_sim = abundance_data['counter']
         counter_sim = np.append(counter_sim, counter)
         abundance_data = {'Fe_H': Fe_H,
@@ -722,6 +759,7 @@ def plot_stellar_abundances(sim_info, output_path, abundance_data):
                           'Si_Fe': Si_Fe,
                           'N_Fe': N_Fe,
                           'Ne_Fe': Ne_Fe,
+                          'FeSNIa_Fe': FeSNIa_Fe,
                           'counter': counter_sim}
 
     return abundance_data

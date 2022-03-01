@@ -690,10 +690,39 @@ def loadAbundancePlots(
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
 
+    for i in range(num_sims):
+        title = name_list[i]
+        caption = "Fe SNIa Fractions as a function of Iron abundance [Fe/H]. "
+        caption += "Grey dots correspond to individual stars within MW-type haloes, the solid line shows the median relation. "
+        filename = "FeSNIa_Fe_"+name_list[i]+".png"
+        id = abs(hash("FeSNIa Fe %i" %i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    if num_sims > 1:
+        title = "Fe SNIa Fractions"
+        caption = "Comparison between the fraction of Fe from SNIa from each simulation listed in this catalogue. "
+        caption += "The curves show the median relations for the mass fraction of Fe from SNIa vs [Fe/H]."
+        filename = "FeSNIa_Fe_comparison.png"
+        id = abs(hash("FeSNIa Fe comparison %i" % i))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Fe(SNIa)/Fe"
+    id = abs(hash("Fe(SNIa)/Fe section"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
     title = "SNIa Rates"
     caption = "Comparison between the SNIa rates from each simulation listed in this catalogue. "
     filename = "SNIa_rates_comparison.png"
     id = abs(hash("SNIa rates comparison %i" % i))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "SFH"
+    caption = "Comparison between the SFH from each simulation listed in this catalogue. "
+    filename = "SFH_comparison.png"
+    id = abs(hash("SFH comparison %i" % i))
     PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = "SNIa Rates"

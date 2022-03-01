@@ -33,7 +33,6 @@ class SimInfo(ParticleIds):
         catalogue: str,
         name: Union[str, None],
         galaxy_min_stellar_mass: unyt.array.unyt_quantity,
-        metal_boost,
     ):
         """
         Parameters
@@ -69,8 +68,6 @@ class SimInfo(ParticleIds):
             self.simulation_name = name
         else:
             self.simulation_name = self.snapshot.metadata.run_name
-
-        self.metal_boost = metal_boost
 
         # Conversion from internal units to kpc
         self.to_kpc_units = (
@@ -137,6 +134,7 @@ class SimInfo(ParticleIds):
         self.star_data = None
 
         self.SNIa_output = f"{self.directory}/SNIa.txt"
+        self.SFH_output = f"{self.directory}/SFR.txt"
 
         print(f"Data from run '{self.simulation_name}' has been loaded! \n")
 

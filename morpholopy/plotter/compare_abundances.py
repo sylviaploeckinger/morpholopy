@@ -13,6 +13,7 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
     O_Fe_all = sims_data['O_Fe']
     Fe_H_all = sims_data['Fe_H']
     Mg_Fe_all = sims_data['Mg_Fe']
+    FeSNIa_Fe = sims_data['FeSNIa_Fe']
     counter = sims_data['counter']
 
     # Load MW data:
@@ -36,6 +37,31 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
         "lines.linewidth": 0.2,
     }
     rcParams.update(params)
+    fig = plt.figure()
+
+    # Box stellar abundance --------------------------------
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    count = 0
+    color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
+    for i in range(len(output_name_list)):
+        xm = Fe_H_all[count:count + counter[i]]
+        ym = FeSNIa_Fe[count:count + counter[i]]
+        count += counter[i]
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.xlabel("[Fe/H]", labelpad=2)
+    plt.ylabel("Fe(SNIa)/Fe", labelpad=2)
+    plt.yscale('log')
+    plt.axis([-4, 1, 1e-2,2])
+    ax.tick_params(direction='in', axis='both', which='both')
+    plt.legend(loc=[0.0, 0.02], labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               columnspacing=0.02)
+    plt.savefig(f"{output_path}/FeSNIa_Fe_comparison.png", dpi=200)
+
+
+    ##################
     fig = plt.figure()
 
     # Box stellar abundance --------------------------------
@@ -108,7 +134,6 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
         plt.grid("True")
 
         count = 0
-        color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
         for i in range(len(output_name_list)):
             xm = Fe_H_all[count:count + counter[i]]
             if el == 'C': ym = C_Fe_all[count:count + counter[i]]
@@ -136,7 +161,6 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
         plt.grid("True")
 
         count = 0
-        color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
         for i in range(len(output_name_list)):
             xm = Fe_H_all[count:count + counter[i]]
             if el == 'N': ym = N_Fe_all[count:count + counter[i]]
@@ -218,7 +242,7 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
+    color = ['tab:blue','tab:green','tab:orange','crimson','tab:purple']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Fe_H_all[count:count + counter[i]]
@@ -262,7 +286,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_gallazzi()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Mg_Fe_all[count:count + counter[i]]
@@ -298,7 +321,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_gallazzi()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = O_Fe_all[count:count + counter[i]]
@@ -346,7 +368,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Fe_H_all[count:count + counter[i]]
@@ -390,7 +411,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_gallazzi()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Mg_Fe_all[count:count + counter[i]]
@@ -427,7 +447,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_gallazzi()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = O_Fe_all[count:count + counter[i]]
@@ -466,7 +485,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Z_mass_weighted[count:count + counter[i]]
@@ -523,7 +541,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Fe_H_light_weighted_r_band[count:count + counter[i]]
@@ -568,7 +585,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Fe_H_light_weighted_i_band[count:count + counter[i]]
@@ -613,7 +629,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Fe_H_light_weighted_Z_band[count:count + counter[i]]
@@ -658,7 +673,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Z_light_weighted_r_band[count:count + counter[i]]
@@ -703,7 +717,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Z_light_weighted_i_band[count:count + counter[i]]
@@ -748,7 +761,6 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     plot_Zahid_2017()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
         ym = Z_light_weighted_Z_band[count:count + counter[i]]

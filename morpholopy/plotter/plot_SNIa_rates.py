@@ -153,6 +153,14 @@ def plot_SNIa_models():
         # integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
         # values[i, 1] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
 
+        beta = 1.12
+        nu = 2e-4
+        tau = 1
+        integral = sci.quad(function, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
+        norm = nu / tau ** (-beta)
+        values[i, 0] = integral * norm / IMF
+
+
         tau = 2.0
         nu = 2e-3
         # Let's do the integral for the exponential function
@@ -162,7 +170,7 @@ def plot_SNIa_models():
         # nu = 0.006
         # tau = 1.0
         beta = 0.5
-        nu = 0.001
+        nu = 2e-4
         tau = 1.0
         integral = sci.quad(function, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
         #values[i, 3] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
@@ -170,7 +178,7 @@ def plot_SNIa_models():
         values[i, 3] = integral * norm / IMF
 
         beta = 0.8
-        nu = 0.001
+        nu = 2e-4
         tau = 1.0
         integral = sci.quad(function, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
         norm = nu / tau ** (-beta)
@@ -180,12 +188,12 @@ def plot_SNIa_models():
 
     plt.plot(1. / (1. + zvalues), values[:, 2], label='EAGLE model ($\\tau = 2, \\nu=2\cdot 10^{-3}$)', color='black',
              linewidth=0.6, linestyle='-.')
-    plt.plot(1. / (1. + zvalues), values[:, 3], label='Power law ($\\beta=0.5, \\tau=1, \\nu=1\cdot 10^{-3}$)',
+    plt.plot(1. / (1. + zvalues), values[:, 3], label='Power law ($\\beta=0.5, \\tau=1, \\nu=2\cdot 10^{-4}$)',
              color='tab:red', linewidth=0.6, linestyle='-.')
-    # plt.plot(1. / (1. + zvalues), values[:, 0], label='Power law ($\\beta=1.03, \\tau=2, \\nu=1.3\cdot 10^{-3}$)',
-    #          color='tab:orange', linewidth=0.6, linestyle='-.')
-    plt.plot(1. / (1. + zvalues), values[:, 4], label='Power law ($\\beta=0.8, \\tau=1, \\nu=1\cdot 10^{-3}$)',
+    plt.plot(1. / (1. + zvalues), values[:, 4], label='Power law ($\\beta=0.8, \\tau=1, \\nu=2\cdot 10^{-4}$)',
              color='darkgreen', linewidth=0.6, linestyle='-.')
+    plt.plot(1. / (1. + zvalues), values[:, 0], label='Power law ($\\beta=1.12, \\tau=1, \\nu=2\cdot 10^{-4}$)',
+             color='tab:orange', linewidth=0.6, linestyle='-.')
     # plt.plot(1. / (1. + zvalues), values[:, 1], label='Power law ($\\beta=0.5, \\tau=1, \\nu=1\cdot 10^{-3}$)',
     #          color='darkblue', linewidth=0.6, linestyle='-.')
 
@@ -220,10 +228,10 @@ def plot_SNIa_rates(sim_data, output_name_list, output_path):
     ax = plt.subplot(1, 1, 1)
 
     plot_SNIa_obs()
-    #plot_SNIa_models()
+    plot_SNIa_models()
 
     count = 0
-    color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
+    color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
     for i in range(len(output_name_list)):
         xm = z[count:count + counter[i]]
         xm = 1./ (1. + xm)

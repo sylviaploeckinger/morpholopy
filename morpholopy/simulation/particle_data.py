@@ -83,8 +83,7 @@ class StarParticleData:
         self.europium = sim_info.snapshot.stars.element_mass_fractions.europium[mask_stars].value
         self.nitrogen = sim_info.snapshot.stars.element_mass_fractions.nitrogen[mask_stars].value
         self.neon = sim_info.snapshot.stars.element_mass_fractions.neon[mask_stars].value
-
-        self.iron *= sim_info.metal_boost
+        self.iron_SNIa_fraction = sim_info.snapshot.stars.iron_mass_fractions_from_snia[mask_stars].value
 
         if (hasattr(sim_info.snapshot.stars.element_mass_fractions, 'barium')):
             self.barium = sim_info.snapshot.stars.element_mass_fractions.barium[mask_stars].value
