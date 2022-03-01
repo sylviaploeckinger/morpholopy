@@ -101,6 +101,10 @@ def prefacpow(beta,tau,tstart,tend):
     thirdpar = tau**beta
     return firstpar / secondpar * thirdpar
 
+def cosmic_sfr(z):
+    phi = 0.01 * (1.+z)**2.6 / (1.0+((1.+z)/3.2)**(6.2))  #Msun Mpc^-3 yr^-1
+    return phi
+
 def Madau2014(z):
     return 0.015 * (1. + z)**2.7/(1. + ((1.+z)/2.9)**5.6)
 
@@ -118,6 +122,10 @@ def function2(tau,t,beta):
     cosmo = FlatLambdaCDM(H0=67.77 * u.km / u.s / u.Mpc, Tcmb0=2.725 * u.K, Om0=0.307)
     return Madau2014(z_at_value(cosmo.age,(t-tau)*u.Gyr))*DTD(tau,beta)*np.heaviside(tau-0.04,1.)
 
+def function(tau,t,beta):
+    cosmo = FlatLambdaCDM(H0=67.77 * u.km / u.s / u.Mpc, Tcmb0=2.725 * u.K, Om0=0.307)
+    return cosmic_sfr(z_at_value(cosmo.age,(t-tau)*u.Gyr))*DTD(tau,beta)*np.heaviside(tau-0.04,1.)
+
 def plot_SNIa_models():
 
     cosmo = FlatLambdaCDM(H0=67.77 * u.km / u.s / u.Mpc, Tcmb0=2.725 * u.K, Om0=0.307)
@@ -131,19 +139,19 @@ def plot_SNIa_models():
 
     # Calculate the functional form of the SNIa rate
     for i in tqdm(range(0, len(values[:, 0]))):
-        # Let's do the integral for the power law function
-        #integral = sci.quad(function2, t_init, time[i], args=(time[i], 1.0), epsrel=1e-4)[0]
 
-        # tau = 2.0
         # beta = 1.0394117647058825
         # nu = 0.0011818181818181819
+        # tau = 2.0
+        # Let's do the integral for the power law function
+        # integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
         # values[i, 0] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
 
-        beta = 0.5
-        nu = 0.001
-        tau = 1.0
-        integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
-        values[i, 1] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
+        # beta = 0.5
+        # nu = 0.001
+        # tau = 1.0
+        # integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
+        # values[i, 1] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
 
         tau = 2.0
         nu = 2e-3
@@ -153,25 +161,33 @@ def plot_SNIa_models():
         # beta = 2
         # nu = 0.006
         # tau = 1.0
-        # values[i, 3] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
+        beta = 0.5
+        nu = 0.001
+        tau = 1.0
+        integral = sci.quad(function, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
+        #values[i, 3] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
+        norm = nu / tau ** (-beta)
+        values[i, 3] = integral * norm / IMF
 
         beta = 0.8
         nu = 0.001
         tau = 1.0
-        integral = sci.quad(function2, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
-        values[i, 4] = integral * prefacpow(beta, tau, t_init, t_H) * nu / tau / IMF
+        integral = sci.quad(function, t_init, time[i], args=(time[i], beta), epsrel=1e-4)[0]
+        norm = nu / tau ** (-beta)
+        values[i, 4] = integral * norm / IMF
+
         zvalues[i] = z_at_value(cosmo.age, time[i] * u.Gyr)
 
     plt.plot(1. / (1. + zvalues), values[:, 2], label='EAGLE model ($\\tau = 2, \\nu=2\cdot 10^{-3}$)', color='black',
              linewidth=0.6, linestyle='-.')
-    # plt.plot(1. / (1. + zvalues), values[:, 3], label='Power law ($\\beta=2, \\tau=1, \\nu=6\cdot 10^{-3}$)',
-    #          color='tab:red', linewidth=0.6, linestyle='-.')
+    plt.plot(1. / (1. + zvalues), values[:, 3], label='Power law ($\\beta=0.5, \\tau=1, \\nu=1\cdot 10^{-3}$)',
+             color='tab:red', linewidth=0.6, linestyle='-.')
     # plt.plot(1. / (1. + zvalues), values[:, 0], label='Power law ($\\beta=1.03, \\tau=2, \\nu=1.3\cdot 10^{-3}$)',
     #          color='tab:orange', linewidth=0.6, linestyle='-.')
     plt.plot(1. / (1. + zvalues), values[:, 4], label='Power law ($\\beta=0.8, \\tau=1, \\nu=1\cdot 10^{-3}$)',
              color='darkgreen', linewidth=0.6, linestyle='-.')
-    plt.plot(1. / (1. + zvalues), values[:, 1], label='Power law ($\\beta=0.5, \\tau=1, \\nu=1\cdot 10^{-3}$)',
-             color='darkblue', linewidth=0.6, linestyle='-.')
+    # plt.plot(1. / (1. + zvalues), values[:, 1], label='Power law ($\\beta=0.5, \\tau=1, \\nu=1\cdot 10^{-3}$)',
+    #          color='darkblue', linewidth=0.6, linestyle='-.')
 
 
 def plot_SNIa_rates(sim_data, output_name_list, output_path):
@@ -204,7 +220,7 @@ def plot_SNIa_rates(sim_data, output_name_list, output_path):
     ax = plt.subplot(1, 1, 1)
 
     plot_SNIa_obs()
-    plot_SNIa_models()
+    #plot_SNIa_models()
 
     count = 0
     color = ['tab:blue', 'tab:orange', 'crimson', 'tab:green']
@@ -229,14 +245,6 @@ def plot_SNIa_rates(sim_data, output_name_list, output_path):
     plt.xlim(1.02, 0.07)
     plt.ylim(1e-5, 1e-3)
 
-    # handles, labels = plt.gca().get_legend_handles_labels()
-    # order = np.arange(len(handles)-2)+2
-    # order = np.append(order,0)
-    # order = np.append(order,1)
-
-    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-    #            fontsize=9, columnspacing=0.02)
     plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
                fontsize=8, columnspacing=0.02)
 
