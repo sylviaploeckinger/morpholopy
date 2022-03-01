@@ -40,7 +40,7 @@ class HaloCatalogue:
 
         mask = np.logical_and(
             catalogue.apertures.mass_star_30_kpc >= galaxy_min_stellar_mass,
-            catalogue.apertures.mass_gas_30_kpc > unyt.unyt_quantity(0.0, "Msun")
+            catalogue.apertures.mass_gas_30_kpc > unyt.unyt_quantity(1e7, "Msun")
         )
 
         # Compute the number of haloes following the selection mask
