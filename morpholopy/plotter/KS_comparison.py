@@ -41,21 +41,12 @@ def KS_relation_plots(output_path, index, name_list):
             plt.plot(
                 np.log10(Sigma_g),
                 np.log10(Sigma_star),
-                color="red",
-                label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
-                linestyle="--",
+                color="k",
+                label="K98",
+                linestyle=".-",
             )
 
             Sigma_g = np.logspace(-1, 4, 1000)
-            Sigma_star = KS(Sigma_g, 1.06, 2.511e-4)
-            plt.plot(
-                np.log10(Sigma_g),
-                np.log10(Sigma_star),
-                lw=1,
-                color="green",
-                label=r"2.51e-4 $\times$ $\Sigma_{g}^{1.06}$ (Pessa+ 2021)",
-                linestyle="-",
-            )
 
             # load the observational data
             if mode == 0:
@@ -71,7 +62,7 @@ def KS_relation_plots(output_path, index, name_list):
                                 fmt="v",
                                 ms=6,
                                 label=observation.description,
-                                color="darkred",
+                                color="k",
                             )
                         elif observation.description == "Bigiel et al. (2010) outer":
                             data2 = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
@@ -82,7 +73,7 @@ def KS_relation_plots(output_path, index, name_list):
                                 fmt="o",
                                 ms=6,
                                 label=observation.description,
-                                color="darkred",
+                                color="k",
                             )
                 plt.xlabel(
                     "log $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
@@ -103,7 +94,7 @@ def KS_relation_plots(output_path, index, name_list):
                                 fmt="<",
                                 ms=6,
                                 label=observation.description,
-                                color="darkred",
+                                color="k",
                             )
                 plt.xlabel(
                     "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
@@ -175,15 +166,16 @@ def KS_relation_plots(output_path, index, name_list):
             plt.ylabel(
                 "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
             )
-            plt.xlim(-1.0, 4.0)
-            plt.ylim(-6.5, 1.0)
+            plt.ylim(-6.0, 1.0)
             if mode == 0:
+                plt.xlim(-0.5, 3.0)
                 plt.savefig(
                     f"{output_path}/KS_relation_best_" + method + "_%i.png" % (index),
                     dpi=200,
                 )
                 plt.close()
             elif mode == 1:
+                plt.xlim(-2.0, 3.0)
                 plt.savefig(
                     f"{output_path}/KS_molecular_relation_"
                     + method
@@ -193,7 +185,7 @@ def KS_relation_plots(output_path, index, name_list):
                 plt.close()
 
 
-def depletion_time_plots(output_path, index, name_list):
+def depletion_time_plots(output_path, index, name_list, markersize=4.):
 
     # read the observational data for the KS relations
     observational_data = read_obs_data("./plotter/obs_data")
@@ -216,9 +208,9 @@ def depletion_time_plots(output_path, index, name_list):
             plt.plot(
                 np.log10(Sigma_g),
                 np.log10(Sigma_g) - np.log10(Sigma_star) + 6.0,
-                color="red",
-                label="KS law (Kennicutt 98)",
-                linestyle="--",
+                color="k",
+                label="K98",
+                linestyle=".-",
             )
 
             # load the observational data
@@ -234,9 +226,9 @@ def depletion_time_plots(output_path, index, name_list):
                                 data[1],
                                 yerr=[data[2], data[3]],
                                 fmt=">",
-                                ms=6,
+                                ms=markersize,
                                 label=observation.description,
-                                color="darkred",
+                                color="k",
                             )
                         elif observation.description == "Bigiel et al. (2010) outer":
                             data2 = observation.bin_data_gas_depletion(
@@ -247,9 +239,9 @@ def depletion_time_plots(output_path, index, name_list):
                                 data2[1],
                                 yerr=[data2[2], data2[3]],
                                 fmt="o",
-                                ms=6,
+                                ms=markersize,
                                 label=observation.description,
-                                color="darkred",
+                                color="k",
                             )
                 plt.xlabel(
                     "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
@@ -269,9 +261,42 @@ def depletion_time_plots(output_path, index, name_list):
                                 data[1],
                                 yerr=[data[2], data[3]],
                                 fmt="o",
-                                ms=6,
+                                ms=markersize,
                                 label=observation.description,
-                                color="darkred",
+                                color="k",
+                            )
+                        elif (observation.description == "Pessa et al. (2021) [500 pc]"):
+                            data = observation.bin_data_KS_molecular(np.arange(-1,3,.25),0.0)
+                            plt.errorbar(
+                                data[0]+0.05,
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="^",
+                                label=f"P21 [500 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                        elif (observation.description[0:25] == "Querejeta et al. (2021) f"):
+                            data = observation.bin_data_KS_molecular( np.arange(-1,3,.25),-0.5, print_stuff=False)
+                            plt.errorbar(
+                                data[0]-0.05, 
+                                data[1], 
+                                yerr=[data[2], data[3]], 
+                                fmt="*",
+                                label=f"Q21 [1 kpc]", 
+                                color="k"
+                                ms=markersize,
+                            )
+                        elif (observation.description[0:25] == "Ellison et al. (2020)"):
+                            data = observation.bin_data_KS_molecular( np.arange(0.5,2.75,.25),0.5, print_stuff=False)
+                            plt.errorbar(
+                                data[0], 
+                                data[1], 
+                                yerr=[data[2], data[3]], 
+                                fmt="p",
+                                label=f"E20 [1 kpc]", 
+                                color="k", 
+                                ms=markersize,
                             )
                 plt.xlabel(
                     "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
@@ -340,9 +365,9 @@ def depletion_time_plots(output_path, index, name_list):
             )
             ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
 
-            plt.xlim(-1, 4.0)
             plt.ylim(7, 12)
             if mode == 0:
+                plt.xlim(-0.5, 3.0)
                 plt.savefig(
                     f"{output_path}/gas_depletion_timescale_best_"
                     + method
@@ -351,6 +376,7 @@ def depletion_time_plots(output_path, index, name_list):
                 )
                 plt.close()
             elif mode == 1:
+                plt.xlim(-2, 3.0)
                 plt.savefig(
                     f"{output_path}/molecular_gas_depletion_timescale_"
                     + method
@@ -392,14 +418,14 @@ def surface_ratios_plots(output_path, index, name_list):
         RH2 = 1.0 / Krumholz_eq39(10 ** Sigma_neutral, 0.5)
         FH2 = np.log10(1.0 / (1.0 + RH2))
         plt.plot(
-            Sigma_neutral, FH2, "--", color="darkred", label="Krumholz+ (2009): f = 0.5"
+            Sigma_neutral, FH2, "--", color="k", label="Krumholz+ (2009): f = 0.5"
         )
         RH2 = 1.0 / Krumholz_eq39(10 ** Sigma_neutral, 0.1)
         FH2 = np.log10(1.0 / (1.0 + RH2))
         plt.plot(
             Sigma_neutral, FH2, ":", color="tab:red", label="Krumholz+ (2009): f = 0.1"
         )
-        plt.plot(x_Schruba, y_Schruba, "o", color="darkred", label="Schruba+ (2011)")
+        plt.plot(x_Schruba, y_Schruba, "o", color="k", label="Schruba+ (2011)")
 
         color = ["tab:blue", "tab:orange"]
 

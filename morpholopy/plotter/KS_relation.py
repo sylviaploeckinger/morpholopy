@@ -254,7 +254,7 @@ def make_KS_data(
 
     # Plotting KS relations with size
     method = "grid"
-    size = 0.25  # kpc
+    size = 0.75  # kpc
 
     # Get the surface densities
     surface_density, SFR_surface_density, tgas, metals = KS_relation(
@@ -315,7 +315,7 @@ def make_KS_data(
 
     # Plotting KS relations with size
     method = "radii"
-    size = 0.8  # kpc
+    size = 0.75  # kpc
 
     surface_density, SFR_surface_density, tgas, metals = KS_relation(
         particles_data, ang_momentum, mode, method, size
