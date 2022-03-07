@@ -76,7 +76,7 @@ def KS_relation_plots(output_path, index, name_list):
                                 color="k",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
 
             elif mode == 1:
@@ -97,7 +97,7 @@ def KS_relation_plots(output_path, index, name_list):
                                 color="k",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
 
             color = ["tab:blue", "tab:orange"]
@@ -164,7 +164,7 @@ def KS_relation_plots(output_path, index, name_list):
             )
             ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
             plt.ylabel(
-                "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
+                "$\\log_{10}$ $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
             )
             plt.ylim(-6.0, 1.0)
             if mode == 0:
@@ -244,10 +244,10 @@ def depletion_time_plots(output_path, index, name_list, markersize=4.):
                                 color="k",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
                 plt.ylabel(
-                    "log $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+                    "$\\log_{10}$ $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
                 )
             elif mode == 1:
                 for ind, observation in enumerate(observational_data):
@@ -299,10 +299,10 @@ def depletion_time_plots(output_path, index, name_list, markersize=4.):
                                 ms=markersize,
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
                 plt.ylabel(
-                    "log $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+                    "$\\log_{10}$ $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
                 )
 
             color = ["tab:blue", "tab:orange"]
@@ -482,10 +482,10 @@ def surface_ratios_plots(output_path, index, name_list):
         plt.xlim(-1.0, 4.0)
         plt.ylim(-8.0, 0.5)
         plt.ylabel(
-            r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$"
+            r"$\log_{10}$ $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$"
         )
         plt.xlabel(
-            r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]"
+            r"$\log_{10}$ $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]"
         )
         plt.legend(
             loc="lower right",
