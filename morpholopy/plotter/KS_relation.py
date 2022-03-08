@@ -311,6 +311,29 @@ def make_KS_data(
             np.transpose([surface_density, tgas]),
         )
 
+    elif mode == 3:
+
+        combined_data.atomic_gas_surface_density = np.append(
+            combined_data.neutral_gas_surface_density, surface_density
+        )
+        combined_data.depletion_time_atomic_gas = np.append(
+            combined_data.depletion_time_neutral_gas, tgas
+        )
+
+        np.savetxt(
+            f"{output_path}/KS_atomic_relation_grid_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, SFR_surface_density]),
+        )
+
+        np.savetxt(
+            f"{output_path}/atomic_gas_depletion_timescale_grid_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, tgas]),
+        )
+
     ###### Making KS plots with azimuthally averaged method #################
 
     # Plotting KS relations with size
@@ -346,6 +369,21 @@ def make_KS_data(
 
         np.savetxt(
             f"{output_path}/gas_depletion_timescale_best_radii_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, tgas]),
+        )
+
+    elif mode == 3:
+        np.savetxt(
+            f"{output_path}/KS_atomic_relation_radii_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, SFR_surface_density]),
+        )
+
+        np.savetxt(
+            f"{output_path}/atomic_gas_depletion_timescale_radii_%i_" % (index)
             + simulation_name
             + ".txt",
             np.transpose([surface_density, tgas]),
@@ -507,8 +545,11 @@ def make_KS_plots(
 ):
 
     for mode, project in enumerate(
-        ["molecular_hydrogen_masses", "not_ionized_hydrogen_masses"]
+        ["molecular_hydrogen_masses", "not_ionized_hydrogen_masses", "atomic_hydrogen_masses"]
     ):
+        if mode ==2:
+            mode+= 1
+
         make_KS_data(
             data, ang_momentum, mode, index, output_path, simulation_name, combined_data
         )

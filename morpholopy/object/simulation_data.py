@@ -391,10 +391,12 @@ class CombinedData:
 
         self.neutral_gas_surface_density: np.ndarray = np.array([])
         self.molecular_gas_surface_density: np.ndarray = np.array([])
+        self.atomic_gas_surface_density: np.ndarray = np.array([])
         self.SFR_surface_density: np.ndarray = np.array([])
 
         self.depletion_time_molecular_gas: np.ndarray = np.array([])
         self.depletion_time_neutral_gas: np.ndarray = np.array([])
+        self.depletion_time_atomic_gas: np.ndarray = np.array([])
 
         self.H2_to_neutral_surface_density_ratio: np.ndarray = np.array([])
 

@@ -34,19 +34,20 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
     methods = ["grid", "radii"]
     for method in methods:
 
-        for mode in range(2):
+        for mode in [0,1,3]:
             plt.figure()
             ax = plt.subplot(1, 1, 1)
 
-            Sigma_g = np.logspace(1, 4, 1000)
-            Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-            plt.plot(
-                np.log10(Sigma_g),
-                np.log10(Sigma_star),
-                color="k",
-                label="K98",
-                linestyle="-.",
-            )
+            if mode==0 or mode==1:
+                Sigma_g = np.logspace(1, 4, 1000)
+                Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+                plt.plot(
+                    np.log10(Sigma_g),
+                    np.log10(Sigma_star),
+                    color="k",
+                    label="K98",
+                    linestyle="-.",
+                )
 
             Sigma_g = np.logspace(-1, 4, 1000)
 
@@ -164,11 +165,61 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
                 plt.xlabel(
                     "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
+            elif (mode == 3) and (method=="grid"):
+                for ind, observation in enumerate(observational_data):
+                    if observation.gas_surface_density is not None:
+                        if (observation.description == "Bigiel et al. (2008) inner"):
+                            data = observation.bin_data_KS_atomic( np.arange(-1,3,.25),0.4)
+                            plt.errorbar(
+                                data[0], 
+                                data[1], 
+                                yerr=[data[2], data[3]], 
+                                fmt="o",
+                                label="B08 inner [750 pc]", 
+                                color="k", 
+                                ms=markersize,
+                            )
+                        elif (observation.description == "Bigiel et al. (2010) outer"):
+                            data2 = observation.bin_data_KS_atomic( np.arange(-1,3,.25),0.4)
+                            plt.errorbar(
+                                data2[0], 
+                                data2[1], 
+                                yerr=[data2[2], data2[3]], 
+                                fmt="v", 
+                                label="B10 outer [750 pc]", 
+                                color="k", 
+                                ms=markersize,
+                            )
+                plt.xlabel(
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
+            elif (mode == 3) and (method=="radii"):
+                for ind, observation in enumerate(observational_data):
+                    if observation.gas_surface_density is not None:
+                        if (observation.description == "Schruba et al. (2011)"):
+                            data = observation.bin_data_KS_atomic( np.arange(-1,3,.25),0.4)
+                            plt.errorbar(
+                                data[0], 
+                                data[1], 
+                                yerr=[data[2], data[3]], 
+                                fmt="o",
+                                label="S11 [750 pc]", 
+                                color="k", 
+                                ms=markersize,
+                            )
+                plt.xlabel(
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
 
             color = ["tab:blue", "tab:orange"]
 
             for i, name in enumerate(name_list):
+                print("Index:")
+                print(index)
                 if mode == 0:
+                    plt.xlabel(
+                        "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    )
                     data = np.loadtxt(
                         f"{output_path}/KS_relation_best_"
                         + method
@@ -177,8 +228,22 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
                         + ".txt"
                     )
                 elif mode == 1:
+                    plt.xlabel(
+                        "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    )
                     data = np.loadtxt(
                         f"{output_path}/KS_molecular_relation_"
+                        + method
+                        + "_%i_" % (index)
+                        + name
+                        + ".txt"
+                    )
+                elif mode == 3:
+                    plt.xlabel(
+                        "$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    )
+                    data = np.loadtxt(
+                        f"{output_path}/KS_atomic_relation_"
                         + method
                         + "_%i_" % (index)
                         + name
@@ -243,6 +308,15 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
                 plt.xlim(-2.0, 3.0)
                 plt.savefig(
                     f"{output_path}/KS_molecular_relation_"
+                    + method
+                    + "_%i.png" % (index),
+                    dpi=200,
+                )
+                plt.close()
+            elif mode == 3:
+                plt.xlim(-0.5, 3.0)
+                plt.savefig(
+                    f"{output_path}/KS_atomic_relation_"
                     + method
                     + "_%i.png" % (index),
                     dpi=200,
@@ -570,7 +644,6 @@ def surface_ratios_plots(output_path, index, name_list):
 def make_comparison_plots(output_path: str, name_list, num_of_galaxies_to_show: int):
 
     for index in range(num_of_galaxies_to_show):
-
         KS_relation_plots(output_path, index, name_list)
         depletion_time_plots(output_path, index, name_list)
         surface_ratios_plots(output_path, index, name_list)
