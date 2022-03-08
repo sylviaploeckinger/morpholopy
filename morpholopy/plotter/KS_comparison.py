@@ -202,7 +202,7 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
                                 data[0], 
                                 data[1], 
                                 yerr=[data[2], data[3]], 
-                                fmt="o",
+                                fmt="d",
                                 label="S11 [750 pc]", 
                                 color="k", 
                                 ms=markersize,
