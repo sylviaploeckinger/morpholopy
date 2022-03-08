@@ -207,29 +207,33 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
     metals = metals[arg_sort[::-1]]
     sigma_SFR = sigma_SFR[arg_sort[::-1]]
 
-    for plot in ["gas", "H2"]:
+    for plot in ["gas", "H2", "HI"]:
 
         # star formation rate surgface density vs surface density
         fig = plt.figure()
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
 
-        Sigma_g = np.logspace(1, 3, 1000)
-        Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-        plt.plot(
-            np.log10(Sigma_g),
-            np.log10(Sigma_star),
-            "-.",
-            color="k",
-            label="K98",
-        )
+        if plot=="gas" or plot=="H2":
+            Sigma_g = np.logspace(1, 3, 1000)
+            Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+            plt.plot(
+                np.log10(Sigma_g),
+                np.log10(Sigma_star),
+                "-.",
+                color="k",
+                label="K98",
+            )
 
         if plot == "gas":
             sigma_gas = combined_data.neutral_gas_surface_density
             t_gas = combined_data.depletion_time_neutral_gas
-        else:
+        elif plot == "H2":
             sigma_gas = combined_data.molecular_gas_surface_density
             t_gas = combined_data.depletion_time_molecular_gas
+        elif plot == "HI":
+            sigma_gas = combined_data.atomic_gas_surface_density
+            t_gas = combined_data.depletion_time_atomic_gas
 
         sigma_gas = sigma_gas[arg_sort[::-1]]
         t_gas = t_gas[arg_sort[::-1]]
@@ -370,7 +374,35 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
                             color="k",
                             ms=markersize,
                         )
+
             plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+        elif plot=="HI":
+           for ind, observation in enumerate(observational_data):
+                if observation.gas_surface_density is not None:
+                    if (observation.description == "Bigiel et al. (2008) inner"):
+                        data = observation.bin_data_KS_atomic( np.arange(-1,3,.25),0.4)
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="o",
+                            label="B08 inner [750 pc]",
+                            color="k",
+                            ms=markersize,
+                        )
+                    elif (observation.description == "Bigiel et al. (2010) outer"):
+                        data2 = observation.bin_data_KS_atomic( np.arange(-1,3,.25),0.4)
+                        plt.errorbar(
+                            data2[0],
+                            data2[1],
+                            yerr=[data2[2], data2[3]],
+                            fmt="v",
+                            label="B10 outer [750 pc]",
+                            color="k",
+                            ms=markersize,
+                        )
+           plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+
 
         plt.ylabel(
             "$\\log_{10}$ $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
