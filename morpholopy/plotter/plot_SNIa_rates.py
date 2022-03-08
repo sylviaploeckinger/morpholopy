@@ -228,7 +228,7 @@ def plot_SNIa_rates(sim_data, output_name_list, output_path):
     ax = plt.subplot(1, 1, 1)
 
     plot_SNIa_obs()
-    plot_SNIa_models()
+    #plot_SNIa_models()
 
     count = 0
     color = ['tab:blue', 'tab:green', 'tab:orange', 'crimson', 'tab:purple']
