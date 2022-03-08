@@ -202,8 +202,8 @@ def KS_relation(data, ang_momentum, mode, method, size):
             map_SFR = np.zeros(len(map_mass))
 
     # Bounds
-    map_SFR[map_SFR <= 0] = 1e-6
-    map_mass[map_mass <= 0] = 1e-6
+    map_SFR[map_SFR <= 0] = 3e-7
+    map_mass[map_mass <= 0] = 3e-7
 
     surface_density = np.log10(map_mass.flatten())  # Msun / kpc^2
     surface_density -= 6  # Msun / pc^2
@@ -379,8 +379,8 @@ def surface_ratios(data, ang_momentum, method, size):
     map_gas = map_H2 + map_HI
 
     # Bounds
-    map_H2[map_H2 <= 0] = 1e-6
-    map_gas[map_gas <= 0] = 1e-6
+    map_H2[map_H2 <= 0] = 3e-7
+    map_gas[map_gas <= 0] = 3e-7
     H2_to_neutral_ratio = map_H2 / map_gas
 
     neutral_gas_surface_density = np.log10(map_gas.flatten())  # HI+H2 Msun / kpc^2
@@ -418,7 +418,7 @@ def make_surface_density_ratios(
 
     # Get the surface densities
     method = "grid"
-    binsize = 0.25  # kpc
+    binsize = 0.75  # kpc
     Sigma_gas_neutral, Sigma_gas_molecular, Sigma_ratio = surface_ratios(
         data, ang_momentum, method, binsize
     )
@@ -445,7 +445,7 @@ def make_surface_density_ratios(
         Sigma_ratio_250pc,
     ) = surface_ratios(data, ang_momentum, method, binsize)
 
-    binsize = 0.8  # kpc
+    binsize = 0.75  # kpc
     (
         Sigma_gas_800pc_neutral,
         Sigma_gas_800pc_molecular,
@@ -496,8 +496,8 @@ def calculate_integrated_quantities(data, ang_momentum, radius, mode):
         Sigma_SFR = np.log10(np.sum(sfr) / surface)  # Msun / yr / kpc^2
 
     else:
-        Sigma_gas = -6
-        Sigma_SFR = -6
+        Sigma_gas = -6.5
+        Sigma_SFR = -6.5
 
     return Sigma_gas, Sigma_SFR
 

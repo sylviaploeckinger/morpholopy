@@ -1,12 +1,17 @@
 import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
 from .KS_relation import median_relations
+from .loadObservationalData import read_obs_data
 import numpy as np
 
 
 def plot_integrated_surface_densities(
-    sigma_SFR, sigma_gas, sigma_H2, stellar_mass, output_path, simulation_name
+    sigma_SFR, sigma_gas, sigma_H2, stellar_mass, output_path, simulation_name, markersize=4.
 ):
+
+    # read the observational data for the KS relations
+    observational_data = read_obs_data("./plotter/obs_data")
+    
     # Plot parameters
     params = {
         "font.size": 12,
@@ -25,7 +30,7 @@ def plot_integrated_surface_densities(
     def KS(sigma_g, n, A):
         return A * sigma_g ** n
 
-    Sigma_g = np.logspace(-2, 3, 1000)
+    Sigma_g = np.logspace(1, 3, 1000)
     Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
 
     rcParams.update(params)
@@ -37,7 +42,7 @@ def plot_integrated_surface_densities(
     plt.plot(
         np.log10(Sigma_g),
         np.log10(Sigma_star),
-        ".-",
+        "-.",
         color="k",
         label="K98",
     )
@@ -53,6 +58,32 @@ def plot_integrated_surface_densities(
         edgecolors="none",
         zorder=2,
     )
+
+    for ind, observation in enumerate(observational_data):
+        if observation.H2_surface_density is not None:
+            print(observation.description)
+            if observation.description == "Kennicutt (1998) [Normal spirals]":
+                data = observation.bin_data_KS_molecular(np.arange(-1, 3, 0.25), 0.4)
+                plt.errorbar(
+                    data[0],
+                    data[1],
+                    yerr=[data[2], data[3]],
+                    fmt="v",
+                    ms=markersize,
+                    label="K98 [spirals]",
+                    color="k",
+                )
+            elif observation.description == "Kennicutt (1998) [Starbursts]":
+                data = observation.bin_data_KS_molecular(np.arange(-1, 3, 0.25), 0.4)
+                plt.errorbar(
+                    data[0],
+                    data[1],
+                    yerr=[data[2], data[3]],
+                    fmt="*",
+                    ms=markersize,
+                    label="K98 [starburst]",
+                    color="k",
+                )
 
     plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
     plt.ylabel(
@@ -80,7 +111,7 @@ def plot_integrated_surface_densities(
     plt.plot(
         np.log10(Sigma_g),
         np.log10(Sigma_star),
-        ".-",
+        "-.",
         color="k",
         label="K98",
     )
@@ -96,6 +127,33 @@ def plot_integrated_surface_densities(
         edgecolors="none",
         zorder=2,
     )
+
+    for ind, observation in enumerate(observational_data):
+        if observation.gas_surface_density is not None:
+            print(observation.description)
+            if observation.description == "Kennicutt (1998) [Normal spirals]":
+                data = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
+                plt.errorbar(
+                    data[0],
+                    data[1],
+                    yerr=[data[2], data[3]],
+                    fmt="v",
+                    ms=markersize,
+                    label="K98 [spirals]",
+                    color="k",
+                )
+            elif observation.description == "Kennicutt (1998) [Starbursts]":
+                data = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
+                plt.errorbar(
+                    data[0],
+                    data[1],
+                    yerr=[data[2], data[3]],
+                    fmt="*",
+                    ms=markersize,
+                    label="K98 [starburst]",
+                    color="k",
+                )
+
 
     plt.xlabel(
         "$\\log_{10}$ $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
@@ -117,7 +175,10 @@ def plot_integrated_surface_densities(
     plt.close()
 
 
-def plot_combined_surface_densities(combined_data, output_path, simulation_name):
+def plot_combined_surface_densities(combined_data, output_path, simulation_name, markersize=4.):
+
+    # read the observational data for the KS relations
+    observational_data = read_obs_data("./plotter/obs_data")
 
     # Get the default KS relation for correct IMF
     def KS(sigma_g, n, A):
@@ -153,12 +214,12 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
 
-        Sigma_g = np.logspace(-2, 3, 1000)
+        Sigma_g = np.logspace(1, 3, 1000)
         Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
         plt.plot(
             np.log10(Sigma_g),
             np.log10(Sigma_star),
-            ".-",
+            "-.",
             color="k",
             label="K98",
         )
@@ -232,10 +293,83 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
         plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
         if plot == "gas":
+            for ind, observation in enumerate(observational_data):
+                if observation.gas_surface_density is not None:
+                    if observation.description == "Bigiel et al. (2008) inner":
+                        data = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="v",
+                            ms=markersize,
+                            label="B08 inner [750 pc]",
+                            color="k",
+                        )
+                    elif observation.description == "Bigiel et al. (2010) outer":
+                        data2 = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
+                        plt.errorbar(
+                            data2[0],
+                            data2[1],
+                            yerr=[data2[2], data2[3]],
+                            fmt="o",
+                            ms=markersize,
+                            label="B10 outer [750 pc]",
+                            color="k",
+                        )
             plt.xlabel(
                 "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
             )
-        else:
+        elif plot=="H2":
+            for ind, observation in enumerate(observational_data):
+                if observation.H2_surface_density is not None:
+                    print(observation.description)
+                    if observation.description == "Bigiel et al. (2008) inner":
+                        data = observation.bin_data_KS_molecular(
+                            np.arange(-1, 3, 0.25), 0.4
+                        )
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="<",
+                            ms=markersize,
+                            label="B08 inner [750 pc]",
+                            color="k",
+                        )
+                    elif (observation.description == "Pessa et al. (2021) [500 pc]"):
+                        data = observation.bin_data_KS_molecular(np.arange(-1,3,.25),0.0)
+                        plt.errorbar(
+                            data[0]+0.05,
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="^",
+                            label=f"P21 [500 pc]",
+                            color="k",
+                            ms=markersize,
+                        )
+                    elif (observation.description[0:25] == "Querejeta et al. (2021) f"):
+                        data = observation.bin_data_KS_molecular( np.arange(-1,3,.25),-0.5, print_stuff=False)
+                        plt.errorbar(
+                            data[0]-0.05,
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="*",
+                            label=f"Q21 [1 kpc]",
+                            color="k",
+                            ms=markersize,
+                        )
+                    elif (observation.description[0:25] == "Ellison et al. (2020)"):
+                        data = observation.bin_data_KS_molecular( np.arange(0.5,2.75,.25),0.5, print_stuff=False)
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="p",
+                            label=f"E20 [1 kpc]",
+                            color="k",
+                            ms=markersize,
+                        )
             plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
 
         plt.ylabel(
@@ -276,7 +410,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name)
             np.log10(Sigma_g) - np.log10(Sigma_star) + 6.0,
             color="k",
             label="K98",
-            linestyle=".-",
+            linestyle="-.",
         )
 
         plt.scatter(

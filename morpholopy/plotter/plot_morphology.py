@@ -73,6 +73,10 @@ def output_accumulative_densities(combined_data, output_path, simulation_name):
         ),
     )
 
+    print(len(combined_data.SFR_surface_density))
+    print(len(combined_data.H2_to_neutral_surface_density_ratio))
+    print(len(combined_data.gas_metallicity))
+
     np.savetxt(
         f"{output_path}/accumulative_surface_density_ratios_grid"
         + simulation_name
