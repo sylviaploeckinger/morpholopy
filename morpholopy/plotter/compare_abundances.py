@@ -791,3 +791,96 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
                fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_z_band_comparison.png", dpi=200)
+
+
+    #########
+    O_Fe_light_weighted_r_band = sim_data['O_Fe_light_weighted_r_band']
+    Mg_Fe_light_weighted_r_band = sim_data['Mg_Fe_light_weighted_r_band']
+
+    plt.figure()
+
+    # Box stellar abundance --------------------------------
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plot_Kirby_data()
+    plot_Kirby_analysed()
+    plot_gallazzi_2005()
+    plot_Kudritzki_2016()
+    plot_Zahid_2017()
+
+    count = 0
+    for i in range(len(output_name_list)):
+        xm = Mstellar_all[count:count + counter[i]]
+        ym = O_Fe_light_weighted_r_band[count:count + counter[i]]
+        count += counter[i]
+
+        bins = np.arange(6, 12, 0.2)
+        ind = np.digitize(xm, bins)
+        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.ylabel("Stellar (light-weighted r-band) [O/Fe]", labelpad=2)
+    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    plt.xscale('log')
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.axis([1e5, 1e12, 0, 0.6])
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = np.arange(len(handles)-2)+2
+    order = np.append(order,0)
+    order = np.append(order,1)
+
+    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               fontsize=9, columnspacing=0.02)
+
+    plt.savefig(f"{output_path}/Mstellar_O_Fe_light_weighted_r_band_comparison.png", dpi=200)
+
+    ###
+
+    plt.figure()
+
+    # Box stellar abundance --------------------------------
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plot_Kirby_data()
+    plot_Kirby_analysed()
+    plot_gallazzi_2005()
+    plot_Kudritzki_2016()
+    plot_Zahid_2017()
+
+    count = 0
+    for i in range(len(output_name_list)):
+        xm = Mstellar_all[count:count + counter[i]]
+        ym = Mg_Fe_light_weighted_r_band[count:count + counter[i]]
+        count += counter[i]
+
+        bins = np.arange(6, 12, 0.2)
+        ind = np.digitize(xm, bins)
+        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.ylabel("Stellar (light-weighted r-band) [Mg/Fe]", labelpad=2)
+    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    plt.xscale('log')
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.axis([1e5, 1e12, -0.2, 0.6])
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = np.arange(len(handles)-2)+2
+    order = np.append(order,0)
+    order = np.append(order,1)
+
+    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               fontsize=9, columnspacing=0.02)
+
+    plt.savefig(f"{output_path}/Mstellar_Mg_Fe_light_weighted_r_band_comparison.png", dpi=200)
