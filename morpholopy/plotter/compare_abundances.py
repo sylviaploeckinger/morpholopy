@@ -803,12 +803,7 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
+    plot_gallazzi()
     count = 0
     for i in range(len(output_name_list)):
         xm = Mstellar_all[count:count + counter[i]]
@@ -824,18 +819,12 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
         plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
-    plt.ylabel("Stellar (light-weighted r-band) [O/Fe]", labelpad=2)
+    plt.ylabel("[O/Fe] (light-weighted r-band)", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 0, 0.6])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    plt.axis([1e8, 1e12, 0, 0.6])
+    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
                fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_O_Fe_light_weighted_r_band_comparison.png", dpi=200)
@@ -848,11 +837,7 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     ax = plt.subplot(1, 1, 1)
     plt.grid("True")
 
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
+    plot_gallazzi()
 
     count = 0
     for i in range(len(output_name_list)):
@@ -869,18 +854,12 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
         plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
         plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
-    plt.ylabel("Stellar (light-weighted r-band) [Mg/Fe]", labelpad=2)
+    plt.ylabel("[Mg/Fe] (light-weighted r-band)", labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, -0.2, 0.6])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    plt.axis([1e8, 1e12, -0.2, 0.6])
+    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
                fontsize=9, columnspacing=0.02)
 
     plt.savefig(f"{output_path}/Mstellar_Mg_Fe_light_weighted_r_band_comparison.png", dpi=200)
