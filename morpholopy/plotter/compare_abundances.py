@@ -203,14 +203,158 @@ def compare_stellar_abundances(sims_data, output_name_list, output_path):
                columnspacing=0.02)
     plt.savefig(f"{output_path}/Sr_Fe_comparison.png", dpi=200)
 
+def plot_Fe_H_mass_relation(Mstellar, Fe_H, counter, ylabel, output_name_list, output_file):
 
-def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
+    # Plot parameters
+    params = {
+        "font.size": 12,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (4, 3),
+        "figure.subplot.left": 0.18,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.15,
+        "figure.subplot.top": 0.95,
+        "figure.subplot.wspace": 0.3,
+        "figure.subplot.hspace": 0.3,
+        "lines.markersize": 0.5,
+        "lines.linewidth": 0.2,
+    }
+    rcParams.update(params)
 
-    Mstellar_all = sim_data['Mstellar']
-    O_Fe_all = sim_data['O_Fe']
-    Fe_H_all = sim_data['Fe_H']
-    Mg_Fe_all = sim_data['Mg_Fe']
-    counter = sim_data['counter']
+    plt.figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plot_Kirby_data()
+    plot_Kirby_analysed()
+    plot_gallazzi_2005()
+    plot_Kudritzki_2016()
+    plot_Zahid_2017()
+
+    count = 0
+    color = ['tab:blue','tab:green','tab:orange','crimson','tab:purple']
+    for i in range(len(output_name_list)):
+        xm = Mstellar[count:count + counter[i]]
+        ym = Fe_H[count:count + counter[i]]
+        count += counter[i]
+
+        bins = np.arange(6, 12, 0.2)
+        ind = np.digitize(xm, bins)
+        ylo = [np.percentile(10**ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        yhi = [np.percentile(10**ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.ylabel(ylabel, labelpad=2)
+    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    plt.xscale('log')
+    plt.yscale('log')
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.axis([1e5, 1e12, 1e-3, 1e2])
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = np.arange(len(handles)-2)+2
+    order = np.append(order,0)
+    order = np.append(order,1)
+
+    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               fontsize=9, columnspacing=0.02)
+
+    plt.savefig(output_file, dpi=200)
+
+
+def plot_Mg_Fe_mass_relation(Mstellar, Mg_Fe, counter, ylabel, output_name_list, output_file):
+
+    # Plot parameters
+    params = {
+        "font.size": 12,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (4, 3),
+        "figure.subplot.left": 0.18,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.15,
+        "figure.subplot.top": 0.95,
+        "figure.subplot.wspace": 0.3,
+        "figure.subplot.hspace": 0.3,
+        "lines.markersize": 0.5,
+        "lines.linewidth": 0.2,
+    }
+    rcParams.update(params)
+
+    plt.figure()
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plot_gallazzi()
+
+    count = 0
+    color = ['tab:blue','tab:green','tab:orange','crimson','tab:purple']
+    for i in range(len(output_name_list)):
+        xm = Mstellar[count:count + counter[i]]
+        ym = Mg_Fe[count:count + counter[i]]
+        count += counter[i]
+
+        bins = np.arange(6, 12, 0.2)
+        ind = np.digitize(xm, bins)
+        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.ylabel(ylabel, labelpad=2)
+    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    plt.xscale('log')
+    plt.axis([1e8, 1e12, -0.2, 0.6])
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               fontsize=9, columnspacing=0.02)
+
+    plt.savefig(output_file, dpi=200)
+
+def plot_O_Fe_mass_relation(Mstellar, O_Fe, counter, ylabel, output_name_list, output_file):
+
+    plt.figure()
+
+    # Box stellar abundance --------------------------------
+    ax = plt.subplot(1, 1, 1)
+    plt.grid("True")
+
+    plot_gallazzi()
+
+    count = 0
+    color = ['tab:blue','tab:green','tab:orange','crimson','tab:purple']
+    for i in range(len(output_name_list)):
+        xm = Mstellar[count:count + counter[i]]
+        ym = O_Fe[count:count + counter[i]]
+        count += counter[i]
+
+        bins = np.arange(6, 12, 0.2)
+        ind = np.digitize(xm, bins)
+        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+
+    plt.ylabel(ylabel, labelpad=2)
+    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    plt.xscale('log')
+    plt.axis([1e8, 1e12, 0.0, 0.6])
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+
+    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+               fontsize=9, columnspacing=0.02)
+
+    plt.savefig(output_file, dpi=200)
+
+def plot_metallicity_mass_relation(Mstellar, Z, counter, ylabel, output_name_list, output_file):
 
     # Plot parameters
     params = {
@@ -244,25 +388,26 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
     count = 0
     color = ['tab:blue','tab:green','tab:orange','crimson','tab:purple']
     for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Fe_H_all[count:count + counter[i]]
+        xm = Mstellar[count:count + counter[i]]
+        ym = Z[count:count + counter[i]]
         count += counter[i]
 
         bins = np.arange(6, 12, 0.2)
         ind = np.digitize(xm, bins)
-        ylo = [np.percentile(10**ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(10**ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
         plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
         plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
 
-    plt.ylabel("Stellar $10^{[\mathrm{Fe/H}]}$", labelpad=2)
+    plt.ylabel(ylabel, labelpad=2)
     plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
     plt.xscale('log')
     plt.yscale('log')
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.axis([1e5, 1e12, 1e-3, 1e2])
+
     handles, labels = plt.gca().get_legend_handles_labels()
     order = np.arange(len(handles)-2)+2
     order = np.append(order,0)
@@ -272,594 +417,778 @@ def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
                loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
                fontsize=9, columnspacing=0.02)
 
-    plt.savefig(f"{output_path}/Mstellar_Fe_H_comparison.png", dpi=200)
+    plt.savefig(output_file, dpi=200)
+
+def compare_mass_metallicity_relations(sim_data, output_name_list, output_path):
+
+    Mstellar = sim_data['Mstellar']
+    counter = sim_data['counter']
+
+    ##############  Fe/H  #################
+
+    Fe_H_median = sim_data['Fe_H_median']
+    Fe_H_mass_weighted = sim_data['Fe_H_mass_weighted']
+    Fe_H_ratio_weighted = sim_data['Fe_H_ratio_weighted']
+
+    ylabel = "Stellar (median) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_median_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_median, counter, ylabel, output_name_list, output_file)
+
+    ylabel = "Stellar (mass-weighted) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_mass_weighted_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_mass_weighted, counter, ylabel, output_name_list, output_file)
+
+    ylabel = "Stellar (mass-weight of ratio) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_ratio_weighted_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_ratio_weighted, counter, ylabel, output_name_list, output_file)
+
+    Fe_H_light_weighted = sim_data['Fe_H_light_weighted_r_band_with_mass']
+    ylabel = "Stellar (light-weight of mass) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_light_weighted_r_band_with_mass_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_light_weighted, counter, ylabel, output_name_list, output_file)
+
+    Fe_H_light_weighted_r_band = sim_data['Fe_H_light_weighted_r_band']
+    Fe_H_light_weighted_i_band = sim_data['Fe_H_light_weighted_i_band']
+    Fe_H_light_weighted_Z_band = sim_data['Fe_H_light_weighted_Z_band']
+
+    ylabel = "Stellar (light-weight of ratio) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_light_weighted_r_band_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_light_weighted_r_band, counter, ylabel, output_name_list, output_file)
+
+    ylabel = "Stellar (light-weighted i-band of ratio) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_light_weighted_i_band_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_light_weighted_i_band, counter, ylabel, output_name_list, output_file)
+
+    ylabel = "Stellar (light-weighted Z-band of ratio) $10^{[\mathrm{Fe/H}]}$"
+    output_file = f"{output_path}/Mstellar_Fe_H_light_weighted_Z_band_comparison.png"
+    plot_Fe_H_mass_relation(Mstellar, Fe_H_light_weighted_Z_band, counter, ylabel, output_name_list, output_file)
+
+    ###################
+    ###################
+
+    Mg_Fe_median = sim_data['Mg_Fe_median']
+    ylabel = "(median) [Mg/Fe]"
+    output_file = f"{output_path}/Mstellar_Mg_Fe_median_comparison.png"
+    plot_Mg_Fe_mass_relation(Mstellar, Mg_Fe_median, counter, ylabel, output_name_list, output_file)
+
+    Mg_Fe_mass_weighted = sim_data['Mg_Fe_mass_weighted']
+    ylabel = "(mass-weighted) [Mg/Fe]"
+    output_file = f"{output_path}/Mstellar_Mg_Fe_mass_weighted_comparison.png"
+    plot_Mg_Fe_mass_relation(Mstellar, Mg_Fe_mass_weighted, counter, ylabel, output_name_list, output_file)
+
+    Mg_Fe_light_weighted = sim_data['Mg_Fe_light_weighted_r_band']
+    ylabel = "(light-weighted r-band) [Mg/Fe]"
+    output_file = f"{output_path}/Mstellar_Mg_Fe_light_weighted_r_band_comparison.png"
+    plot_Mg_Fe_mass_relation(Mstellar, Mg_Fe_light_weighted, counter, ylabel, output_name_list, output_file)
+
+    Mg_Fe_ratio_weighted = sim_data['Mg_Fe_ratio_weighted']
+    ylabel = "(mass-ratio-weighted) [Mg/Fe]"
+    output_file = f"{output_path}/Mstellar_Mg_Fe_ratio_weighted_comparison.png"
+    plot_Mg_Fe_mass_relation(Mstellar, Mg_Fe_ratio_weighted, counter, ylabel, output_name_list, output_file)
+
+    Mg_Fe_ratio_weighted = sim_data['Mg_Fe_light_weighted_r_band_with_mass']
+    ylabel = "(light-weight r-band of mass) [Mg/Fe]"
+    output_file = f"{output_path}/Mstellar_Mg_Fe_light_weighted_r_band_with_mass_comparison.png"
+    plot_Mg_Fe_mass_relation(Mstellar, Mg_Fe_ratio_weighted, counter, ylabel, output_name_list, output_file)
+
+    O_Fe_median = sim_data['O_Fe_median']
+    ylabel = "(median) [O/Fe]"
+    output_file = f"{output_path}/Mstellar_O_Fe_median_comparison.png"
+    plot_O_Fe_mass_relation(Mstellar, O_Fe_median, counter, ylabel, output_name_list, output_file)
+
+    O_Fe_mass_weighted = sim_data['O_Fe_mass_weighted']
+    ylabel = "(mass-weighted) [O/Fe]"
+    output_file = f"{output_path}/Mstellar_O_Fe_mass_weighted_comparison.png"
+    plot_O_Fe_mass_relation(Mstellar, O_Fe_mass_weighted, counter, ylabel, output_name_list, output_file)
+
+    O_Fe_ratio_weighted = sim_data['O_Fe_ratio_weighted']
+    ylabel = "(mass-weight of ratio) [O/Fe]"
+    output_file = f"{output_path}/Mstellar_O_Fe_ratio_weighted_comparison.png"
+    plot_O_Fe_mass_relation(Mstellar, O_Fe_ratio_weighted, counter, ylabel, output_name_list, output_file)
+
+    O_Fe_light_weighted = sim_data['O_Fe_light_weighted_r_band']
+    ylabel = "(light-weight r-band of ratio) [O/Fe]"
+    output_file = f"{output_path}/Mstellar_O_Fe_light_weighted_r_band_comparison.png"
+    plot_O_Fe_mass_relation(Mstellar, O_Fe_light_weighted, counter, ylabel, output_name_list, output_file)
+
+    O_Fe_ratio_weighted = sim_data['O_Fe_light_weighted_r_band_with_mass']
+    ylabel = "(light-weight r-band of mass) [O/Fe]"
+    output_file = f"{output_path}/Mstellar_O_Fe_light_weighted_r_band_with_mass_comparison.png"
+    plot_O_Fe_mass_relation(Mstellar, O_Fe_ratio_weighted, counter, ylabel, output_name_list, output_file)
+
+    ###################
+    ###################
+
+    Z_mass_weighted = sim_data['Z_mass_weighted']
+    ylabel = "Stellar (mass-weighted) $Z/Z_{\odot}$"
+    output_file = f"{output_path}/Mstellar_Z_mass_weighted_comparison.png"
+    plot_metallicity_mass_relation(Mstellar, Z_mass_weighted, counter, ylabel, output_name_list, output_file)
+
+    Z_light_weighted_r_band = sim_data['Z_light_weighted_r_band']
+    Z_light_weighted_i_band = sim_data['Z_light_weighted_i_band']
+    Z_light_weighted_Z_band = sim_data['Z_light_weighted_Z_band']
+
+    ylabel = "Stellar (light-weighted r-band) $Z/Z_{\odot}$"
+    output_file = f"{output_path}/Mstellar_Z_light_weighted_r_band_comparison.png"
+    plot_metallicity_mass_relation(Mstellar, Z_light_weighted_r_band, counter, ylabel, output_name_list, output_file)
+
+    ylabel = "Stellar (light-weighted i-band) $Z/Z_{\odot}$"
+    output_file = f"{output_path}/Mstellar_Z_light_weighted_i_band_comparison.png"
+    plot_metallicity_mass_relation(Mstellar, Z_light_weighted_i_band, counter, ylabel, output_name_list, output_file)
+
+    ylabel = "Stellar (light-weighted Z-band) $Z/Z_{\odot}$"
+    output_file = f"{output_path}/Mstellar_Z_light_weighted_Z_band_comparison.png"
+    plot_metallicity_mass_relation(Mstellar, Z_light_weighted_Z_band, counter, ylabel, output_name_list, output_file)
+
+
+    # # Plot parameters
+    # params = {
+    #     "font.size": 12,
+    #     "font.family": "Times",
+    #     "text.usetex": True,
+    #     "figure.figsize": (4, 3),
+    #     "figure.subplot.left": 0.18,
+    #     "figure.subplot.right": 0.95,
+    #     "figure.subplot.bottom": 0.15,
+    #     "figure.subplot.top": 0.95,
+    #     "figure.subplot.wspace": 0.3,
+    #     "figure.subplot.hspace": 0.3,
+    #     "lines.markersize": 0.5,
+    #     "lines.linewidth": 0.2,
+    # }
+    # rcParams.update(params)
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # color = ['tab:blue','tab:green','tab:orange','crimson','tab:purple']
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Fe_H_all[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(10**ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(10**ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar $10^{[\mathrm{Fe/H}]}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Fe_H_comparison.png", dpi=200)
 
 
     #############
 
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_gallazzi()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Mg_Fe_all[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("[Mg/Fe]", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.axis([1e8, 1e12, -0.2, 0.6])
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Mg_Fe_comparison.png", dpi=200)
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_gallazzi()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Mg_Fe_all[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("[Mg/Fe]", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.axis([1e8, 1e12, -0.2, 0.6])
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Mg_Fe_comparison.png", dpi=200)
 
     #############
 
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_gallazzi()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = O_Fe_all[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("[O/Fe]", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.axis([1e8, 1e12, 0.0, 0.6])
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-
-    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_O_Fe_comparison.png", dpi=200)
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_gallazzi()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = O_Fe_all[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("[O/Fe]", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.axis([1e8, 1e12, 0.0, 0.6])
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    #
+    # plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_O_Fe_comparison.png", dpi=200)
 
     ##############
     # Mass-weighted relations
     ##############
 
-    O_Fe_all = sim_data['O_Fe_mass_weighted']
-    Fe_H_all = sim_data['Fe_H_mass_weighted']
-    Mg_Fe_all = sim_data['Mg_Fe_mass_weighted']
-    Z_mass_weighted = sim_data['Z_mass_weighted']
+    # O_Fe_all = sim_data['O_Fe_mass_weighted']
+    # Fe_H_all = sim_data['Fe_H_mass_weighted']
+    # Mg_Fe_all = sim_data['Mg_Fe_mass_weighted']
+    # Z_mass_weighted = sim_data['Z_mass_weighted']
 
-    plt.figure()
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Fe_H_all[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(10**ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(10**ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (mass-weighted) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Fe_H_total_comparison.png", dpi=200)
 
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Fe_H_all[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(10**ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(10**ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(10**ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (mass-weighted) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Fe_H_total_comparison.png", dpi=200)
-
-
-    #############
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_gallazzi()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Mg_Fe_all[count:count + counter[i]]
-
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("[Mg/Fe] (mass-weighted)", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.axis([1e8, 1e12, -0.2, 0.6])
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Mg_Fe_total_comparison.png", dpi=200)
 
     #############
 
-    plt.figure()
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_gallazzi()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Mg_Fe_all[count:count + counter[i]]
+    #
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("[Mg/Fe] (mass-weighted)", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.axis([1e8, 1e12, -0.2, 0.6])
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Mg_Fe_total_comparison.png", dpi=200)
 
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
+    #############
 
-    plot_gallazzi()
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_gallazzi()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = O_Fe_all[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("[O/Fe] (mass-weighted)", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.axis([1e8, 1e12, 0.0, 0.6])
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_O_Fe_total_comparison.png", dpi=200)
 
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = O_Fe_all[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("[O/Fe] (mass-weighted)", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.axis([1e8, 1e12, 0.0, 0.6])
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_O_Fe_total_comparison.png", dpi=200)
-
-    ##############
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Z_mass_weighted[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (mass-weighted) $Z/Z_{\odot}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Z_mass_weighted_comparison.png", dpi=200)
+    # ##############
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Z_mass_weighted[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i],16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i],84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10**xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (mass-weighted) $Z/Z_{\odot}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    #
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Z_mass_weighted_comparison.png", dpi=200)
 
     ##############
     # Light-weighted relations
     ##############
 
-    Z_light_weighted_r_band = sim_data['Z_light_weighted_r_band']
-    Z_light_weighted_i_band = sim_data['Z_light_weighted_i_band']
-    Z_light_weighted_Z_band = sim_data['Z_light_weighted_Z_band']
-    Fe_H_light_weighted_r_band = sim_data['Fe_H_light_weighted_r_band']
-    Fe_H_light_weighted_i_band = sim_data['Fe_H_light_weighted_i_band']
-    Fe_H_light_weighted_Z_band = sim_data['Fe_H_light_weighted_Z_band']
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Fe_H_light_weighted_r_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(10 ** ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(10 ** ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(10 ** ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (light-weighted r-band) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Fe_H_light_weighted_r_band_comparison.png", dpi=200)
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Fe_H_light_weighted_i_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(10 ** ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(10 ** ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(10 ** ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (light-weighted i-band) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles) - 2) + 2
-    order = np.append(order, 0)
-    order = np.append(order, 1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Fe_H_light_weighted_i_band_comparison.png", dpi=200)
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Fe_H_light_weighted_Z_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(10 ** ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(10 ** ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(10 ** ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (light-weighted z-band) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles) - 2) + 2
-    order = np.append(order, 0)
-    order = np.append(order, 1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Fe_H_light_weighted_z_band_comparison.png", dpi=200)
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Z_light_weighted_r_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (light-weighted r-band) $Z/Z_{\odot}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_r_band_comparison.png", dpi=200)
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Z_light_weighted_i_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (light-weighted i-band) $Z/Z_{\odot}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_i_band_comparison.png", dpi=200)
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_Kirby_data()
-    plot_Kirby_analysed()
-    plot_gallazzi_2005()
-    plot_Kudritzki_2016()
-    plot_Zahid_2017()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Z_light_weighted_Z_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("Stellar (light-weighted z-band) $Z/Z_{\odot}$", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    plt.yscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e5, 1e12, 1e-3, 1e2])
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = np.arange(len(handles)-2)+2
-    order = np.append(order,0)
-    order = np.append(order,1)
-
-    plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-               loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_z_band_comparison.png", dpi=200)
-
-
-    #########
-    O_Fe_light_weighted_r_band = sim_data['O_Fe_light_weighted_r_band']
-    Mg_Fe_light_weighted_r_band = sim_data['Mg_Fe_light_weighted_r_band']
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_gallazzi()
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = O_Fe_light_weighted_r_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("[O/Fe] (light-weighted r-band)", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e8, 1e12, 0, 0.6])
-    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_O_Fe_light_weighted_r_band_comparison.png", dpi=200)
-
-    ###
-
-    plt.figure()
-
-    # Box stellar abundance --------------------------------
-    ax = plt.subplot(1, 1, 1)
-    plt.grid("True")
-
-    plot_gallazzi()
-
-    count = 0
-    for i in range(len(output_name_list)):
-        xm = Mstellar_all[count:count + counter[i]]
-        ym = Mg_Fe_light_weighted_r_band[count:count + counter[i]]
-        count += counter[i]
-
-        bins = np.arange(6, 12, 0.2)
-        ind = np.digitize(xm, bins)
-        ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
-        plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
-        plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
-
-    plt.ylabel("[Mg/Fe] (light-weighted r-band)", labelpad=2)
-    plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
-    plt.xscale('log')
-    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.axis([1e8, 1e12, -0.2, 0.6])
-    plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
-               fontsize=9, columnspacing=0.02)
-
-    plt.savefig(f"{output_path}/Mstellar_Mg_Fe_light_weighted_r_band_comparison.png", dpi=200)
+    # Z_light_weighted_r_band = sim_data['Z_light_weighted_r_band']
+    # Z_light_weighted_i_band = sim_data['Z_light_weighted_i_band']
+    # Z_light_weighted_Z_band = sim_data['Z_light_weighted_Z_band']
+    # Fe_H_light_weighted_r_band = sim_data['Fe_H_light_weighted_r_band']
+    # Fe_H_light_weighted_i_band = sim_data['Fe_H_light_weighted_i_band']
+    # Fe_H_light_weighted_Z_band = sim_data['Fe_H_light_weighted_Z_band']
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Fe_H_light_weighted_r_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(10 ** ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(10 ** ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(10 ** ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (light-weighted r-band) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Fe_H_light_weighted_r_band_comparison.png", dpi=200)
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Fe_H_light_weighted_i_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(10 ** ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(10 ** ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(10 ** ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (light-weighted i-band) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles) - 2) + 2
+    # order = np.append(order, 0)
+    # order = np.append(order, 1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Fe_H_light_weighted_i_band_comparison.png", dpi=200)
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Fe_H_light_weighted_Z_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(10 ** ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(10 ** ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(10 ** ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (light-weighted z-band) $10^{[\mathrm{Fe/H}]}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles) - 2) + 2
+    # order = np.append(order, 0)
+    # order = np.append(order, 1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Fe_H_light_weighted_z_band_comparison.png", dpi=200)
+    #
+    # plt.figure()
+
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Z_light_weighted_r_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (light-weighted r-band) $Z/Z_{\odot}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_r_band_comparison.png", dpi=200)
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Z_light_weighted_i_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (light-weighted i-band) $Z/Z_{\odot}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_i_band_comparison.png", dpi=200)
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_Kirby_data()
+    # plot_Kirby_analysed()
+    # plot_gallazzi_2005()
+    # plot_Kudritzki_2016()
+    # plot_Zahid_2017()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Z_light_weighted_Z_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("Stellar (light-weighted z-band) $Z/Z_{\odot}$", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # plt.yscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e5, 1e12, 1e-3, 1e2])
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = np.arange(len(handles)-2)+2
+    # order = np.append(order,0)
+    # order = np.append(order,1)
+    #
+    # plt.legend([handles[idx] for idx in order], [labels[idx] for idx in order],
+    #            loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Z_light_weighted_z_band_comparison.png", dpi=200)
+    #
+
+    # #########
+    # O_Fe_light_weighted_r_band = sim_data['O_Fe_light_weighted_r_band']
+    # Mg_Fe_light_weighted_r_band = sim_data['Mg_Fe_light_weighted_r_band']
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_gallazzi()
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = O_Fe_light_weighted_r_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("[O/Fe] (light-weighted r-band)", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e8, 1e12, 0, 0.6])
+    # plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_O_Fe_light_weighted_r_band_comparison.png", dpi=200)
+    #
+    # ###
+    #
+    # plt.figure()
+    #
+    # # Box stellar abundance --------------------------------
+    # ax = plt.subplot(1, 1, 1)
+    # plt.grid("True")
+    #
+    # plot_gallazzi()
+    #
+    # count = 0
+    # for i in range(len(output_name_list)):
+    #     xm = Mstellar_all[count:count + counter[i]]
+    #     ym = Mg_Fe_light_weighted_r_band[count:count + counter[i]]
+    #     count += counter[i]
+    #
+    #     bins = np.arange(6, 12, 0.2)
+    #     ind = np.digitize(xm, bins)
+    #     ylo = [np.percentile(ym[ind == i], 16) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     yhi = [np.percentile(ym[ind == i], 84) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     ym = [np.median(ym[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     xm = [np.median(10 ** xm[ind == i]) for i in range(1, len(bins)) if len(xm[ind == i]) > 2]
+    #     plt.fill_between(xm, ylo, yhi, color=color[i], alpha=0.2)
+    #     plt.plot(xm, ym, '-', lw=1.5, color=color[i], label=output_name_list[i])
+    #
+    # plt.ylabel("[Mg/Fe] (light-weighted r-band)", labelpad=2)
+    # plt.xlabel("Stellar Mass [M$_{\odot}$]", labelpad=2)
+    # plt.xscale('log')
+    # ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    # plt.axis([1e8, 1e12, -0.2, 0.6])
+    # plt.legend(loc='upper left', labelspacing=0.1, handlelength=1.5, handletextpad=0.1, frameon=False, ncol=1,
+    #            fontsize=9, columnspacing=0.02)
+    #
+    # plt.savefig(f"{output_path}/Mstellar_Mg_Fe_light_weighted_r_band_comparison.png", dpi=200)

@@ -151,10 +151,10 @@ def main(config: ArgumentParser):
 
         # plot_Kirby_distributions(config.output_directory)
 
-        abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
+        #abundance_data = plot_stellar_abundances(sim_info, config.output_directory, abundance_data)
 
-        SNIa_data = read_SNIa_rates(sim_info, SNIa_data)
-        SFH_data = read_SFH(sim_info, SFH_data)
+        #SNIa_data = read_SNIa_rates(sim_info, SNIa_data)
+        #SFH_data = read_SFH(sim_info, SFH_data)
 
         # # Compute morphological properties (loop over haloes)
         # print("Computing morphological properties...")
@@ -167,12 +167,12 @@ def main(config: ArgumentParser):
         #         halo_counter=i,
         #     )
 
-    if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
+    #if len(output_name_list) > 1: compare_stellar_abundances(abundance_data, output_name_list, config.output_directory)
 
     compare_mass_metallicity_relations(metallicity_data, output_name_list, config.output_directory)
 
-    plot_SNIa_rates(SNIa_data, output_name_list, config.output_directory)
-    plot_SFH(SFH_data, output_name_list, config.output_directory)
+    #plot_SNIa_rates(SNIa_data, output_name_list, config.output_directory)
+    #plot_SFH(SFH_data, output_name_list, config.output_directory)
 
     #     write_morphology_data_to_file(
     #         sim_info.halo_data,

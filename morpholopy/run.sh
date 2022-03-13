@@ -29,15 +29,15 @@
 #                     -n DTDtau2nu2Fe05Fe4Z0p4Zsun DTDtau2nu2Fe05Fe4Z0p6Zsun DTDtau2nu2Fe05Fe4Z0p8Zsun DTDtau2nu2Fe05 \
 #                     -m 5e8
 
-python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05Zhigh1 \
-                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05Zhigh2 \
-                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05Zhigh3 \
-                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05 \
-                     -o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/AbundancePlots/2022_03_comparisons/TestMetalDepBoostFactorZTau2nu2 \
-                     -c halo_0036.properties halo_0036.properties halo_0036.properties halo_0036.properties \
-                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
-                     -n DTDtau2nu2Fe05Z0p4Zsun DTDtau2nu2Fe05Z0p8Zsun DTDtau2nu2Fe05Z1p5Zsun DTDtau2nu2Fe05 \
-                     -m 5e8
+#python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05Zhigh1 \
+#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05Zhigh2 \
+#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05Zhigh3 \
+#                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu2_Fe05 \
+#                     -o /cosma/home/www/swift.dur.ac.uk/public_html/COLIBREPlots/ccorrea/AbundancePlots/2022_03_comparisons/TestMetalDepBoostFactorZTau2nu2 \
+#                     -c halo_0036.properties halo_0036.properties halo_0036.properties halo_0036.properties \
+#                     -s colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 colibre_0036.hdf5 \
+#                     -n DTDtau2nu2Fe05Z0p4Zsun DTDtau2nu2Fe05Z0p8Zsun DTDtau2nu2Fe05Z1p5Zsun DTDtau2nu2Fe05 \
+#                     -m 5e8
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu1p6_Fe2Zhigh1 \
 #                        /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLIBRE/Test_Metallicity_Dependent_Boost_Factor/L025N188_NewYields_SNIILinlo8hi40_DTDExptau2nu1p6_Fe2Zhigh2 \
@@ -326,8 +326,9 @@ python morpholopy.py -d /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2022_03_COLI
 #                     -o /cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/2021_12_COLIBRE/Morholopy_Plots/
 
 #python morpholopy.py -d ../../ \
-#                     -s colibre_0034.hdf5 -c halo_0034.properties -n test \
-#                     -o ../../Morpholopy_Plots/
+#                     -s colibre_0036.hdf5 -c halo_0036.properties -n DTDExptau2nu1p6Fe05Z0p4Zsun \
+#                     -o ../../Morpholopy_Plots/ \
+#                     -m 1e9
 
 
 #python morpholopy.py -d /cosma7/data/dp004/dc-chai1/HAWK/123b2_121b2_SNII_Mg_2_Fe_1_L012N188/ \

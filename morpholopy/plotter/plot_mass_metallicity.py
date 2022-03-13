@@ -5,7 +5,7 @@ from tqdm import tqdm
 import scipy.stats as stat
 
 
-def compute_ratios(Oxygen_fraction, Iron_fraction,
+def compute_median_ratios(Oxygen_fraction, Iron_fraction,
                    Magnesium_fraction,Hydrogen_fraction):
 
     mp_in_cgs = 1.6737236e-24
@@ -49,8 +49,8 @@ def compute_ratios(Oxygen_fraction, Iron_fraction,
 
     return {'Fe_H': Fe_H, 'O_Fe': O_Fe, 'Mg_Fe': Mg_Fe}
 
-def compute_total_ratios(Oxygen_fraction, Iron_fraction,
-                   Magnesium_fraction,Hydrogen_fraction):
+def compute_mass_weighted_ratios(Oxygen_fraction, Iron_fraction, Magnesium_fraction,
+                                 Hydrogen_fraction, stellar_mass):
 
     mp_in_cgs = 1.6737236e-24
     mH_in_cgs = 1.00784 * mp_in_cgs
@@ -67,29 +67,48 @@ def compute_total_ratios(Oxygen_fraction, Iron_fraction,
     Mg_Fe_Sun = Mg_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mMg_in_cgs)
     Fe_H_Sun = Fe_H_Sun - 12.0 - np.log10(mH_in_cgs / mFe_in_cgs)
 
-    Fe_H = np.log10(Iron_fraction / Hydrogen_fraction) - Fe_H_Sun
-    O_Fe = np.log10(Oxygen_fraction / Iron_fraction) - O_Fe_Sun
-    Mg_Fe = np.log10(Magnesium_fraction / Iron_fraction) - Mg_Fe_Sun
+    Fe_H = Iron_fraction / Hydrogen_fraction
+    O_Fe = Oxygen_fraction / Iron_fraction
+    Mg_Fe = Magnesium_fraction / Iron_fraction
 
-    return {'Fe_H': Fe_H, 'O_Fe': O_Fe, 'Mg_Fe': Mg_Fe}
+    # Let's set lower and upper limits:
+    Mg_Fe[Iron_fraction == 0] = 0.  # set lower limit
+    O_Fe[Iron_fraction == 0] = 0.   # set lower limit
 
-def compute_light_weighted_ratios(Z, Fe, H, O, Mg, mass, L_r_band, L_i_band, L_Z_band):
+    Fe_H_mass_weighted = np.sum( stellar_mass * Iron_fraction) / np.sum( Hydrogen_fraction * stellar_mass)
+    O_Fe_mass_weighted = np.sum( stellar_mass * Oxygen_fraction) / np.sum( Iron_fraction * stellar_mass)
+    Mg_Fe_mass_weighted = np.sum( stellar_mass * Magnesium_fraction) / np.sum( Iron_fraction * stellar_mass)
+    Fe_H_mass_weighted = np.log10(Fe_H_mass_weighted) - Fe_H_Sun
+    O_Fe_mass_weighted = np.log10(O_Fe_mass_weighted) - O_Fe_Sun
+    Mg_Fe_mass_weighted = np.log10(Mg_Fe_mass_weighted) - Mg_Fe_Sun
+
+    Fe_H_mass_weighted_ratio = np.sum( stellar_mass * Fe_H) / np.sum( stellar_mass)
+    O_Fe_mass_weighted_ratio = np.sum( stellar_mass * O_Fe) / np.sum( stellar_mass)
+    Mg_Fe_mass_weighted_ratio = np.sum( stellar_mass * Mg_Fe) / np.sum( stellar_mass)
+    Fe_H_mass_weighted_ratio = np.log10(Fe_H_mass_weighted_ratio) - Fe_H_Sun
+    O_Fe_mass_weighted_ratio = np.log10(O_Fe_mass_weighted_ratio) - O_Fe_Sun
+    Mg_Fe_mass_weighted_ratio = np.log10(Mg_Fe_mass_weighted_ratio) - Mg_Fe_Sun
+
+    return {'Fe_H': Fe_H_mass_weighted,
+            'O_Fe': O_Fe_mass_weighted,
+            'Mg_Fe': Mg_Fe_mass_weighted,
+            'Fe_H_weighted_ratio': Fe_H_mass_weighted_ratio,
+            'O_Fe_weighted_ratio': O_Fe_mass_weighted_ratio,
+            'Mg_Fe_weighted_ratio': Mg_Fe_mass_weighted_ratio}
+
+def compute_metallicity_light_weighted_ratios(Z, Fe, H, mass, L_r_band, L_i_band, L_Z_band):
 
     mp_in_cgs = 1.6737236e-24
     mH_in_cgs = 1.00784 * mp_in_cgs
     mFe_in_cgs = 55.845 * mp_in_cgs
-    mO_in_cgs = 15.999 * mp_in_cgs
-    mMg_in_cgs = 24.305 * mp_in_cgs
 
     # Asplund et al. (2009)
     Fe_H_Sun = 7.5
-    O_H_Sun = 8.69
-    Mg_H_Sun = 7.6
     Z_Sun = 0.0134
-
-    O_Fe_Sun = O_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mO_in_cgs)
-    Mg_Fe_Sun = Mg_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mMg_in_cgs)
     Fe_H_Sun = Fe_H_Sun - 12.0 - np.log10(mH_in_cgs / mFe_in_cgs)
+
+    # Ratio
+    Fe_H = Fe / H
 
     Z_weighted_r_band = np.sum(Z * L_r_band) / np.sum(L_r_band)
     Z_weighted_r_band /= Z_Sun
@@ -100,22 +119,23 @@ def compute_light_weighted_ratios(Z, Fe, H, O, Mg, mass, L_r_band, L_i_band, L_Z
     Z_weighted_Z_band = np.sum(Z * L_Z_band) / np.sum(L_Z_band)
     Z_weighted_Z_band /= Z_Sun
 
+    Fe_H_weighted_r_band = np.sum(Fe_H * L_r_band) / np.sum(L_r_band)
+    Fe_H_weighted_i_band = np.sum(Fe_H * L_i_band) / np.sum(L_i_band)
+    Fe_H_weighted_Z_band = np.sum(Fe_H * L_Z_band) / np.sum(L_Z_band)
+    Fe_H_weighted_r_band = np.log10(Fe_H_weighted_r_band) - Fe_H_Sun
+    Fe_H_weighted_i_band = np.log10(Fe_H_weighted_i_band) - Fe_H_Sun
+    Fe_H_weighted_Z_band = np.log10(Fe_H_weighted_Z_band) - Fe_H_Sun
+
+
     Fe_weighted = np.sum(Fe * mass * L_r_band) / np.sum(L_r_band)
     H_weighted = np.sum(H * mass * L_r_band) / np.sum(L_r_band)
-    Fe_H_weighted_r_band = np.log10(Fe_weighted / H_weighted) - Fe_H_Sun
-
-    O_weighted = np.sum(O * mass * L_r_band) / np.sum(L_r_band)
-    O_Fe_weighted_r_band = np.log10(O_weighted / Fe_weighted) - O_Fe_Sun
-    Mg_weighted = np.sum(Mg * mass * L_r_band) / np.sum(L_r_band)
-    Mg_Fe_weighted_r_band = np.log10(Mg_weighted / Fe_weighted) - Mg_Fe_Sun
-
+    Fe_H_weighted_r_band_with_mass = np.log10(Fe_weighted / H_weighted) - Fe_H_Sun
     Fe_weighted = np.sum(Fe * mass * L_i_band) / np.sum(L_i_band)
     H_weighted = np.sum(H * mass * L_i_band) / np.sum(L_i_band)
-    Fe_H_weighted_i_band = np.log10(Fe_weighted / H_weighted) - Fe_H_Sun
-
+    Fe_H_weighted_i_band_with_mass = np.log10(Fe_weighted / H_weighted) - Fe_H_Sun
     Fe_weighted = np.sum(Fe * mass * L_Z_band) / np.sum(L_Z_band)
     H_weighted = np.sum(H * mass * L_Z_band) / np.sum(L_Z_band)
-    Fe_H_weighted_Z_band = np.log10(Fe_weighted / H_weighted) - Fe_H_Sun
+    Fe_H_weighted_Z_band_with_mass = np.log10(Fe_weighted / H_weighted) - Fe_H_Sun
 
     return {'Fe_H_weighted_r_band': Fe_H_weighted_r_band,
             'Fe_H_weighted_i_band': Fe_H_weighted_i_band,
@@ -123,9 +143,47 @@ def compute_light_weighted_ratios(Z, Fe, H, O, Mg, mass, L_r_band, L_i_band, L_Z
             'Z_weighted_r_band': Z_weighted_r_band,
             'Z_weighted_i_band': Z_weighted_i_band,
             'Z_weighted_Z_band': Z_weighted_Z_band,
-            'O_Fe_weighted_r_band': O_Fe_weighted_r_band,
-            'Mg_Fe_weighted_r_band': Mg_Fe_weighted_r_band}
+            'Fe_H_weighted_r_band_with_mass': Fe_H_weighted_r_band_with_mass,
+            'Fe_H_weighted_i_band_with_mass': Fe_H_weighted_i_band_with_mass,
+            'Fe_H_weighted_Z_band_with_mass': Fe_H_weighted_Z_band_with_mass}
 
+def compute_alpha_light_weighted_ratios(Fe, O, Mg, mass, L_r_band):
+
+    mp_in_cgs = 1.6737236e-24
+    mH_in_cgs = 1.00784 * mp_in_cgs
+    mFe_in_cgs = 55.845 * mp_in_cgs
+    mO_in_cgs = 15.999 * mp_in_cgs
+    mMg_in_cgs = 24.305 * mp_in_cgs
+
+    # Asplund et al. (2009)
+    Fe_H_Sun = 7.5
+    O_H_Sun = 8.69
+    Mg_H_Sun = 7.6
+
+    O_Fe_Sun = O_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mO_in_cgs)
+    Mg_Fe_Sun = Mg_H_Sun - Fe_H_Sun - np.log10(mFe_in_cgs / mMg_in_cgs)
+
+    # Ratios
+    O_Fe = O / Fe
+    Mg_Fe = Mg / Fe
+    Mg_Fe[Fe == 0] = 0.  # set lower limit
+    O_Fe[Fe == 0] = 0.  # set lower limit
+
+    O_Fe_weighted_r_band = np.sum(O_Fe * L_r_band) / np.sum(L_r_band)
+    Mg_Fe_weighted_r_band = np.sum(Mg_Fe * L_r_band) / np.sum(L_r_band)
+    O_Fe_weighted_r_band = np.log10(O_Fe_weighted_r_band) - O_Fe_Sun
+    Mg_Fe_weighted_r_band = np.log10(Mg_Fe_weighted_r_band) - Mg_Fe_Sun
+
+    Fe_weighted = np.sum(Fe * mass * L_r_band) / np.sum(L_r_band)
+    O_weighted = np.sum(O * mass * L_r_band) / np.sum(L_r_band)
+    O_Fe_weighted_r_band_with_mass = np.log10(O_weighted / Fe_weighted) - O_Fe_Sun
+    Mg_weighted = np.sum(Mg * mass * L_r_band) / np.sum(L_r_band)
+    Mg_Fe_weighted_r_band_with_mass = np.log10(Mg_weighted / Fe_weighted) - Mg_Fe_Sun
+
+    return {'O_Fe_weighted_r_band': O_Fe_weighted_r_band,
+            'Mg_Fe_weighted_r_band': Mg_Fe_weighted_r_band,
+            'O_Fe_weighted_r_band_with_mass': O_Fe_weighted_r_band_with_mass,
+            'Mg_Fe_weighted_r_band_with_mass': Mg_Fe_weighted_r_band_with_mass}
 
 def calculate_galaxies_metallicity(sim_info):
 
@@ -137,22 +195,33 @@ def calculate_galaxies_metallicity(sim_info):
     sample = select_sample[select_centrals]
     num_sample = len(sample)
 
-    FeH = np.zeros(num_sample)
-    MgFe = np.zeros(num_sample)
-    OFe = np.zeros(num_sample)
-    totalFeH = np.zeros(num_sample)
-    totalMgFe = np.zeros(num_sample)
-    totalOFe = np.zeros(num_sample)
+    FeH_median = np.zeros(num_sample)
+    MgFe_median = np.zeros(num_sample)
+    OFe_median = np.zeros(num_sample)
+    FeH_total_mass_weighted = np.zeros(num_sample)
+    MgFe_total_mass_weighted = np.zeros(num_sample)
+    OFe_total_mass_weighted = np.zeros(num_sample)
+    FeH_ratio_weighted = np.zeros(num_sample)
+    MgFe_ratio_weighted = np.zeros(num_sample)
+    OFe_ratio_weighted = np.zeros(num_sample)
+
     Z_mass_weighted = np.zeros(num_sample)
-    FeH_light_weighted_r_band = np.zeros(num_sample)
     Z_light_weighted_r_band = np.zeros(num_sample)
-    FeH_light_weighted_i_band = np.zeros(num_sample)
     Z_light_weighted_i_band = np.zeros(num_sample)
-    FeH_light_weighted_Z_band = np.zeros(num_sample)
     Z_light_weighted_Z_band = np.zeros(num_sample)
+
+    FeH_light_weighted_r_band = np.zeros(num_sample)
+    FeH_light_weighted_i_band = np.zeros(num_sample)
+    FeH_light_weighted_Z_band = np.zeros(num_sample)
+
+    FeH_light_weighted_r_band_with_mass = np.zeros(num_sample)
+    FeH_light_weighted_i_band_with_mass = np.zeros(num_sample)
+    FeH_light_weighted_Z_band_with_mass = np.zeros(num_sample)
 
     OFe_light_weighted_r_band = np.zeros(num_sample)
     MgFe_light_weighted_r_band = np.zeros(num_sample)
+    OFe_light_weighted_r_band_with_mass = np.zeros(num_sample)
+    MgFe_light_weighted_r_band_with_mass = np.zeros(num_sample)
 
     stellar_mass = sim_info.halo_data.log10_stellar_mass[sample]
     metallicity = sim_info.halo_data.metallicity[sample]
@@ -171,41 +240,58 @@ def calculate_galaxies_metallicity(sim_info):
         L_stars_i_band = pow(10.0, -0.4 * stars_mag["i"]) * 3631
         L_stars_z_band = pow(10.0, -0.4 * stars_mag["z"]) * 3631
 
+        ratios = compute_alpha_light_weighted_ratios(Fe_stars, O_stars, Mg_stars, M_stars, L_stars_r_band)
 
-        ratios = compute_light_weighted_ratios(Z_stars, Fe_stars, H_stars, O_stars, Mg_stars, M_stars,
-                                               L_stars_r_band, L_stars_i_band, L_stars_z_band)
-        FeH_light_weighted_r_band[i] = ratios['Fe_H_weighted_r_band']
-        Z_light_weighted_r_band[i] = ratios['Z_weighted_r_band']
-        FeH_light_weighted_i_band[i] = ratios['Fe_H_weighted_i_band']
-        Z_light_weighted_i_band[i] = ratios['Z_weighted_i_band']
-        FeH_light_weighted_Z_band[i] = ratios['Fe_H_weighted_Z_band']
-        Z_light_weighted_Z_band[i] = ratios['Z_weighted_Z_band']
         OFe_light_weighted_r_band[i] = ratios['O_Fe_weighted_r_band']
         MgFe_light_weighted_r_band[i] = ratios['Mg_Fe_weighted_r_band']
+
+        OFe_light_weighted_r_band_with_mass[i] = ratios['O_Fe_weighted_r_band_with_mass']
+        MgFe_light_weighted_r_band_with_mass[i] = ratios['Mg_Fe_weighted_r_band_with_mass']
+
+        ratios = compute_metallicity_light_weighted_ratios(Z_stars, Fe_stars, H_stars, M_stars,
+                                                           L_stars_r_band, L_stars_i_band, L_stars_z_band)
+        Z_light_weighted_r_band[i] = ratios['Z_weighted_r_band']
+        Z_light_weighted_i_band[i] = ratios['Z_weighted_i_band']
+        Z_light_weighted_Z_band[i] = ratios['Z_weighted_Z_band']
+
+        FeH_light_weighted_r_band[i] = ratios['Fe_H_weighted_r_band']
+        FeH_light_weighted_i_band[i] = ratios['Fe_H_weighted_i_band']
+        FeH_light_weighted_Z_band[i] = ratios['Fe_H_weighted_Z_band']
+
+        FeH_light_weighted_r_band_with_mass[i] = ratios['Fe_H_weighted_r_band_with_mass']
+        FeH_light_weighted_i_band_with_mass[i] = ratios['Fe_H_weighted_i_band_with_mass']
+        FeH_light_weighted_Z_band_with_mass[i] = ratios['Fe_H_weighted_Z_band_with_mass']
 
         Zsun = 0.0134
         Z_mass_weighted[i] = ( np.sum( Z_stars * M_stars ) / np.sum(M_stars) ) / Zsun
 
-        ratios = compute_ratios(O_stars, Fe_stars, Mg_stars, H_stars)
-        FeH[i] = ratios['Fe_H']
-        MgFe[i] = ratios['Mg_Fe']
-        OFe[i] = ratios['O_Fe']
-
-        O_stars = np.sum( sim_info.stars.oxygen * sim_info.stars.mass )
-        Fe_stars = np.sum( sim_info.stars.iron * sim_info.stars.mass )
-        Mg_stars = np.sum( sim_info.stars.magnesium * sim_info.stars.mass )
-        H_stars = np.sum( sim_info.stars.hydrogen * sim_info.stars.mass )
-
-        ratios = compute_total_ratios(O_stars, Fe_stars, Mg_stars, H_stars)
-        totalFeH[i] = ratios['Fe_H']
-        totalMgFe[i] = ratios['Mg_Fe']
-        totalOFe[i] = ratios['O_Fe']
+        ratios = compute_median_ratios(O_stars, Fe_stars, Mg_stars, H_stars)
+        FeH_median[i] = ratios['Fe_H']
+        MgFe_median[i] = ratios['Mg_Fe']
+        OFe_median[i] = ratios['O_Fe']
 
 
-    return {'Fe_H': FeH, 'O_Fe': OFe, 'Mg_Fe': MgFe,
-            'Fe_H_mass_weighted': totalFeH,
-            'O_Fe_mass_weighted': totalOFe,
-            'Mg_Fe_mass_weighted': totalMgFe,
+        ratios = compute_mass_weighted_ratios(O_stars, Fe_stars, Mg_stars, H_stars, M_stars)
+        FeH_total_mass_weighted[i] = ratios['Fe_H']
+        MgFe_total_mass_weighted[i] = ratios['Mg_Fe']
+        OFe_total_mass_weighted[i] = ratios['O_Fe']
+        FeH_ratio_weighted[i] = ratios['Fe_H_weighted_ratio']
+        MgFe_ratio_weighted[i] = ratios['Mg_Fe_weighted_ratio']
+        OFe_ratio_weighted[i] = ratios['O_Fe_weighted_ratio']
+
+
+    return {'Fe_H_median': FeH_median,
+            'O_Fe_median': OFe_median,
+            'Mg_Fe_median': MgFe_median,
+
+            'Fe_H_mass_weighted': FeH_total_mass_weighted,
+            'O_Fe_mass_weighted': OFe_total_mass_weighted,
+            'Mg_Fe_mass_weighted': MgFe_total_mass_weighted,
+
+            'Fe_H_ratio_weighted': FeH_ratio_weighted,
+            'O_Fe_ratio_weighted': OFe_ratio_weighted,
+            'Mg_Fe_ratio_weighted': MgFe_ratio_weighted,
+
             'Z_mass_weighted': Z_mass_weighted,
             'Z_light_weighted_r_band': Z_light_weighted_r_band,
             'Z_light_weighted_i_band': Z_light_weighted_i_band,
@@ -213,8 +299,17 @@ def calculate_galaxies_metallicity(sim_info):
             'Fe_H_light_weighted_r_band': FeH_light_weighted_r_band,
             'Fe_H_light_weighted_i_band': FeH_light_weighted_i_band,
             'Fe_H_light_weighted_Z_band': FeH_light_weighted_Z_band,
+
+            'Fe_H_light_weighted_r_band_with_mass': FeH_light_weighted_r_band_with_mass,
+            'Fe_H_light_weighted_i_band_with_mass': FeH_light_weighted_i_band_with_mass,
+            'Fe_H_light_weighted_Z_band_with_mass': FeH_light_weighted_Z_band_with_mass,
+
             'O_Fe_light_weighted_r_band': OFe_light_weighted_r_band,
             'Mg_Fe_light_weighted_r_band': MgFe_light_weighted_r_band,
+
+            'O_Fe_light_weighted_r_band_with_mass': OFe_light_weighted_r_band_with_mass,
+            'Mg_Fe_light_weighted_r_band_with_mass': MgFe_light_weighted_r_band_with_mass,
+
             'Mstellar':stellar_mass}
 
 def plot_Kirby_distributions(output_path):
@@ -452,17 +547,28 @@ def compute_metallicity_relation(sim_info, metallicity_data):
 
     # Look for abundance ratios from COLIBRE snaps:
     data = calculate_galaxies_metallicity(sim_info)
-    Fe_H_median = data['Fe_H']
-    O_Fe_median = data['O_Fe']
-    Mg_Fe_median = data['Mg_Fe']
+
+    Fe_H_median = data['Fe_H_median']
+    O_Fe_median = data['O_Fe_median']
+    Mg_Fe_median = data['Mg_Fe_median']
+
     Mstellar_median = data['Mstellar']
+
     Fe_H_mass_weighted = data['Fe_H_mass_weighted']
     O_Fe_mass_weighted = data['O_Fe_mass_weighted']
     Mg_Fe_mass_weighted = data['Mg_Fe_mass_weighted']
 
+    Fe_H_ratio_weighted = data['Fe_H_ratio_weighted']
+    O_Fe_ratio_weighted = data['O_Fe_ratio_weighted']
+    Mg_Fe_ratio_weighted = data['Mg_Fe_ratio_weighted']
+
     Fe_H_light_weighted_r_band = data['Fe_H_light_weighted_r_band']
     Fe_H_light_weighted_i_band = data['Fe_H_light_weighted_i_band']
     Fe_H_light_weighted_Z_band = data['Fe_H_light_weighted_Z_band']
+
+    Fe_H_light_weighted_r_band_with_mass = data['Fe_H_light_weighted_r_band_with_mass']
+    # Fe_H_light_weighted_i_band_with_mass = data['Fe_H_light_weighted_i_band_with_mass']
+    # Fe_H_light_weighted_Z_band_with_mass = data['Fe_H_light_weighted_Z_band_with_mass']
 
     Z_mass_weighted = data['Z_mass_weighted']
     Z_light_weighted_r_band = data['Z_light_weighted_r_band']
@@ -471,37 +577,51 @@ def compute_metallicity_relation(sim_info, metallicity_data):
 
     O_Fe_light_weighted_r_band = data['O_Fe_light_weighted_r_band']
     Mg_Fe_light_weighted_r_band = data['Mg_Fe_light_weighted_r_band']
+    O_Fe_light_weighted_r_band_with_mass = data['O_Fe_light_weighted_r_band_with_mass']
+    Mg_Fe_light_weighted_r_band_with_mass = data['Mg_Fe_light_weighted_r_band_with_mass']
 
     counter = np.array([len(Mstellar_median)])
 
     if metallicity_data == None:
 
         metallicity_data = {
-            'Fe_H': Fe_H_median,
-            'O_Fe': O_Fe_median,
-            'Mg_Fe': Mg_Fe_median,
+            'Fe_H_median': Fe_H_median,
+            'O_Fe_median': O_Fe_median,
+            'Mg_Fe_median': Mg_Fe_median,
             'Fe_H_mass_weighted': Fe_H_mass_weighted,
             'O_Fe_mass_weighted': O_Fe_mass_weighted,
             'Mg_Fe_mass_weighted': Mg_Fe_mass_weighted,
+
+            'Fe_H_ratio_weighted': Fe_H_ratio_weighted,
+            'O_Fe_ratio_weighted': O_Fe_ratio_weighted,
+            'Mg_Fe_ratio_weighted': Mg_Fe_ratio_weighted,
+
             'Mstellar': Mstellar_median,
             'Z_mass_weighted': Z_mass_weighted,
             'Z_light_weighted_r_band': Z_light_weighted_r_band,
             'Z_light_weighted_i_band': Z_light_weighted_i_band,
             'Z_light_weighted_Z_band': Z_light_weighted_Z_band,
+
             'Fe_H_light_weighted_r_band': Fe_H_light_weighted_r_band,
             'Fe_H_light_weighted_i_band': Fe_H_light_weighted_i_band,
             'Fe_H_light_weighted_Z_band': Fe_H_light_weighted_Z_band,
+
             'O_Fe_light_weighted_r_band': O_Fe_light_weighted_r_band,
             'Mg_Fe_light_weighted_r_band': Mg_Fe_light_weighted_r_band,
+
+            'Fe_H_light_weighted_r_band_with_mass': Fe_H_light_weighted_r_band_with_mass,
+            'O_Fe_light_weighted_r_band_with_mass': O_Fe_light_weighted_r_band_with_mass,
+            'Mg_Fe_light_weighted_r_band_with_mass': Mg_Fe_light_weighted_r_band_with_mass,
+
             'counter':counter}
 
     else:
 
-        Fe_H = metallicity_data['Fe_H']
+        Fe_H = metallicity_data['Fe_H_median']
         Fe_H = np.append(Fe_H,Fe_H_median)
-        O_Fe = metallicity_data['O_Fe']
+        O_Fe = metallicity_data['O_Fe_median']
         O_Fe = np.append(O_Fe,O_Fe_median)
-        Mg_Fe = metallicity_data['Mg_Fe']
+        Mg_Fe = metallicity_data['Mg_Fe_median']
         Mg_Fe = np.append(Mg_Fe,Mg_Fe_median)
 
         Fe_H_t = metallicity_data['Fe_H_mass_weighted']
@@ -510,6 +630,13 @@ def compute_metallicity_relation(sim_info, metallicity_data):
         O_Fe_t = np.append(O_Fe_t,O_Fe_mass_weighted)
         Mg_Fe_t = metallicity_data['Mg_Fe_mass_weighted']
         Mg_Fe_t = np.append(Mg_Fe_t,Mg_Fe_mass_weighted)
+
+        Fe_H_r = metallicity_data['Fe_H_ratio_weighted']
+        Fe_H_r = np.append(Fe_H_r,Fe_H_ratio_weighted)
+        O_Fe_r = metallicity_data['O_Fe_ratio_weighted']
+        O_Fe_r = np.append(O_Fe_r,O_Fe_ratio_weighted)
+        Mg_Fe_r = metallicity_data['Mg_Fe_ratio_weighted']
+        Mg_Fe_r = np.append(Mg_Fe_r,Mg_Fe_ratio_weighted)
 
         Mstellar = metallicity_data['Mstellar']
         Mstellar = np.append(Mstellar, Mstellar_median)
@@ -528,6 +655,13 @@ def compute_metallicity_relation(sim_info, metallicity_data):
         Mg_Fe_lw_r = metallicity_data['Mg_Fe_light_weighted_r_band']
         Mg_Fe_lw_r = np.append(Mg_Fe_lw_r, Mg_Fe_light_weighted_r_band)
 
+        Fe_H_lw_r_with_mass = metallicity_data['Fe_H_light_weighted_r_band_with_mass']
+        Fe_H_lw_r_with_mass = np.append(Fe_H_lw_r_with_mass, Fe_H_light_weighted_r_band_with_mass)
+        O_Fe_lw_r_with_mass = metallicity_data['O_Fe_light_weighted_r_band_with_mass']
+        O_Fe_lw_r_with_mass = np.append(O_Fe_lw_r_with_mass, O_Fe_light_weighted_r_band_with_mass)
+        Mg_Fe_lw_r_with_mass= metallicity_data['Mg_Fe_light_weighted_r_band_with_mass']
+        Mg_Fe_lw_r_with_mass = np.append(Mg_Fe_lw_r_with_mass, Mg_Fe_light_weighted_r_band_with_mass)
+
         Z_mw = metallicity_data['Z_mass_weighted']
         Z_mw = np.append(Z_mw, Z_mass_weighted)
 
@@ -539,22 +673,33 @@ def compute_metallicity_relation(sim_info, metallicity_data):
         Z_lw_Z = np.append(Z_lw_Z, Z_light_weighted_Z_band)
 
         metallicity_data = {
-            'Fe_H': Fe_H,
-            'O_Fe': O_Fe,
-            'Mg_Fe': Mg_Fe,
+            'Fe_H_median': Fe_H,
+            'O_Fe_median': O_Fe,
+            'Mg_Fe_median': Mg_Fe,
             'Fe_H_mass_weighted': Fe_H_t,
             'O_Fe_mass_weighted': O_Fe_t,
             'Mg_Fe_mass_weighted': Mg_Fe_t,
+
+            'Fe_H_ratio_weighted': Fe_H_r,
+            'O_Fe_ratio_weighted': O_Fe_r,
+            'Mg_Fe_ratio_weighted': Mg_Fe_r,
+
             'Mstellar': Mstellar,
             'Z_mass_weighted': Z_mw,
             'Z_light_weighted_r_band': Z_lw_r,
             'Z_light_weighted_i_band': Z_lw_i,
             'Z_light_weighted_Z_band': Z_lw_Z,
+
             'Fe_H_light_weighted_r_band': Fe_H_lw_r,
             'Fe_H_light_weighted_i_band': Fe_H_lw_i,
             'Fe_H_light_weighted_Z_band': Fe_H_lw_Z,
             'O_Fe_light_weighted_r_band': O_Fe_lw_r,
             'Mg_Fe_light_weighted_r_band': Mg_Fe_lw_r,
+
+            'Fe_H_light_weighted_r_band_with_mass': Fe_H_lw_r_with_mass,
+            'O_Fe_light_weighted_r_band_with_mass': O_Fe_lw_r_with_mass,
+            'Mg_Fe_light_weighted_r_band_with_mass': Mg_Fe_lw_r_with_mass,
+
             'counter': counter_sim}
 
     return metallicity_data
