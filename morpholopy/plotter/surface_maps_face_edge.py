@@ -38,7 +38,7 @@ nr_total_plots   = nr_text_boxes + nr_map_plots + nr_scatter_plots
 # Miscellaneous
 #################################
 
-npix = int(512 * 2)
+npix = int(512 / 2)
 
 vmin = -0.98
 vmax =  2.98
