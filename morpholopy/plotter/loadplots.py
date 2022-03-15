@@ -196,6 +196,16 @@ def loadGalaxyPlots(
     for index in range(num_galaxies_to_show):
 
         for name in name_list:
+            title = "Overview plot (" + name + ")"
+            caption = (
+                "Surface brightness (gri-composite) and surface density maps"
+            )
+            id = abs(hash("galaxy overview %i " % (index) + name))
+            
+            outfile = "surface_overview_halo%3.3i_" % (index) + name + ".png"
+            PlotsInWeb.load_plots(title, caption, outfile, id)
+
+        for name in name_list:
             title = "Gas component (" + name + ")"
             caption = (
                 "Projection of gas within 5 times the galaxy's  stellar "
