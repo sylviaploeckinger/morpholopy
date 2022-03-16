@@ -2,6 +2,7 @@ import matplotlib.pylab as plt
 from matplotlib.pylab import rcParams
 from sphviewer.tools import QuickView
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
+from swiftsimio.visualisation.projection import project_gas
 import numpy as np
 
 # Plot parameters
@@ -268,6 +269,9 @@ def plot_galaxy(
     ax.set_title(title)
 
     ###### plot one side ########################
+
+    print(parts_data)
+
     qv = QuickView(
         pos_face_on,
         mass=mass,

@@ -67,6 +67,7 @@ def compute_galaxy_morpholopy(
 
     # Make plots for individual galaxies, perhaps.. only first 10
     if halo_counter < num_galaxies:
+        '''
         visualize_galaxy(
             stars_data,
             gas_data,
@@ -78,6 +79,7 @@ def compute_galaxy_morpholopy(
             output_path,
             sim_info.simulation_name,
         )
+        '''
 
         make_KS_plots(
             gas_data,
