@@ -389,18 +389,37 @@ class CombinedData:
 
     def __init__(self):
 
+        # Surface densities (spatially-resolved)
         self.neutral_gas_surface_density: np.ndarray = np.array([])
         self.molecular_gas_surface_density: np.ndarray = np.array([])
         self.atomic_gas_surface_density: np.ndarray = np.array([])
+
+        # SFR surface density (spatially-resolved)
         self.SFR_surface_density: np.ndarray = np.array([])
 
+        # Depletion time scales corrected for corresponding surface densities (spatially-resolved)
         self.depletion_time_molecular_gas: np.ndarray = np.array([])
         self.depletion_time_neutral_gas: np.ndarray = np.array([])
         self.depletion_time_atomic_gas: np.ndarray = np.array([])
 
+        # H_2 to H_2 + HI ratio (spatially-resolved) 
         self.H2_to_neutral_surface_density_ratio: np.ndarray = np.array([])
 
+        # Metallicity map (spatially-resolved)
         self.gas_metallicity: np.ndarray = np.array([])
 
+        # Surface densities (azimuthally-averaged) 
         self.radii_neutral_gas_surface_density: np.ndarray = np.array([])
+        self.radii_atomic_gas_surface_density: np.ndarray = np.array([])
+        self.radii_molecular_gas_surface_density: np.ndarray = np.array([])
+
+        # SFR surface density (azimuthally-averaged)
+        self.radii_SFR_surface_density: np.ndarray = np.array([])
+
+        # Depletion times (azimuthally-averaged)
+        self.radii_depletion_time_molecular_gas: np.ndarray = np.array([])
+        self.radii_depletion_time_neutral_gas: np.ndarray = np.array([])
+        self.radii_depletion_time_atomic_gas: np.ndarray = np.array([])
+
+        # H_2 to H_2 + HI ratio (azimuthally-averaged) 
         self.radii_H2_to_neutral_surface_density_ratio: np.ndarray = np.array([])

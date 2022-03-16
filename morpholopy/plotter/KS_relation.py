@@ -345,6 +345,12 @@ def make_KS_data(
     )
 
     if mode == 0:
+        combined_data.radii_molecular_gas_surface_density = np.append(
+            combined_data.radii_molecular_gas_surface_density, surface_density
+        )
+        combined_data.radii_depletion_time_molecular_gas = np.append(
+            combined_data.radii_depletion_time_molecular_gas, tgas
+        )
         np.savetxt(
             f"{output_path}/KS_molecular_relation_radii_%i_" % (index)
             + simulation_name
@@ -360,6 +366,12 @@ def make_KS_data(
         )
 
     elif mode == 1:
+        combined_data.radii_depletion_time_neutral_gas = np.append(
+            combined_data.radii_depletion_time_neutral_gas, tgas
+        )
+        combined_data.radii_SFR_surface_density = np.append(
+            combined_data.radii_SFR_surface_density, SFR_surface_density
+        )
         np.savetxt(
             f"{output_path}/KS_relation_best_radii_%i_" % (index)
             + simulation_name
@@ -375,6 +387,12 @@ def make_KS_data(
         )
 
     elif mode == 3:
+        combined_data.radii_atomic_gas_surface_density = np.append(
+            combined_data.radii_neutral_gas_surface_density, surface_density
+        )
+        combined_data.radii_depletion_time_atomic_gas = np.append(
+            combined_data.radii_depletion_time_neutral_gas, tgas
+        )
         np.savetxt(
             f"{output_path}/KS_atomic_relation_radii_%i_" % (index)
             + simulation_name

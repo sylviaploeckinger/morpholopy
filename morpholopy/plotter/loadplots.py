@@ -173,6 +173,51 @@ def loadGalaxyPlots(
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     for name in name_list:
+        title = "Neutral KS relation (azimuthally-averaged) (" + name + ")"
+        caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
+        caption += (
+            " The X axis shows the surface density of neutral"
+            " gas and the Y axis shows the star formation rate surface density. The surface densities were calculated"
+            " using the azimuthally-averaging method with a radial width of 750pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "radii_combined_surface_density_gas_" + name + ".png"
+        id = abs(hash("radii_combined_surface_density_gas_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Molecular KS relation (azimuthally-averaged) (" + name + ")"
+        caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
+        caption += (
+            " The X axis shows the surface density of molecular"
+            " gas and the Y axis shows the star formation rate surface density. The surface densities were calculated"
+            " using the azimuthally-averaging method with a radial width of 750pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "radii_combined_surface_density_H2_" + name + ".png"
+        id = abs(hash("radii_combined_surface_density_H2_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Atomic KS relation (azimuthally-averaged) (" + name + ")"
+        caption = "Combined spatially resolved measurements from N most massive individual galaxies,"
+        caption += (
+            " The X axis shows the surface density of atomic"
+            " gas and the Y axis shows the star formation rate surface density. The surface densities were calculated"
+            " using the azimuthally-averaging method with a radial width of 750pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "radii_combined_surface_density_HI_" + name + ".png"
+        id = abs(hash("radii_combined_surface_density_HI_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
         title = "Depletion time vs. surface density, neutral gas (" + name + ")"
         caption = "Depletion time of neutral gas vs. neutral gas surface density from N most massive individual galaxies,"
         caption += (
@@ -198,6 +243,20 @@ def loadGalaxyPlots(
         )
         filename = "depletion_time_combined_surface_density_H2_" + name + ".png"
         id = abs(hash("depletion_time_combined_surface_density_H2_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Depletion time vs. surface density, atomic gas (" + name + ")"
+        caption = "Depletion time of atomic gas vs. atomic gas surface density from N most massive individual galaxies,"
+        caption += (
+            " coloured by the mean metallicity of the resolved pixel. The surface densities"
+            " were calculated using a grid with pixel size of 750 pc. Coloured lines show in the median relations"
+            " considering only cells with fixed metallicity (as indicated in the legends). The grey solid line"
+            " shows the median relation for all pixels, whereas the black solid line shows the relation"
+            " only for pixels that have SFR surface density >0."
+        )
+        filename = "depletion_time_combined_surface_density_HI_" + name + ".png"
+        id = abs(hash("depletion_time_combined_surface_density_HI_" + name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     title = "Combined surface densities"

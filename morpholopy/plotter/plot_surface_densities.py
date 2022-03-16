@@ -61,7 +61,6 @@ def plot_integrated_surface_densities(
 
     for ind, observation in enumerate(observational_data):
         if observation.H2_surface_density is not None:
-            print(observation.description)
             if observation.description == "Kennicutt (1998) [Normal spirals]":
                 data = observation.bin_data_KS_molecular(np.arange(-1, 3, 0.25), 0.4)
                 plt.errorbar(
@@ -130,7 +129,6 @@ def plot_integrated_surface_densities(
 
     for ind, observation in enumerate(observational_data):
         if observation.gas_surface_density is not None:
-            print(observation.description)
             if observation.description == "Kennicutt (1998) [Normal spirals]":
                 data = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
                 plt.errorbar(
@@ -209,6 +207,129 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
 
     for plot in ["gas", "H2", "HI"]:
 
+        # azimuthally averaged plot
+        fig = plt.figure()
+        ax = plt.subplot(1, 1, 1)
+        plt.grid("True")
+
+        if plot=="gas" or plot=="H2":
+            Sigma_g = np.logspace(1, 3, 1000)
+            Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+            plt.plot(
+                np.log10(Sigma_g),
+                np.log10(Sigma_star),
+                "-.",
+                color="k",
+                label="K98",
+            )
+
+        if plot == "gas":
+            sigma_gas = combined_data.radii_neutral_gas_surface_density
+            t_gas = combined_data.radii_depletion_time_neutral_gas
+            sigma_SFR_radii = combined_data.radii_SFR_surface_density
+        elif plot == "H2":
+            sigma_gas = combined_data.radii_molecular_gas_surface_density
+            t_gas = combined_data.radii_depletion_time_molecular_gas
+            sigma_SFR_radii = combined_data.radii_SFR_surface_density
+        elif plot == "HI":
+            sigma_gas = combined_data.radii_atomic_gas_surface_density
+            t_gas = combined_data.radii_depletion_time_atomic_gas
+            sigma_SFR_radii = combined_data.radii_SFR_surface_density
+
+        plt.scatter(
+            sigma_gas,
+            sigma_SFR_radii,
+            alpha=0.9,
+            s=25,
+            edgecolors="none",
+            zorder=2,
+        )
+
+        x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR_radii)
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
+
+        select = np.where(sigma_SFR_radii > -5.5)[0]
+        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR_radii[select])
+        plt.plot(x, y, "-", lw=2, color="white")
+        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
+
+        if plot == "gas":
+            for ind, observation in enumerate(observational_data):
+                if observation.gas_surface_density is not None:
+                    if (observation.description == "Schruba et al. (2011)"):
+                        data = observation.bin_data_KS( np.arange(-1,3,.25),0.4)
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="d",
+                            label=f"S11 [750 pc]",
+                            color="k",
+                            ms=markersize,
+                        )
+
+            plt.xlabel(
+                "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+            )
+        elif plot=="H2":
+            for ind, observation in enumerate(observational_data):
+                if observation.H2_surface_density is not None:
+                    if (observation.description == "Schruba et al. (2011)"):
+                        data = observation.bin_data_KS_molecular( np.arange(-1,3,.25),0.4)
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="d",
+                            label=f"S11 [750 pc]",
+                            color="k",
+                            ms=markersize,
+                        )
+
+            plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+        elif plot=="HI":
+           for ind, observation in enumerate(observational_data):
+                if observation.gas_surface_density is not None:
+                    if (observation.description == "Schruba et al. (2011)"):
+                        data = observation.bin_data_KS_atomic( np.arange(-1,3,.25),0.4)
+                        plt.errorbar(
+                            data[0],
+                            data[1],
+                            yerr=[data[2], data[3]],
+                            fmt="d",
+                            label="S11 [750 pc]",
+                            color="k",
+                            ms=markersize,
+                        )
+
+           plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+
+
+        plt.ylabel(
+            "$\\log_{10}$ $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
+        )
+        plt.xlim(-1.0, 4.0)
+        plt.ylim(-6.0, 1.0)
+        plt.legend(
+            loc=[0.0, 0.5],
+            labelspacing=0.2,
+            handlelength=1,
+            handletextpad=0.2,
+            frameon=False,
+        )
+
+        ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
+        plt.savefig(
+            f"{output_path}/radii_combined_surface_density_{plot}_"
+            + simulation_name
+            + ".png",
+            dpi=200,
+        )
+        plt.close()
+
+        # Spatially-resolved versions
+
         # star formation rate surgface density vs surface density
         fig = plt.figure()
         ax = plt.subplot(1, 1, 1)
@@ -237,19 +358,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
 
         sigma_gas = sigma_gas[arg_sort[::-1]]
         t_gas = t_gas[arg_sort[::-1]]
-
-        plt.scatter(
-            sigma_gas,
-            sigma_SFR,
-            c=metals,
-            alpha=0.9,
-            s=10,
-            vmin=-3,
-            vmax=1,
-            cmap="CMRmap_r",
-            edgecolors="none",
-            zorder=2,
-        )
 
         select = np.where((metals > -1.2) & (metals < -0.8))[0]
         x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
@@ -327,7 +435,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         elif plot=="H2":
             for ind, observation in enumerate(observational_data):
                 if observation.H2_surface_density is not None:
-                    print(observation.description)
                     if observation.description == "Bigiel et al. (2008) inner":
                         data = observation.bin_data_KS_molecular(
                             np.arange(-1, 3, 0.25), 0.4
@@ -401,7 +508,7 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
                             color="k",
                             ms=markersize,
                         )
-           plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+           plt.xlabel("$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
 
 
         plt.ylabel(
@@ -417,10 +524,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
             frameon=False,
         )
 
-        cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
-        cbar_ax.tick_params(labelsize=15)
-        cb = plt.colorbar(ticks=[-3, -2, -1, 0, 1], cax=cbar_ax)
-        cb.set_label(label="$\\log_{10}$ Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
         ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
         plt.savefig(
             f"{output_path}/combined_surface_density_{plot}_"
@@ -435,28 +538,16 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         ax = plt.subplot(1, 1, 1)
         plt.grid("True")
 
-        Sigma_g = np.logspace(-1, 4, 1000)
-        Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-        plt.plot(
-            np.log10(Sigma_g),
-            np.log10(Sigma_g) - np.log10(Sigma_star) + 6.0,
-            color="k",
-            label="K98",
-            linestyle="-.",
-        )
-
-        plt.scatter(
-            sigma_gas,
-            t_gas,
-            c=metals,
-            alpha=0.9,
-            s=10,
-            vmin=-3,
-            vmax=1,
-            cmap="CMRmap_r",
-            edgecolors="none",
-            zorder=2,
-        )
+        if plot=="gas" or plot=="H2":
+            Sigma_g = np.logspace(-1, 4, 1000)
+            Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+            plt.plot(
+                np.log10(Sigma_g),
+                np.log10(Sigma_g) - np.log10(Sigma_star) + 6.0,
+                color="k",
+                label="K98",
+                linestyle="-.",
+            )
 
         select = np.where((metals > -1.2) & (metals < -0.8))[0]
         x, y, y_down, y_up = median_relations(sigma_gas[select], t_gas[select])
@@ -510,10 +601,15 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
             plt.ylabel(
                 "$\\log_{10}$ $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
             )
-        else:
+        elif plot=="H2":
             plt.xlabel("log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
             plt.ylabel(
                 "$\\log_{10}$ $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+            )
+        elif plot=="HI":
+            plt.xlabel("log $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$")
+            plt.ylabel(
+                "$\\log_{10}$ $\\rm t_{\\rm HI} = \\Sigma_{\\rm HI} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
             )
 
         plt.xlim(-1, 4.0)
@@ -526,10 +622,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
             frameon=False,
         )
 
-        cbar_ax = fig.add_axes([0.87, 0.18, 0.018, 0.5])
-        cbar_ax.tick_params(labelsize=15)
-        cb = plt.colorbar(ticks=[-3, -2, -1, 0, 1], cax=cbar_ax)
-        cb.set_label(label="$\\log_{10}$ Z$_{\mathrm{gas}}$/Z$_{\odot}$", labelpad=0.5)
         ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
         plt.savefig(
             f"{output_path}/depletion_time_combined_surface_density_{plot}_"
