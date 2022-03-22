@@ -9,9 +9,10 @@ import numpy as np
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 import scipy.stats as stat
 from .loadObservationalData import read_obs_data
+from swiftsimio.visualisation.projection_backends import backends, backends_parallel
 
 
-def project_pixel_grid(data, mode, res, region, rotation_matrix):
+def project_pixel_grid(data, mode, res, region, rotation_matrix, backend):
 
     x_min, x_max = region
     y_min, y_max = region
@@ -37,17 +38,12 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
     maximal_array_index = res
     inverse_cell_area = res * res
 
-    for x_pos, y_pos, mass in zip(x, y, m):
-        particle_cell_x = int(res * x_pos)
-        particle_cell_y = int(res * y_pos)
-
-        if not (
-            particle_cell_x < 0
-            or particle_cell_x >= maximal_array_index
-            or particle_cell_y < 0
-            or particle_cell_y >= maximal_array_index
-        ):
-            image[particle_cell_x, particle_cell_y] += mass * inverse_cell_area
+    if backend=="histogram":
+        h = np.empty_like(m)
+    else:
+        h = data[:,7]
+    
+    image = backends[backend](x=x, y=y, m=m, h=h, res=res)
     return image
 
 
@@ -88,9 +84,9 @@ def integrate_metallicity_using_grid(data, res, region, rotation_matrix):
     return image
 
 
-def project_gas(data, mode, resolution, region, rotation_matrix):
+def project_gas(data, mode, resolution, region, rotation_matrix, backend="subsampled"):
 
-    image = project_pixel_grid(data, mode, resolution, region, rotation_matrix)
+    image = project_pixel_grid(data, mode, resolution, region, rotation_matrix, backend)
 
     x_range = region[1] - region[0]
     y_range = region[1] - region[0]
