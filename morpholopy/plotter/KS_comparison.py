@@ -261,7 +261,9 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
                     SFR_surface_density_err_up,
                 ) = median_relations(surface_density, SFR_surface_density)
 
-                plt.plot(surface_density, SFR_surface_density, "o", color=color[i])
+                if method=="radii":
+                    plt.plot(surface_density, SFR_surface_density, "o", color=color[i])
+
                 plt.plot(
                     median_surface_density,
                     median_SFR_surface_density,
