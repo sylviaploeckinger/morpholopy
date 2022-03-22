@@ -3,7 +3,12 @@ from matplotlib.pylab import rcParams
 from .KS_relation import median_relations
 from .loadObservationalData import read_obs_data
 import numpy as np
+from matplotlib import cm as cmm
+from matplotlib.colors import ListedColormap
 
+top = cmm.get_cmap("CMRmap_r", 256)
+newcolors = top(np.linspace(0.1,0.9, 230))
+newcmp = ListedColormap(newcolors, name="custombar")
 
 def plot_integrated_surface_densities(
     sigma_SFR, sigma_gas, sigma_H2, stellar_mass, output_path, simulation_name, markersize=4.
@@ -120,9 +125,9 @@ def plot_integrated_surface_densities(
         c=stellar_mass,
         alpha=0.9,
         s=25,
-        vmin=6,
-        vmax=10,
-        cmap="CMRmap_r",
+        vmin=9.5,
+        vmax=12,
+        cmap=newcmp,
         edgecolors="none",
         zorder=2,
     )
