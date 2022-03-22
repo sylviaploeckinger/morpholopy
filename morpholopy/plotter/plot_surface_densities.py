@@ -249,11 +249,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
 
-        select = np.where(sigma_SFR_radii > -5.5)[0]
-        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR_radii[select])
-        plt.plot(x, y, "-", lw=2, color="white")
-        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
-
         if plot == "gas":
             for ind, observation in enumerate(observational_data):
                 if observation.gas_surface_density is not None:
@@ -398,11 +393,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
-
-        select = np.where(sigma_SFR > -5.5)[0]
-        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-        plt.plot(x, y, "-", lw=2, color="white")
-        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
         if plot == "gas":
             for ind, observation in enumerate(observational_data):
@@ -588,11 +578,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         x, y, y_down, y_up = median_relations(sigma_gas, t_gas)
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
-
-        select = np.where(sigma_SFR > -5.5)[0]
-        x, y, y_down, y_up = median_relations(sigma_gas[select], t_gas[select])
-        plt.plot(x, y, "-", lw=2, color="white")
-        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
         if plot == "gas":
             plt.xlabel(
