@@ -137,13 +137,19 @@ class SimInfo(ParticleIds):
         Finds paths to the fields with particles catalogue and groups catalogue
         """
 
-        catalogue_num = "".join([s for s in self.catalogue_name if s.isdigit()])
+        catalogue_num = "".join([s for s in self.catalogue_name if s.isdigit()])[:4]
         catalogue_groups_paths: List[str] = glob.glob(
             f"{self.directory}/*{catalogue_num}.catalog_groups*"
         )
         catalogue_particles_paths: List[str] = glob.glob(
             f"{self.directory}/*{catalogue_num}.catalog_particles*"
         )
+        
+        print(self.catalogue_name)
+        print(catalogue_num)
+        print(f"{self.directory}/")
+        print(catalogue_groups_paths)
+        print(catalogue_particles_paths)
 
         # We expect one file for particle groups
         if len(catalogue_groups_paths) == 1:
