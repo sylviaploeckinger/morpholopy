@@ -57,9 +57,9 @@ def plot_integrated_surface_densities(
         c=stellar_mass,
         alpha=0.9,
         s=25,
-        vmin=6,
-        vmax=10,
-        cmap="CMRmap_r",
+        vmin=9.5,
+        vmax=12,
+        cmap=newcmp,
         edgecolors="none",
         zorder=2,
     )

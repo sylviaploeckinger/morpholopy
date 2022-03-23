@@ -2,6 +2,7 @@ from typing import List, Union, Tuple, Dict
 import unyt
 import numpy as np
 import glob
+import re
 
 from .unitilies import constants
 from .unitilies.helper_functions import (
@@ -145,12 +146,6 @@ class SimInfo(ParticleIds):
             f"{self.directory}/*{catalogue_num}.catalog_particles*"
         )
         
-        print(self.catalogue_name)
-        print(catalogue_num)
-        print(f"{self.directory}/")
-        print(catalogue_groups_paths)
-        print(catalogue_particles_paths)
-
         # We expect one file for particle groups
         if len(catalogue_groups_paths) == 1:
             self.catalogue_groups = catalogue_groups_paths[0].split("/")[-1]

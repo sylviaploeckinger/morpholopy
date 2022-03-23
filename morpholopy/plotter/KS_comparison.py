@@ -98,7 +98,6 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
                             )
             elif (mode == 1) and (method=="radii"):
                 for ind, observation in enumerate(observational_data):
-                    print(observation.description)
                     if observation.H2_surface_density is not None:
                         if (observation.description == "Schruba et al. (2011)"):
                             data = observation.bin_data_KS_molecular( np.arange(-1,3,.25),0.4)
@@ -214,8 +213,6 @@ def KS_relation_plots(output_path, index, name_list,markersize=4):
             color = ["tab:blue", "tab:orange"]
 
             for i, name in enumerate(name_list):
-                print("Index:")
-                print(index)
                 if mode == 0:
                     plt.xlabel(
                         "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
