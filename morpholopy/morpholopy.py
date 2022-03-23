@@ -16,6 +16,7 @@ from time import time
 from tqdm import tqdm
 
 from plotter.surface_maps_face_edge import surface_densities_overview
+from plotter.species_transitions import species_transitions_combined
 
 def compute_galaxy_morpholopy(
     sim_info: simulation_data.SimInfo,
@@ -140,16 +141,21 @@ def main(config: ArgumentParser):
         # Compute morphological properties (loop over haloes)
         print("Computing morphological properties...")
 
-        for i in range(sim_info.halo_data.number_of_haloes):
-            surface_densities_overview(
+        surface_densities_overview(
                 sim_name = sim_name,
                 directory = directory,
                 snapshot = snapshot,
-                catalogue = catalogue,
+                catalogue_file = catalogue,
                 output_path=config.output_directory,
-                halo_id=i,
+                nhalos = sim_info.halo_data.number_of_haloes,
                 halo_min_stellar_mass = config.min_stellar_mass,
-            )
+        )
+
+        species_transitions_combined(
+                sim_name = sim_name,
+                output_path=config.output_directory,
+                halo_min_stellar_mass = config.min_stellar_mass,
+        )
 
         for i in tqdm(range(sim_info.halo_data.number_of_haloes)):
             compute_galaxy_morpholopy(

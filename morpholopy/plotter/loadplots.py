@@ -112,6 +112,103 @@ def loadGalaxyPlots(
 
     for name in name_list:
         title = (
+            "Ratio between molecular and atomic neutral surface density vs. neutral gas surface density ("
+            + name
+            + ")"
+        )
+        caption = "Combined azimuthally averaged measurements of galaxies with stellar masses as indicated"
+        caption += ( 
+                  " in the figure title, color coded by the mean oxygen abundance of the diffuse component"
+                  " (i.e. excluding the oxygen in dust) for each bin. Each galaxy is binned with three"
+                  " different radial bin sizes (see legend). The grey crosses (triangles) show the detections"
+                  " (upper limits) from Schruba et al. (2011)"
+        )
+        filename = "Species_transition_" + name + "_Schruba2011.png"
+        id = abs(hash("species_transition_Schruba2011" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = (
+            "Ratio between molecular and atomic neutral surface density vs. neutral gas surface density ("
+            + name
+            + ")"
+        )
+        caption = "Combined azimuthally averaged measurements of galaxies with stellar masses as indicated"
+        caption += ( 
+                  " in the figure title, color coded by the stellar surface density for each bin."
+                  " Each galaxy is binned with three"
+                  " different radial bin sizes (see legend). The grey crosses (triangles) show the detections"
+                  " (upper limits) from Schruba et al. (2011)"
+        )
+        filename = "Species_transition_" + name + "_Schruba2011_Sigma_star.png"
+        id = abs(hash("species_transition_Schruba2011_Sigma_star" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = (
+            "Ratio between molecular and atomic neutral surface density vs. neutral gas surface density ("
+            + name
+            + ")"
+        )
+        caption = "Combined spatially resolved (grid averaged) measurements of galaxies with stellar masses as indicated"
+        caption += ( 
+                  " in the figure title."
+                  " The grey crosses show the detections"
+                  " from Bigiel et al. (2008). The simulation data is either displayed with points or with"
+                  " contours of a kernel-density estimate using Gaussian kernels (scipy.stats.gaussian_kde), if the points saturate."
+        )
+        filename = "Species_transition_" + name + "_Bigiel2008.png"
+        id = abs(hash("species_transition_Bigiel2008" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = (
+            "Molecular surface density vs. stellar surface density ("
+            + name
+            + ")"
+        )
+        caption = "Combined spatially resolved (grid averaged) measurements of galaxies with stellar masses as indicated"   
+        caption += ( 
+                  " in the figure title. Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
+                  " if enough points are present."
+        )
+        filename = "Grid_averaged_" + name + "_Mmol_Mstar.png"
+        id = abs(hash("Grid_averaged_" + name + "_Mmol_Mstar"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    for name in name_list:
+        title = (
+            " Star formation rate surface density vs. molecular surface density ("
+            + name
+            + ")"
+        )
+        caption = "Combined spatially resolved (grid averaged) measurements of galaxies with stellar masses as indicated"
+        caption += ( 
+                  " in the figure title. Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
+                  " if enough points are present."
+        )
+        filename = "Grid_averaged_" + name + "_SFR_Mmol.png"
+        id = abs(hash("Grid_averaged_" + name + "_SFR_Mmol"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = (
+            " Star formation rate surface density vs. stellar surface density ("
+            + name
+            + ")"
+        )   
+        caption = "Combined spatially resolved (grid averaged) measurements of galaxies with stellar masses as indicated"
+        caption += ( 
+                  " in the figure title. Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
+                  " if enough points are present."
+        )   
+        filename = "Grid_averaged_" + name + "_SFR_Mstar.png"
+        id = abs(hash("Grid_averaged_" + name + "_SFR_Mstar"))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = (
             "Molecular-to-neutral surface density vs. neutral gas surface density ("
             + name
             + ")"
@@ -191,8 +288,8 @@ def loadGalaxyPlots(
     caption = " "
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
-
-    # Individual galaxy plots
+ 
+    # Individual galaxy gallery
     for index in range(num_galaxies_to_show):
 
         for name in name_list:
@@ -201,9 +298,19 @@ def loadGalaxyPlots(
                 "Surface brightness (gri-composite) and surface density maps"
             )
             id = abs(hash("galaxy overview %i " % (index) + name))
-            
+
             outfile = "surface_overview_halo%3.3i_" % (index) + name + ".png"
             PlotsInWeb.load_plots(title, caption, outfile, id)
+
+    title = "Gallery"
+    caption = " "
+    id = abs(hash("galaxy overview gallery %i" % index))
+    plots = PlotsInWeb.plots_details
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    # Individual galaxy plots
+    for index in range(num_galaxies_to_show):
 
         for name in name_list:
             title = "Gas component (" + name + ")"

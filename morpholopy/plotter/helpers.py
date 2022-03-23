@@ -467,7 +467,7 @@ def get_stars_surface_density_map(catalogue, halo_id, plottype, snapshot_filenam
 
 def get_Bigiel2008_data():
         # from morpholopy
-        with open("KS_relation_Bigiel2010.txt") as f:
+        with open("plotter/obs_data/KS_relation_Bigiel2010.txt") as f:
             lines = f.readlines()
 
         size_array = len(lines) - 49
