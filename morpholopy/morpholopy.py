@@ -199,6 +199,7 @@ def main(config: ArgumentParser):
         config.output_directory,
         num_galaxies_to_show,
         output_name_list,
+        config.min_stellar_mass,
     )
 
     # Finish and output html file
