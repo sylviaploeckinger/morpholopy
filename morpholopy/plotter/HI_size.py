@@ -138,6 +138,28 @@ def calculate_HI_size(
 
     # Compute the HI size
     HIsize = 2.0 * Dx
+    # Compute the HI mass as the integrated surface density of the image
+    HImass = image.sum() * x_range * y_range * 1.0e6 / resolution**2
+    # Set the values for this galaxy
+    galaxy_data.add_HI_size_mass(HIsize, HImass, index)
+
+    rcparams = {
+        "font.size": 12,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (5.5, 4),
+        "figure.subplot.left": 0.05,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.15,
+        "figure.subplot.top": 0.9,
+        "figure.subplot.wspace": 0.3,
+        "figure.subplot.hspace": 0.3,
+        "lines.markersize": 2,
+        "lines.linewidth": 1.0,
+        "xtick.top": True,
+        "ytick.right": True,
+    }
+    pl.rcParams.update(rcparams)
 
     # Create a figure to show how good the fit was
     fig, ax = pl.subplots(1, 1)
@@ -176,8 +198,73 @@ def calculate_HI_size(
     ax.set_xlabel("x (kpc)")
     ax.set_ylabel("y (kpc)")
 
-    fig.colorbar(cs, label="Surface density (M$_\\odot{}$ pc$^{-2}$)")
+    fig.colorbar(
+        cs,
+        label="Surface density (M$_\\odot{}$ pc$^{-2}$)",
+        ticks=matplotlib.ticker.LogLocator(),
+        format=matplotlib.ticker.LogFormatterMathtext(),
+    )
 
     pl.tight_layout()
     pl.savefig(f"{output_path}/HI_size_{index}.png", dpi=300)
+    pl.close()
+
+
+def plot_HI_size_mass(output_path, name_list):
+
+    fit_slope = 0.501
+    fit_intercept = -3.252
+    fit_intercept_sigma_low = 0.074
+    fit_intercept_sigma_high = 0.073
+
+    params = {
+        "font.size": 12,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (5.5, 4),
+        "figure.subplot.left": 0.05,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.15,
+        "figure.subplot.top": 0.9,
+        "figure.subplot.wspace": 0.3,
+        "figure.subplot.hspace": 0.3,
+        "lines.markersize": 4,
+        "lines.linewidth": 2.0,
+        "xtick.top": True,
+        "xtick.labeltop": True,
+        "ytick.right": True,
+        "ytick.labelright": True,
+    }
+    pl.rcParams.update(params)
+
+    logMfit = np.array([6.5, 12.0])
+    pl.fill_between(
+        10.0**logMfit,
+        10.0 ** (fit_slope * logMfit + fit_intercept - fit_intercept_sigma_low),
+        10.0 ** (fit_slope * logMfit + fit_intercept + fit_intercept_sigma_high),
+        alpha=0.1,
+        color="k",
+    )
+    pl.plot(
+        10.0**logMfit,
+        10.0 ** (fit_slope * logMfit + fit_intercept),
+        "--",
+        color="k",
+        label="Rajohnson et al. (2022)",
+    )
+
+    for i, name in enumerate(name_list):
+        data = np.loadtxt(
+            f"{output_path}/HI_size_mass_{name}.txt",
+            dtype=[("size", "f8"), ("mass", "f8")],
+        )
+        pl.loglog(data["mass"], data["size"], "o", color=f"C{i}", label=name)
+
+    pl.xlabel("M$_{\\rm{}HI}$ (M$_\\odot$)")
+    pl.ylabel("D$_{\\rm{}HI}$ (kpc)")
+
+    pl.legend(loc="best")
+
+    pl.tight_layout()
+    pl.savefig(f"{output_path}/HI_size_mass.png", dpi=200)
     pl.close()
