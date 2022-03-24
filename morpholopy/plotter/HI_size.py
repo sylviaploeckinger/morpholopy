@@ -2,55 +2,182 @@ import numpy as np
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from swiftsimio.visualisation.projection_backends import backends, backends_parallel
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as pl
 import scipy.optimize as opt
 
+
 def gauss_curve(x, A, a, b, c, x0, y0):
-  return A * np.exp(
-    -(a*(x[:,0]-x0)**2 + 2.*b*(x[:,0]-x0)*(x[:,1]-y0) + c * (x[:,1]-y0)**2)
-  )
+    """
+    General 2D elliptical Gaussian function, based on Rajohnson et al. (2022),
+    equation (2).
 
-def calculate_HI_size(data, ang_momentum, galaxy_data, output_path, index):
-  pos_parts = data[:,0:3].copy()
+    Parameters
+    ----------
+    x: (N,2) array containing positions (in kpc)
 
-  face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="z")
-  pos_face_on = np.matmul(face_on_rotation_matrix, pos_parts.T).T
+    A: central surface density (in Msun pc^-2)
+    a, b, c: rotated major and minor axis of the ellipse (in kpc^-2)
+    x0, y0: centre of the ellipse (in kpc)
 
-  hsml = data[:, 7]
-  mass = data[:, 8]
+    Returns
+    -------
+    (N,) array containing the predicted surface density for each position
+    """
+    return A * np.exp(
+        -(
+            a * (x[:, 0] - x0) ** 2
+            + 2.0 * b * (x[:, 0] - x0) * (x[:, 1] - y0)
+            + c * (x[:, 1] - y0) ** 2
+        )
+    )
 
-  x_min = pos_face_on[:,0].min()
-  x_max = pos_face_on[:,0].max()
-  y_min = pos_face_on[:,1].min()
-  y_max = pos_face_on[:,1].max()
 
-  x_range = x_max - x_min
-  y_range = y_max - y_min
+def calculate_HI_size(
+    data, ang_momentum, galaxy_data, output_path, index, resolution=128
+):
+    """
+    Calculate the HI size of the given galaxy by fitting a 2D elliptical function
+    to the surface density profile and measuring the diameter along the major axis
+    of the 1 Msun pc^-2 contour (see Rajohnson et al. (2022) section 4).
+    The result is stored in the given HaloCatalogue (in units of kpc).
 
-  x = (pos_face_on[:,0] - x_min) / x_range
-  y = (pos_face_on[:,1] - y_min) / y_range
+    Parameters
+    ----------
+    data: gas data (as returned by simulation_data.make_particle_data() - note
+          that the positions have been recentred onto the centre of the halo)
+    ang_momentum: angular momentum vector of the galaxy
+    galaxy_data: HaloCatalogue object to store the HI size in
+    output_path: directory in which to store images
+    index: halo index, used to index images
+    resolution: resolution of the image that is used to fit the elliptical profile
+                the default value (128) provides a good mix of accuracy and speed
+    """
 
-  image = backends["subsampled"](x=x, y=y, m=mass, h=hsml, res=128)
-  imin = image.min()
-  imax = image.max()
+    # get a local copy of the particle coordinates (that we can rotate)
+    pos_parts = data[:, 0:3].copy()
 
-  xg, yg = np.meshgrid(np.linspace(x_min, x_max, 128), np.linspace(y_min, y_max, 128))
-  xs = np.zeros((128*128, 2))
-  xs[:,0] = xg.flatten()
-  xs[:,1] = yg.flatten()
-  A = imin
-  sigX = 20 * x_range / 128
-  sigY = 20 * y_range / 128
-  a = 0.5 / sigX**2
-  b = 0.
-  c = 0.5 / sigY**2
-  params, _ = opt.curve_fit(gauss_curve, xs, image.flatten(), p0 = (A, a, b, c, 0., 0.))
-  print(params)
+    # determine the size of the galaxy from the maximum of the coordinates
+    R = np.sqrt(
+        pos_parts[:, 0] ** 2 + pos_parts[:, 1] ** 2 + pos_parts[:, 2] ** 2
+    ).max()
 
-  fig, ax = pl.subplots(1, 2)
-  ax[0].imshow(image, norm=matplotlib.colors.LogNorm(vmin=imin, vmax=imax))
-  image = gauss_curve(xs, *params).reshape((128, 128))
-  ax[1].imshow(image, norm=matplotlib.colors.LogNorm(vmin=imin, vmax=imax))
-  pl.savefig(f"{output_path}/HI_size_{index}.png", dpi=300)
-  pl.close()
+    # rotate the coordinates to a face-on projection
+    face_on_rotation_matrix = rotation_matrix_from_vector(ang_momentum, axis="z")
+    pos_face_on = np.matmul(face_on_rotation_matrix, pos_parts.T).T
+
+    # get the smoothing lengths and HI mass
+    hsml = data[:, 7]
+    mass = data[:, 8]
+
+    # rescale the coordinates to a square box [-R,R] -> [0, 1]
+    x_min = -R
+    x_max = R
+    y_min = -R
+    y_max = R
+
+    x_range = x_max - x_min
+    y_range = y_max - y_min
+
+    x = (pos_face_on[:, 0] - x_min) / x_range
+    y = (pos_face_on[:, 1] - y_min) / y_range
+
+    # create the projected image using the swiftsimio backend
+    image = backends["subsampled"](x=x, y=y, m=mass, h=hsml, res=resolution)
+    # units are Msun / (x_range * y_range)
+    # convert to Msun / pc^2
+    image *= 1.0e-6 / (x_range * y_range)
+
+    # get the limits (for plotting)
+    imin = image.min()
+    imax = image.max()
+
+    # set up a grid of positions for the fit
+    xg, yg = np.meshgrid(
+        np.linspace(x_min, x_max, resolution), np.linspace(y_min, y_max, resolution)
+    )
+    xs = np.zeros((resolution**2, 2))
+    xs[:, 0] = xg.flatten()
+    xs[:, 1] = yg.flatten()
+    # initial values for the fit (based on Rajohnson et al.)
+    A = imin
+    sigX = 20 * x_range / resolution
+    sigY = 20 * y_range / resolution
+    a = 0.5 / sigX**2
+    b = 0.0
+    c = 0.5 / sigY**2
+    # perform the fit
+    params, _ = opt.curve_fit(
+        gauss_curve, xs, image.flatten(), p0=(A, a, b, c, 0.0, 0.0)
+    )
+
+    # extract the fitted parameters
+    A, a, b, c, x0, y0 = params
+
+    # the HI size is determined from the 1 Msun pc^-2 contour level. If the fitted
+    # profile has a central surface density that is lower, the HI size is undefined
+    if A <= 1.0:
+        print(
+            "Central surface density below 1 Msun pc^-2 limit, no HI size measurement possible!"
+        )
+        return
+
+    # convert from the general elliptical coordinates to a coordinate frame where
+    # the major axis is aligned with the x axis (and the minor axis with the y
+    # axis). Determine the rotation angle theta of the general ellipse.
+    # The relations below have been derived from Rajohnson et al., eq (3)-(5),
+    # using some basic trigonometry.
+    # Note that the derivation depends on the condition 1/sigY2 > 1/sigX2, so
+    # that sigX2 is guaranteed to correspond to the major axis
+    sigX2 = 1.0 / (a + c - np.sqrt((a - c) ** 2 + 4.0 * b**2))
+    sigY2 = 1.0 / (np.sqrt((a - c) ** 2 + 4.0 * b**2) + a + c)
+    theta = 0.5 * np.arcsin(-2.0 * b / np.sqrt((a - c) ** 2 + 4.0 * b**2))
+    Dx = np.sqrt(2.0 * sigX2 * np.log(A))
+    Dy = np.sqrt(2.0 * sigY2 * np.log(A))
+
+    # Compute the HI size
+    HIsize = 2.0 * Dx
+
+    # Create a figure to show how good the fit was
+    fig, ax = pl.subplots(1, 1)
+
+    # First, plot the surface density map
+    levels = np.logspace(np.log10(imin), np.log10(imax), 100)
+    cs = ax.contourf(
+        xg,
+        yg,
+        image,
+        norm=matplotlib.colors.LogNorm(vmin=imin, vmax=imax),
+        levels=levels,
+    )
+
+    # Now overplot the 1 Msun pc^-2 contour, using the parametric equation for
+    # the general ellipse
+    tpar = np.linspace(0.0, 2.0 * np.pi, 1000)
+    xpar = Dx * np.cos(theta) * np.cos(tpar) - Dy * np.sin(theta) * np.sin(tpar)
+    ypar = Dx * np.sin(theta) * np.cos(tpar) + Dy * np.cos(theta) * np.sin(tpar)
+    ax.plot(x0 + xpar, y0 + ypar, color="w", linestyle="--")
+
+    # Overplot 9 contour levels of the Gaussian function
+    image = gauss_curve(xs, *params).reshape((resolution, resolution))
+    levels = np.logspace(np.log10(imin), np.log10(imax), 10)
+    ax.contour(
+        xg,
+        yg,
+        image,
+        norm=matplotlib.colors.LogNorm(vmin=imin, vmax=imax),
+        levels=levels,
+        colors="w",
+    )
+
+    # Finalise and save the plot
+    ax.set_aspect("equal")
+    ax.set_xlabel("x (kpc)")
+    ax.set_ylabel("y (kpc)")
+
+    fig.colorbar(cs, label="Surface density (M$_\\odot{}$ pc$^{-2}$)")
+
+    pl.tight_layout()
+    pl.savefig(f"{output_path}/HI_size_{index}.png", dpi=300)
+    pl.close()
