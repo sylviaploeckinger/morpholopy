@@ -3,7 +3,12 @@ from matplotlib.pylab import rcParams
 from .KS_relation import median_relations
 from .loadObservationalData import read_obs_data
 import numpy as np
+from matplotlib import cm as cmm
+from matplotlib.colors import ListedColormap
 
+top = cmm.get_cmap("CMRmap_r", 256)
+newcolors = top(np.linspace(0.1,0.9, 230))
+newcmp = ListedColormap(newcolors, name="custombar")
 
 def plot_integrated_surface_densities(
     sigma_SFR, sigma_gas, sigma_H2, stellar_mass, output_path, simulation_name, markersize=4.
@@ -52,9 +57,9 @@ def plot_integrated_surface_densities(
         c=stellar_mass,
         alpha=0.9,
         s=25,
-        vmin=6,
-        vmax=10,
-        cmap="CMRmap_r",
+        vmin=9.5,
+        vmax=12,
+        cmap=newcmp,
         edgecolors="none",
         zorder=2,
     )
@@ -120,9 +125,9 @@ def plot_integrated_surface_densities(
         c=stellar_mass,
         alpha=0.9,
         s=25,
-        vmin=6,
-        vmax=10,
-        cmap="CMRmap_r",
+        vmin=9.5,
+        vmax=12,
+        cmap=newcmp,
         edgecolors="none",
         zorder=2,
     )
@@ -248,11 +253,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR_radii)
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
-
-        select = np.where(sigma_SFR_radii > -5.5)[0]
-        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR_radii[select])
-        plt.plot(x, y, "-", lw=2, color="white")
-        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
         if plot == "gas":
             for ind, observation in enumerate(observational_data):
@@ -398,11 +398,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         x, y, y_down, y_up = median_relations(sigma_gas, sigma_SFR)
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
-
-        select = np.where(sigma_SFR > -5.5)[0]
-        x, y, y_down, y_up = median_relations(sigma_gas[select], sigma_SFR[select])
-        plt.plot(x, y, "-", lw=2, color="white")
-        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
         if plot == "gas":
             for ind, observation in enumerate(observational_data):
@@ -588,11 +583,6 @@ def plot_combined_surface_densities(combined_data, output_path, simulation_name,
         x, y, y_down, y_up = median_relations(sigma_gas, t_gas)
         plt.plot(x, y, "-", lw=2, color="white")
         plt.plot(x, y, "-", lw=1.5, color="grey", label="All")
-
-        select = np.where(sigma_SFR > -5.5)[0]
-        x, y, y_down, y_up = median_relations(sigma_gas[select], t_gas[select])
-        plt.plot(x, y, "-", lw=2, color="white")
-        plt.plot(x, y, "-", lw=1.5, color="black", label="star-forming")
 
         if plot == "gas":
             plt.xlabel(

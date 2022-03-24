@@ -2,6 +2,7 @@ from typing import List, Union, Tuple, Dict
 import unyt
 import numpy as np
 import glob
+import re
 
 from .unitilies import constants
 from .unitilies.helper_functions import (
@@ -137,14 +138,14 @@ class SimInfo(ParticleIds):
         Finds paths to the fields with particles catalogue and groups catalogue
         """
 
-        catalogue_num = "".join([s for s in self.catalogue_name if s.isdigit()])
+        catalogue_num = "".join([s for s in self.catalogue_name if s.isdigit()])[:4]
         catalogue_groups_paths: List[str] = glob.glob(
             f"{self.directory}/*{catalogue_num}.catalog_groups*"
         )
         catalogue_particles_paths: List[str] = glob.glob(
             f"{self.directory}/*{catalogue_num}.catalog_particles*"
         )
-
+        
         # We expect one file for particle groups
         if len(catalogue_groups_paths) == 1:
             self.catalogue_groups = catalogue_groups_paths[0].split("/")[-1]
