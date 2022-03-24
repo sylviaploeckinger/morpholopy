@@ -142,7 +142,7 @@ def species_transitions_combined(sim_name, output_path, halo_min_stellar_mass):
 
 
         #######################
-        # Sigma HI / Sigma H2  (data: Bigiel+2008, color: stellar surface density)
+        # Sigma HI / Sigma H2  (data: Bigiel+2008, scatter)
         #######################
 
         fig = plt.figure(figsize = (3.5, 3.))
@@ -167,27 +167,53 @@ def species_transitions_combined(sim_name, output_path, halo_min_stellar_mass):
         x = (np.power(10., log10H2_fp) + np.power(10., log10HI_fp))
         y = log10H2_fp-log10HI_fp
 
-        hist, xe, ye = np.histogram2d(x, y, bins = nbins_hist, range = [[Sigma_min, Sigma_max],[np.log10(H2_over_HI_min), np.log10(H2_over_HI_max)]])
-        if hist.max() < 20:
-                # not enough points for meaningful contour plot, use scatter plot
-                sc = ax.scatter(np.power(10., log10H2_fp) + np.power(10., log10HI_fp), log10H2_fp-log10HI_fp, c = 'black', marker = 'o', s = 10, zorder = 3)
-        else:
-                # too many points for scatter plot, use contour plot
-                data = np.vstack([x,y])
-                kde  = gaussian_kde(data)
-                xgrid = np.linspace(Sigma_min, Sigma_max, nbins_hist)
-                ygrid = np.linspace(np.log10(H2_over_HI_min), np.log10(H2_over_HI_max), nbins_hist)
-
-                Xgrid, Ygrid = np.meshgrid(xgrid, ygrid)
-                Z = kde.evaluate(np.vstack([Xgrid.ravel(), Ygrid.ravel()]))
-
-                levels = (np.nanmax(Z) * 0.01, np.nanmax(Z) *0.05, np.nanmax(Z) * 0.1, np.nanmax(Z) * 0.25, np.nanmax(Z) * 0.5, np.nanmax(Z) * 0.75, np.nanmax(Z) * 0.9, np.nanmax(Z))
-                ax.contour(xgrid, ygrid, Z.reshape(Xgrid.shape), origin = 'lower', extent = [xgrid[0], xgrid[-1], ygrid[0], ygrid[-1]], zorder = 5, colors = '#CC0066', levels = levels, linestyles = 'solid')
+        sc = ax.scatter(np.power(10., log10H2_fp) + np.power(10., log10HI_fp), log10H2_fp-log10HI_fp, c = 'black', marker = 'o', s = 10, zorder = 3)
 
         ax.legend(loc = 'lower right', fontsize = 6)
-        fig.savefig(output_path + '/Species_transition_'+sim_name + '_Bigiel2008.png', dpi = 150)
+        fig.savefig(output_path + '/Species_transition_'+sim_name + '_Bigiel2008_scatter.png', dpi = 150)
         plt.close()
 
+
+        #######################
+        # Sigma HI / Sigma H2  (data: Bigiel+2008, contour)
+        #######################
+
+        fig = plt.figure(figsize = (3.5, 3.))
+        fig.subplots_adjust(left = 0.1, right = 0.8, top = 0.73, bottom = 0.17)
+        gs  = gridspec.GridSpec(1,2, width_ratios = [1., 0.05], wspace = 0. )
+
+        ax = plt.subplot(gs[0])
+        text += "\n" + "grid =%.2f kpc"%(binsize_fp[0])
+        ax.text(-0.1, 1.01, text, ha ='left', va = 'bottom', transform=ax.transAxes, fontsize = 8)
+
+        ax.set_aspect((Sigma_max-Sigma_min)/(np.log10(H2_over_HI_max) - np.log10(H2_over_HI_min)))
+        ax.set_xlim(Sigma_min, Sigma_max)
+        ax.set_ylim(np.log10(H2_over_HI_min), np.log10(H2_over_HI_max))
+        ax.set_yticks([-1., 0., 1., 2.])
+        ax.set_yticklabels(["0.1", "1", "10", "100"])
+        ax.set_xlabel(r'$\Sigma_{\mathrm{HI}}$ + $\Sigma_{\mathrm{H2}}$ [M$_{\odot}$ pc$^{-2}$]')
+        ax.set_ylabel(r'$\Sigma_{\mathrm{H2}}$ / $\Sigma_{\mathrm{HI}}$')
+
+        S_HI_obs, S_H2_obs = get_Bigiel2008_data()
+        ax.scatter((S_HI_obs + S_H2_obs), np.log10(S_H2_obs / S_HI_obs) , color = 'lightgrey', marker = '+', label = 'Bigiel+2008')
+
+        x = (np.power(10., log10H2_fp) + np.power(10., log10HI_fp))
+        y = log10H2_fp-log10HI_fp
+
+        data = np.vstack([x,y])
+        kde  = gaussian_kde(data,bw_method=0.1)
+        xgrid = np.linspace(Sigma_min, Sigma_max, nbins_hist)
+        ygrid = np.linspace(np.log10(H2_over_HI_min), np.log10(H2_over_HI_max), nbins_hist)
+
+        Xgrid, Ygrid = np.meshgrid(xgrid, ygrid)
+        Z = kde.evaluate(np.vstack([Xgrid.ravel(), Ygrid.ravel()]))
+
+        levels = (np.nanmax(Z) * 0.01, np.nanmax(Z) *0.05, np.nanmax(Z) * 0.1, np.nanmax(Z) * 0.25, np.nanmax(Z) * 0.5, np.nanmax(Z) * 0.75, np.nanmax(Z) * 0.9, np.nanmax(Z))
+        ax.contour(xgrid, ygrid, Z.reshape(Xgrid.shape), origin = 'lower', extent = [xgrid[0], xgrid[-1], ygrid[0], ygrid[-1]], zorder = 5, colors = 'black', levels = levels, linestyles = 'solid')
+
+        ax.legend(loc = 'lower right', fontsize = 6)
+        fig.savefig(output_path + '/Species_transition_'+sim_name + '_Bigiel2008_contour.png', dpi = 150)
+        plt.close()
 
         #######################
         # Sigma_SFR vs. Sigma_star

@@ -151,6 +151,7 @@ def main(config: ArgumentParser):
                 output_path=config.output_directory,
                 nhalos = sim_info.halo_data.number_of_haloes,
                 halo_min_stellar_mass = config.min_stellar_mass,
+                halo_ids_sample = sim_info.halo_data.halo_ids,
         )
 
         species_transitions_combined(

@@ -117,7 +117,7 @@ def loadGalaxyPlots(
             + ")"
         )
    
-        caption = "Combined galaxy sample: checking the most massive %i halos in VR and limit to galaxies with stellar masses "%(num_galaxies_to_show)
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
         caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
         caption += "\nAzimuthally averaged measurements, color coded by the mean oxygen abundance of the diffuse component" 
         caption += ( 
@@ -135,7 +135,7 @@ def loadGalaxyPlots(
             + name
             + ")"
         )
-        caption = "Combined galaxy sample: checking the most massive %i halos in VR and limit to galaxies with stellar masses "%(num_galaxies_to_show)
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
         caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
         caption += "\nAzimuthally averaged measurements, color coded by the stellar surface density for each bin." 
         caption += ( 
@@ -153,16 +153,33 @@ def loadGalaxyPlots(
             + name
             + ")"
         )
-        caption = "Combined galaxy sample: checking the most massive %i halos in VR and limit to galaxies with stellar masses "%(num_galaxies_to_show)
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
         caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
         caption += "\nSpatially resolved (grid averaged) measurements of galaxies."
         caption += ( 
                   " The grey crosses show the detections"
-                  " from Bigiel et al. (2008). The simulation data is either displayed with points or with"
-                  " contours of a kernel-density estimate using Gaussian kernels (scipy.stats.gaussian_kde), if the points saturate."
+                  " from Bigiel et al. (2008). The simulation data is displayed with points."
         )
-        filename = "Species_transition_" + name + "_Bigiel2008.png"
-        id = abs(hash("species_transition_Bigiel2008" + name))
+        filename = "Species_transition_" + name + "_Bigiel2008_scatter.png"
+        id = abs(hash("species_transition_Bigiel2008 scatter" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = (
+            "Ratio between molecular and atomic neutral surface density vs. neutral gas surface density ("
+            + name
+            + ")"
+        )
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
+        caption += "\nSpatially resolved (grid averaged) measurements of galaxies."
+        caption += ( 
+                  " The grey crosses show the detections"
+                  " from Bigiel et al. (2008). The simulation data is displayed with"
+                  " contours of a kernel-density estimate using Gaussian kernels (scipy.stats.gaussian_kde)."
+        )
+        filename = "Species_transition_" + name + "_Bigiel2008_contour.png"
+        id = abs(hash("species_transition_Bigiel2008 contour" + name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     for name in name_list:
@@ -171,7 +188,7 @@ def loadGalaxyPlots(
             + name
             + ")"
         )
-        caption = "Combined galaxy sample: checking the most massive %i halos in VR and limit to galaxies with stellar masses "%(num_galaxies_to_show)
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
         caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
         caption += "\nSpatially resolved (grid averaged) measurements."   
         caption += ( 
@@ -189,7 +206,7 @@ def loadGalaxyPlots(
             + name
             + ")"
         )
-        caption = "Combined galaxy sample: checking the most massive %i halos in VR and limit to galaxies with stellar masses "%(num_galaxies_to_show)
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
         caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
         caption += "\nSpatially resolved (grid averaged) measurements."   
         caption += ( 
@@ -206,7 +223,7 @@ def loadGalaxyPlots(
             + name
             + ")"
         )   
-        caption = "Combined galaxy sample: checking the most massive %i halos in VR and limit to galaxies with stellar masses "%(num_galaxies_to_show)
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
         caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
         caption += "\nSpatially resolved (grid averaged) measurements."   
         caption += ( 

@@ -60,7 +60,7 @@ usergreen = cmap(0.7)
 cmap = matplotlib.cm.get_cmap('Blues')
 userblue  = cmap(0.7)
 
-def surface_densities_overview(sim_name, directory, snapshot, catalogue_file, output_path, nhalos, halo_min_stellar_mass):
+def surface_densities_overview(sim_name, directory, snapshot, catalogue_file, output_path, nhalos, halo_min_stellar_mass, halo_ids_sample):
 
         filename_text_f1 = output_path + '/Azimuth_averaged_'+sim_name+'.dat'
         f1 = open(filename_text_f1, 'w')
@@ -88,28 +88,26 @@ def surface_densities_overview(sim_name, directory, snapshot, catalogue_file, ou
         f2.write('# column 8: log10 Stellar mass surface density [Msol pc-2]\n')
         f2.close()
 
-        for halo_id in range (nhalos):
 
-                snapshot_filename = directory + '/' + snapshot
+        snapshot_filename = directory + '/' + snapshot
 
-                catalogue_filename = glob.glob(directory+catalogue_file+'*')[0]
-                catalogue = load_catalogue(catalogue_filename)
-                catalogue.masses.mass_star_30kpc.convert_to_units('Msun')
+        catalogue_filename = glob.glob(directory+catalogue_file+'*')[0]
+        catalogue = load_catalogue(catalogue_filename)
+        catalogue.masses.mass_star_30kpc.convert_to_units('Msun')
 
-                if catalogue.masses.mass_star_30kpc[halo_id].value < halo_min_stellar_mass:
-                        return
+        catalogue.masses.mass_200crit.convert_to_units('Msun')
+        catalogue.masses.mass_gas_30kpc.convert_to_units('Msun')
+        catalogue.gas_hydrogen_species_masses.HI_mass_30_kpc.convert_to_units('Msun')
+        catalogue.gas_hydrogen_species_masses.H2_mass_30_kpc.convert_to_units('Msun')
+        catalogue.apertures.mass_star_100_kpc.convert_to_units('Msun')
 
-                catalogue.masses.mass_200crit.convert_to_units('Msun')
-                catalogue.masses.mass_gas_30kpc.convert_to_units('Msun')
-                catalogue.gas_hydrogen_species_masses.HI_mass_30_kpc.convert_to_units('Msun')
-                catalogue.gas_hydrogen_species_masses.H2_mass_30_kpc.convert_to_units('Msun')
-                catalogue.apertures.mass_star_100_kpc.convert_to_units('Msun')
+        Zdiffuse = catalogue.cold_dense_gas_properties.cold_dense_diffuse_metal_mass_100_kpc
+        ColdGas  = catalogue.cold_dense_gas_properties.cold_dense_gas_mass_100_kpc
+        twelve_plus_logOH = np.log10(Zdiffuse / (Zsun * ColdGas)) + twelve_plus_log_OH_solar
 
-                Zdiffuse = catalogue.cold_dense_gas_properties.cold_dense_diffuse_metal_mass_100_kpc
-                ColdGas  = catalogue.cold_dense_gas_properties.cold_dense_gas_mass_100_kpc
-                twelve_plus_logOH = np.log10(Zdiffuse / (Zsun * ColdGas)) + twelve_plus_log_OH_solar
-
-                snapnum = "".join([s for s in snapshot if s.isdigit()])
+        snapnum = "".join([s for s in snapshot if s.isdigit()])
+                              
+        for ihalo, halo_id in enumerate(halo_ids_sample):
 
                 fig = plt.figure(figsize = (15., 3.5))
                 fig.subplots_adjust(left = 0.01, right = 0.95, top = 0.85, bottom = 0.12)
@@ -139,6 +137,7 @@ def surface_densities_overview(sim_name, directory, snapshot, catalogue_file, ou
                 ax.set_xticks([])
                 ax.set_yticks([])
                 ax.text(0.05, 0.95, text, ha ='left', va = 'top', transform=ax.transAxes, fontsize = 8)
+                ax.text(0.05, 1.20, "%i Galaxy"%(ihalo+1), ha ='left', va = 'bottom', transform=ax.transAxes, fontsize = 14)
 
                 # Stars gri face-on
                 ax = plt.subplot(gs[nr_total_plots + 1])
@@ -321,7 +320,7 @@ def surface_densities_overview(sim_name, directory, snapshot, catalogue_file, ou
                 ax.text(0.95, 0.05, '12 + log$_{\mathrm{10}}$(O/H) = %.2f'%(twelve_plus_logOH[halo_id]), va = 'bottom', ha = 'right', transform = ax.transAxes, fontsize = 8)
 
 
-                fig.savefig(output_path + '/surface_overview_halo%3.3i_'%(halo_id) + sim_name + '.png', dpi = 150)
+                fig.savefig(output_path + '/surface_overview_halo%3.3i_'%(ihalo) + sim_name + '.png', dpi = 150)
                 plt.close()
 
                 # produce the grid averaged properties
