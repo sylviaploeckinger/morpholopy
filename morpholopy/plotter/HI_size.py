@@ -35,7 +35,7 @@ def gauss_curve(x, A, a, b, c, x0, y0):
 
 
 def calculate_HI_size(
-    data, ang_momentum, galaxy_data, output_path, index, resolution=128
+    data, ang_momentum, galaxy_data, output_path, index, resolution=64
 ):
     """
     Calculate the HI size of the given galaxy by fitting a 2D elliptical function
@@ -72,38 +72,29 @@ def calculate_HI_size(
     mass = data[:, 8]
 
     # rescale the coordinates to a square box [-R,R] -> [0, 1]
-    x_min = -R
-    x_max = R
-    y_min = -R
-    y_max = R
-
-    x_range = x_max - x_min
-    y_range = y_max - y_min
-
-    x = (pos_face_on[:, 0] - x_min) / x_range
-    y = (pos_face_on[:, 1] - y_min) / y_range
+    x = 0.5 * (pos_face_on[:, 0] + R) / R
+    y = 0.5 * (pos_face_on[:, 1] + R) / R
+    h = 0.5 * hsml / R
 
     # create the projected image using the swiftsimio backend
-    image = backends["subsampled"](x=x, y=y, m=mass, h=hsml, res=resolution)
-    # units are Msun / (x_range * y_range)
+    image = backends["subsampled"](x=x, y=y, m=mass, h=h, res=resolution)
+    # units are Msun / (2*R)^2
     # convert to Msun / pc^2
-    image *= 1.0e-6 / (x_range * y_range)
+    image *= 2.5e-7 / R**2
 
     # get the limits (for plotting)
-    imin = image.min()
     imax = image.max()
+    imin = max(1.0e-4 * imax, image.min())
 
     # set up a grid of positions for the fit
-    xg, yg = np.meshgrid(
-        np.linspace(x_min, x_max, resolution), np.linspace(y_min, y_max, resolution)
-    )
+    xg, yg = np.meshgrid(np.linspace(-R, R, resolution), np.linspace(-R, R, resolution))
     xs = np.zeros((resolution**2, 2))
     xs[:, 0] = xg.flatten()
     xs[:, 1] = yg.flatten()
     # initial values for the fit (based on Rajohnson et al.)
-    A = imin
-    sigX = 20 * x_range / resolution
-    sigY = 20 * y_range / resolution
+    A = imax
+    sigX = 40.0 * R / resolution
+    sigY = 40.0 * R / resolution
     a = 0.5 / sigX**2
     b = 0.0
     c = 0.5 / sigY**2
@@ -121,27 +112,29 @@ def calculate_HI_size(
         print(
             "Central surface density below 1 Msun pc^-2 limit, no HI size measurement possible!"
         )
-        return
+    else:
+        # convert from the general elliptical coordinates to a coordinate frame where
+        # the major axis is aligned with the x axis (and the minor axis with the y
+        # axis). Determine the rotation angle theta of the general ellipse.
+        # The relations below have been derived from Rajohnson et al., eq (3)-(5),
+        # using some basic trigonometry.
+        # Note that the derivation depends on the condition 1/sigY2 > 1/sigX2, so
+        # that sigX2 is guaranteed to correspond to the major axis
+        sigX2 = 1.0 / (a + c - np.sqrt((a - c) ** 2 + 4.0 * b**2))
+        sigY2 = 1.0 / (np.sqrt((a - c) ** 2 + 4.0 * b**2) + a + c)
+        theta = 0.5 * np.arctan2(-2.0 * b, c - a)
+        Dx = np.sqrt(2.0 * sigX2 * np.log(A))
+        Dy = np.sqrt(2.0 * sigY2 * np.log(A))
 
-    # convert from the general elliptical coordinates to a coordinate frame where
-    # the major axis is aligned with the x axis (and the minor axis with the y
-    # axis). Determine the rotation angle theta of the general ellipse.
-    # The relations below have been derived from Rajohnson et al., eq (3)-(5),
-    # using some basic trigonometry.
-    # Note that the derivation depends on the condition 1/sigY2 > 1/sigX2, so
-    # that sigX2 is guaranteed to correspond to the major axis
-    sigX2 = 1.0 / (a + c - np.sqrt((a - c) ** 2 + 4.0 * b**2))
-    sigY2 = 1.0 / (np.sqrt((a - c) ** 2 + 4.0 * b**2) + a + c)
-    theta = 0.5 * np.arcsin(-2.0 * b / np.sqrt((a - c) ** 2 + 4.0 * b**2))
-    Dx = np.sqrt(2.0 * sigX2 * np.log(A))
-    Dy = np.sqrt(2.0 * sigY2 * np.log(A))
+        if Dx < Dy:
+            print("Error: major axis smaller than minor axis!")
 
-    # Compute the HI size
-    HIsize = 2.0 * Dx
-    # Compute the HI mass as the integrated surface density of the image
-    HImass = image.sum() * x_range * y_range * 1.0e6 / resolution**2
-    # Set the values for this galaxy
-    galaxy_data.add_HI_size_mass(HIsize, HImass, index)
+        # Compute the HI size
+        HIsize = 2.0 * Dx
+        # Compute the HI mass as the integrated surface density of the image
+        HImass = image.sum() * R**2 * 4.0e6 / resolution**2
+        # Set the values for this galaxy
+        galaxy_data.add_HI_size_mass(HIsize, HImass, index)
 
     rcparams = {
         "font.size": 12,
@@ -174,12 +167,13 @@ def calculate_HI_size(
         levels=levels,
     )
 
-    # Now overplot the 1 Msun pc^-2 contour, using the parametric equation for
-    # the general ellipse
-    tpar = np.linspace(0.0, 2.0 * np.pi, 1000)
-    xpar = Dx * np.cos(theta) * np.cos(tpar) - Dy * np.sin(theta) * np.sin(tpar)
-    ypar = Dx * np.sin(theta) * np.cos(tpar) + Dy * np.cos(theta) * np.sin(tpar)
-    ax.plot(x0 + xpar, y0 + ypar, color="w", linestyle="--")
+    if A > 1.0:
+        # Now overplot the 1 Msun pc^-2 contour, using the parametric equation for
+        # the general ellipse
+        tpar = np.linspace(0.0, 2.0 * np.pi, 1000)
+        xpar = Dx * np.cos(theta) * np.cos(tpar) - Dy * np.sin(theta) * np.sin(tpar)
+        ypar = Dx * np.sin(theta) * np.cos(tpar) + Dy * np.cos(theta) * np.sin(tpar)
+        ax.plot(x0 + xpar, y0 + ypar, color="w", linestyle="--")
 
     # Overplot 9 contour levels of the Gaussian function
     image = gauss_curve(xs, *params).reshape((resolution, resolution))
