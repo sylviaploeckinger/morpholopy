@@ -104,9 +104,9 @@ def output_HI_size_mass(HI_size, HI_mass, output_path, simulation_name):
     x = [HI_size[i] for i in index]
     y = [HI_mass[i] for i in index]
     np.savetxt(
-        f"{output_path}/HI_size_mass_{simulation_name}.txt",
-        np.transpose([x, y]),
+        f"{output_path}/HI_size_mass_{simulation_name}.txt", np.transpose([x, y])
     )
+
 
 def write_morphology_data_to_file(
     galaxy_data, combined_data, output_path, simulation_name
@@ -175,7 +175,9 @@ def write_morphology_data_to_file(
     output_accumulative_densities(combined_data, output_path, simulation_name)
 
     # HI size and mass
-    output_HI_size_mass(galaxy_data.HI_size, galaxy_data.HI_mass, output_path, simulation_name)
+    output_HI_size_mass(
+        galaxy_data.HI_size, galaxy_data.HI_mass, output_path, simulation_name
+    )
 
     return
 

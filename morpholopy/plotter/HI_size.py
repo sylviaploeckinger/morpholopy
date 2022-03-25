@@ -80,7 +80,7 @@ def calculate_HI_size(
     image = backends["subsampled"](x=x, y=y, m=mass, h=h, res=resolution)
     # units are Msun / (2*R)^2
     # convert to Msun / pc^2
-    image *= 2.5e-7 / R**2
+    image *= 2.5e-7 / R ** 2
 
     # get the limits (for plotting)
     imax = image.max()
@@ -88,16 +88,16 @@ def calculate_HI_size(
 
     # set up a grid of positions for the fit
     xg, yg = np.meshgrid(np.linspace(-R, R, resolution), np.linspace(-R, R, resolution))
-    xs = np.zeros((resolution**2, 2))
+    xs = np.zeros((resolution ** 2, 2))
     xs[:, 0] = xg.flatten()
     xs[:, 1] = yg.flatten()
     # initial values for the fit (based on Rajohnson et al.)
     A = imax
     sigX = 40.0 * R / resolution
     sigY = 40.0 * R / resolution
-    a = 0.5 / sigX**2
+    a = 0.5 / sigX ** 2
     b = 0.0
-    c = 0.5 / sigY**2
+    c = 0.5 / sigY ** 2
     # perform the fit
     params, _ = opt.curve_fit(
         gauss_curve, xs, image.flatten(), p0=(A, a, b, c, 0.0, 0.0)
@@ -120,8 +120,8 @@ def calculate_HI_size(
         # using some basic trigonometry.
         # Note that the derivation depends on the condition 1/sigY2 > 1/sigX2, so
         # that sigX2 is guaranteed to correspond to the major axis
-        sigX2 = 1.0 / (a + c - np.sqrt((a - c) ** 2 + 4.0 * b**2))
-        sigY2 = 1.0 / (np.sqrt((a - c) ** 2 + 4.0 * b**2) + a + c)
+        sigX2 = 1.0 / (a + c - np.sqrt((a - c) ** 2 + 4.0 * b ** 2))
+        sigY2 = 1.0 / (np.sqrt((a - c) ** 2 + 4.0 * b ** 2) + a + c)
         theta = 0.5 * np.arctan2(-2.0 * b, c - a)
         Dx = np.sqrt(2.0 * sigX2 * np.log(A))
         Dy = np.sqrt(2.0 * sigY2 * np.log(A))
@@ -132,7 +132,7 @@ def calculate_HI_size(
         # Compute the HI size
         HIsize = 2.0 * Dx
         # Compute the HI mass as the integrated surface density of the image
-        HImass = image.sum() * R**2 * 4.0e6 / resolution**2
+        HImass = image.sum() * R ** 2 * 4.0e6 / resolution ** 2
         # Set the values for this galaxy
         galaxy_data.add_HI_size_mass(HIsize, HImass, index)
 
@@ -233,14 +233,14 @@ def plot_HI_size_mass(output_path, name_list):
 
     logMfit = np.array([6.5, 12.0])
     pl.fill_between(
-        10.0**logMfit,
+        10.0 ** logMfit,
         10.0 ** (fit_slope * logMfit + fit_intercept - fit_intercept_sigma_low),
         10.0 ** (fit_slope * logMfit + fit_intercept + fit_intercept_sigma_high),
         alpha=0.1,
         color="k",
     )
     pl.plot(
-        10.0**logMfit,
+        10.0 ** logMfit,
         10.0 ** (fit_slope * logMfit + fit_intercept),
         "--",
         color="k",

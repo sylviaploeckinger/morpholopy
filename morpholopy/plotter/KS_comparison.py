@@ -19,10 +19,11 @@ params = {
 }
 
 
-def KS_relation_plots(output_path, index, name_list):
+def KS_relation_plots(output_path, index, name_list, markersize=4):
 
     # read the observational data for the KS relations
     observational_data = read_obs_data("./plotter/obs_data")
+    print(observational_data)
 
     # Get the default KS relation for correct IMF
     def KS(sigma_g, n, A):
@@ -32,33 +33,25 @@ def KS_relation_plots(output_path, index, name_list):
     methods = ["grid", "radii"]
     for method in methods:
 
-        for mode in range(2):
+        for mode in [0, 1, 3]:
             plt.figure()
             ax = plt.subplot(1, 1, 1)
 
-            Sigma_g = np.logspace(-1, 4, 1000)
-            Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
-            plt.plot(
-                np.log10(Sigma_g),
-                np.log10(Sigma_star),
-                color="red",
-                label=r"1.51e-4 $\times$ $\Sigma_{g}^{1.4}$",
-                linestyle="--",
-            )
+            if mode == 0 or mode == 1:
+                Sigma_g = np.logspace(1, 4, 1000)
+                Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
+                plt.plot(
+                    np.log10(Sigma_g),
+                    np.log10(Sigma_star),
+                    color="k",
+                    label="K98",
+                    linestyle="-.",
+                )
 
             Sigma_g = np.logspace(-1, 4, 1000)
-            Sigma_star = KS(Sigma_g, 1.06, 2.511e-4)
-            plt.plot(
-                np.log10(Sigma_g),
-                np.log10(Sigma_star),
-                lw=1,
-                color="green",
-                label=r"2.51e-4 $\times$ $\Sigma_{g}^{1.06}$ (Pessa+ 2021)",
-                linestyle="-",
-            )
 
             # load the observational data
-            if mode == 0:
+            if (mode == 0) and (method == "grid"):
 
                 for ind, observation in enumerate(observational_data):
                     if observation.gas_surface_density is not None:
@@ -69,9 +62,9 @@ def KS_relation_plots(output_path, index, name_list):
                                 data[1],
                                 yerr=[data[2], data[3]],
                                 fmt="v",
-                                ms=6,
-                                label=observation.description,
-                                color="darkred",
+                                ms=markersize,
+                                label="B08 inner [750 pc]",
+                                color="k",
                             )
                         elif observation.description == "Bigiel et al. (2010) outer":
                             data2 = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
@@ -80,18 +73,49 @@ def KS_relation_plots(output_path, index, name_list):
                                 data2[1],
                                 yerr=[data2[2], data2[3]],
                                 fmt="o",
-                                ms=6,
-                                label=observation.description,
-                                color="darkred",
+                                ms=markersize,
+                                label="B10 outer [750 pc]",
+                                color="k",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI}+ \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
 
-            elif mode == 1:
-
+            elif (mode == 0) and (method == "radii"):
                 for ind, observation in enumerate(observational_data):
                     if observation.gas_surface_density is not None:
+                        if observation.description == "Schruba et al. (2011)":
+                            data = observation.bin_data_KS(np.arange(-1, 3, 0.25), 0.4)
+                            plt.errorbar(
+                                data[0],
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="d",
+                                label=f"S11 [750 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+            elif (mode == 1) and (method == "radii"):
+                for ind, observation in enumerate(observational_data):
+                    if observation.H2_surface_density is not None:
+                        if observation.description == "Schruba et al. (2011)":
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(-1, 3, 0.25), 0.4
+                            )
+                            plt.errorbar(
+                                data[0],
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="d",
+                                label=f"S11 [750 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+
+            elif (mode == 1) and (method == "grid"):
+
+                for ind, observation in enumerate(observational_data):
+                    if observation.H2_surface_density is not None:
                         if observation.description == "Bigiel et al. (2008) inner":
                             data = observation.bin_data_KS_molecular(
                                 np.arange(-1, 3, 0.25), 0.4
@@ -101,18 +125,113 @@ def KS_relation_plots(output_path, index, name_list):
                                 data[1],
                                 yerr=[data[2], data[3]],
                                 fmt="<",
-                                ms=6,
-                                label=observation.description,
-                                color="darkred",
+                                ms=markersize,
+                                label="B08 inner [750 pc]",
+                                color="k",
+                            )
+                        elif observation.description == "Pessa et al. (2021) [500 pc]":
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(-1, 3, 0.25), 0.0
+                            )
+                            plt.errorbar(
+                                data[0] + 0.05,
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="^",
+                                label=f"P21 [500 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                        elif (
+                            observation.description[0:25] == "Querejeta et al. (2021) f"
+                        ):
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(-1, 3, 0.25), -0.5, print_stuff=False
+                            )
+                            plt.errorbar(
+                                data[0] - 0.05,
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="*",
+                                label=f"Q21 [1 kpc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                        elif observation.description[0:25] == "Ellison et al. (2020)":
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(0.5, 2.75, 0.25), 0.5, print_stuff=False
+                            )
+                            plt.errorbar(
+                                data[0],
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="p",
+                                label=f"E20 [1 kpc]",
+                                color="k",
+                                ms=markersize,
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
+            elif (mode == 3) and (method == "grid"):
+                for ind, observation in enumerate(observational_data):
+                    if observation.gas_surface_density is not None:
+                        if observation.description == "Bigiel et al. (2008) inner":
+                            data = observation.bin_data_KS_atomic(
+                                np.arange(-1, 3, 0.25), 0.4
+                            )
+                            plt.errorbar(
+                                data[0],
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="o",
+                                label="B08 inner [750 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                        elif observation.description == "Bigiel et al. (2010) outer":
+                            data2 = observation.bin_data_KS_atomic(
+                                np.arange(-1, 3, 0.25), 0.4
+                            )
+                            plt.errorbar(
+                                data2[0],
+                                data2[1],
+                                yerr=[data2[2], data2[3]],
+                                fmt="v",
+                                label="B10 outer [750 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                plt.xlabel(
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                )
+            elif (mode == 3) and (method == "radii"):
+                for ind, observation in enumerate(observational_data):
+                    if observation.gas_surface_density is not None:
+                        if observation.description == "Schruba et al. (2011)":
+                            data = observation.bin_data_KS_atomic(
+                                np.arange(-1, 3, 0.25), 0.4
+                            )
+                            plt.errorbar(
+                                data[0],
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="d",
+                                label="S11 [750 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                plt.xlabel(
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
 
             color = ["tab:blue", "tab:orange"]
 
             for i, name in enumerate(name_list):
                 if mode == 0:
+                    plt.xlabel(
+                        "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    )
                     data = np.loadtxt(
                         f"{output_path}/KS_relation_best_"
                         + method
@@ -121,8 +240,22 @@ def KS_relation_plots(output_path, index, name_list):
                         + ".txt"
                     )
                 elif mode == 1:
+                    plt.xlabel(
+                        "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    )
                     data = np.loadtxt(
                         f"{output_path}/KS_molecular_relation_"
+                        + method
+                        + "_%i_" % (index)
+                        + name
+                        + ".txt"
+                    )
+                elif mode == 3:
+                    plt.xlabel(
+                        "$\\log_{10}$ $\\Sigma_{\\rm HI}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    )
+                    data = np.loadtxt(
+                        f"{output_path}/KS_atomic_relation_"
                         + method
                         + "_%i_" % (index)
                         + name
@@ -140,7 +273,9 @@ def KS_relation_plots(output_path, index, name_list):
                     SFR_surface_density_err_up,
                 ) = median_relations(surface_density, SFR_surface_density)
 
-                plt.plot(surface_density, SFR_surface_density, "o", color=color[i])
+                if method == "radii":
+                    plt.plot(surface_density, SFR_surface_density, "o", color=color[i])
+
                 plt.plot(
                     median_surface_density,
                     median_SFR_surface_density,
@@ -173,17 +308,18 @@ def KS_relation_plots(output_path, index, name_list):
             )
             ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
             plt.ylabel(
-                "log $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
+                "$\\log_{10}$ $\\Sigma_{\\rm SFR}$ $[{\\rm M_\\odot \\cdot yr^{-1} \\cdot kpc^{-2}}]$"
             )
-            plt.xlim(-1.0, 4.0)
-            plt.ylim(-6.5, 1.0)
+            plt.ylim(-6.0, 1.0)
             if mode == 0:
+                plt.xlim(-0.5, 3.0)
                 plt.savefig(
                     f"{output_path}/KS_relation_best_" + method + "_%i.png" % (index),
                     dpi=200,
                 )
                 plt.close()
             elif mode == 1:
+                plt.xlim(-2.0, 3.0)
                 plt.savefig(
                     f"{output_path}/KS_molecular_relation_"
                     + method
@@ -191,9 +327,16 @@ def KS_relation_plots(output_path, index, name_list):
                     dpi=200,
                 )
                 plt.close()
+            elif mode == 3:
+                plt.xlim(-0.5, 3.0)
+                plt.savefig(
+                    f"{output_path}/KS_atomic_relation_" + method + "_%i.png" % (index),
+                    dpi=200,
+                )
+                plt.close()
 
 
-def depletion_time_plots(output_path, index, name_list):
+def depletion_time_plots(output_path, index, name_list, markersize=4.0):
 
     # read the observational data for the KS relations
     observational_data = read_obs_data("./plotter/obs_data")
@@ -211,14 +354,14 @@ def depletion_time_plots(output_path, index, name_list):
             plt.figure()
             ax = plt.subplot(1, 1, 1)
 
-            Sigma_g = np.logspace(-1, 4, 1000)
+            Sigma_g = np.logspace(1, 4, 1000)
             Sigma_star = KS(Sigma_g, 1.4, 1.515e-4)
             plt.plot(
                 np.log10(Sigma_g),
                 np.log10(Sigma_g) - np.log10(Sigma_star) + 6.0,
-                color="red",
-                label="KS law (Kennicutt 98)",
-                linestyle="--",
+                color="k",
+                label="K98",
+                linestyle="-.",
             )
 
             # load the observational data
@@ -234,9 +377,9 @@ def depletion_time_plots(output_path, index, name_list):
                                 data[1],
                                 yerr=[data[2], data[3]],
                                 fmt=">",
-                                ms=6,
-                                label=observation.description,
-                                color="darkred",
+                                ms=markersize,
+                                label="B08 inner [750 pc]",
+                                color="k",
                             )
                         elif observation.description == "Bigiel et al. (2010) outer":
                             data2 = observation.bin_data_gas_depletion(
@@ -247,15 +390,15 @@ def depletion_time_plots(output_path, index, name_list):
                                 data2[1],
                                 yerr=[data2[2], data2[3]],
                                 fmt="o",
-                                ms=6,
-                                label=observation.description,
-                                color="darkred",
+                                ms=markersize,
+                                label="B10 outer [750 pc]",
+                                color="k",
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
                 plt.ylabel(
-                    "log $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+                    "$\\log_{10}$ $\\rm t_{gas} = (\\Sigma_{\\rm HI} + \\Sigma_{\\rm H_2})/ \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
                 )
             elif mode == 1:
                 for ind, observation in enumerate(observational_data):
@@ -269,15 +412,56 @@ def depletion_time_plots(output_path, index, name_list):
                                 data[1],
                                 yerr=[data[2], data[3]],
                                 fmt="o",
-                                ms=6,
-                                label=observation.description,
-                                color="darkred",
+                                ms=markersize,
+                                label="B08 inner [750 pc]",
+                                color="k",
+                            )
+                        elif observation.description == "Pessa et al. (2021) [500 pc]":
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(-1, 3, 0.25), 0.0
+                            )
+                            plt.errorbar(
+                                data[0] + 0.05,
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="^",
+                                label=f"P21 [500 pc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                        elif (
+                            observation.description[0:25] == "Querejeta et al. (2021) f"
+                        ):
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(-1, 3, 0.25), -0.5, print_stuff=False
+                            )
+                            plt.errorbar(
+                                data[0] - 0.05,
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="*",
+                                label=f"Q21 [1 kpc]",
+                                color="k",
+                                ms=markersize,
+                            )
+                        elif observation.description[0:25] == "Ellison et al. (2020)":
+                            data = observation.bin_data_KS_molecular(
+                                np.arange(0.5, 2.75, 0.25), 0.5, print_stuff=False
+                            )
+                            plt.errorbar(
+                                data[0],
+                                data[1],
+                                yerr=[data[2], data[3]],
+                                fmt="p",
+                                label=f"E20 [1 kpc]",
+                                color="k",
+                                ms=markersize,
                             )
                 plt.xlabel(
-                    "log $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
+                    "$\\log_{10}$ $\\Sigma_{\\rm H_2}$  $[{\\rm M_\\odot\\cdot pc^{-2}}]$"
                 )
                 plt.ylabel(
-                    "log $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
+                    "$\\log_{10}$ $\\rm t_{H_2} = \\Sigma_{\\rm H_2} / \\Sigma_{\\rm SFR}$ $[{\\rm yr }]$"
                 )
 
             color = ["tab:blue", "tab:orange"]
@@ -340,9 +524,9 @@ def depletion_time_plots(output_path, index, name_list):
             )
             ax.tick_params(direction="in", axis="both", which="both", pad=4.5)
 
-            plt.xlim(-1, 4.0)
             plt.ylim(7, 12)
             if mode == 0:
+                plt.xlim(-0.5, 3.0)
                 plt.savefig(
                     f"{output_path}/gas_depletion_timescale_best_"
                     + method
@@ -351,6 +535,7 @@ def depletion_time_plots(output_path, index, name_list):
                 )
                 plt.close()
             elif mode == 1:
+                plt.xlim(-2, 3.0)
                 plt.savefig(
                     f"{output_path}/molecular_gas_depletion_timescale_"
                     + method
@@ -391,15 +576,11 @@ def surface_ratios_plots(output_path, index, name_list):
         Sigma_neutral = np.arange(-1, 3, 0.2)
         RH2 = 1.0 / Krumholz_eq39(10 ** Sigma_neutral, 0.5)
         FH2 = np.log10(1.0 / (1.0 + RH2))
-        plt.plot(
-            Sigma_neutral, FH2, "--", color="darkred", label="Krumholz+ (2009): f = 0.5"
-        )
+        plt.plot(Sigma_neutral, FH2, "--", color="k", label="K09: f = 0.5")
         RH2 = 1.0 / Krumholz_eq39(10 ** Sigma_neutral, 0.1)
         FH2 = np.log10(1.0 / (1.0 + RH2))
-        plt.plot(
-            Sigma_neutral, FH2, ":", color="tab:red", label="Krumholz+ (2009): f = 0.1"
-        )
-        plt.plot(x_Schruba, y_Schruba, "o", color="darkred", label="Schruba+ (2011)")
+        plt.plot(Sigma_neutral, FH2, ":", color="k", label="K09: f = 0.1")
+        plt.plot(x_Schruba, y_Schruba, "d", color="k", label="S11 [750 pc]")
 
         color = ["tab:blue", "tab:orange"]
 
@@ -456,10 +637,10 @@ def surface_ratios_plots(output_path, index, name_list):
         plt.xlim(-1.0, 4.0)
         plt.ylim(-8.0, 0.5)
         plt.ylabel(
-            r"log $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$"
+            r"$\log_{10}$ $\Sigma_{\mathrm{H2}} / (\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}})$"
         )
         plt.xlabel(
-            r"log $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]"
+            r"$\log_{10}$ $\Sigma_{\mathrm{HI}}+\Sigma_{\mathrm{H2}}$  [M$_{\odot}$ pc$^{-2}$]"
         )
         plt.legend(
             loc="lower right",
@@ -479,7 +660,6 @@ def surface_ratios_plots(output_path, index, name_list):
 def make_comparison_plots(output_path: str, name_list, num_of_galaxies_to_show: int):
 
     for index in range(num_of_galaxies_to_show):
-
         KS_relation_plots(output_path, index, name_list)
         depletion_time_plots(output_path, index, name_list)
         surface_ratios_plots(output_path, index, name_list)

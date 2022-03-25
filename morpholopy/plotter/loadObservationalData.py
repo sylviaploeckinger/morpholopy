@@ -3,12 +3,12 @@ Code from Folkert Nobels to load observational SFR data.
 """
 
 import numpy as np
-import codecs
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+from scipy import stats
 
 
-def bin_data_general(array_x, array_y, array_x_bin, x_limit):
+def bin_data_general(array_x, array_y, array_x_bin, x_limit, print_stuff=False):
     # create a SFR value array
     y_array_bin = np.zeros(len(array_x_bin) - 1)
     y_array_bin_std_up = np.zeros(len(array_x_bin) - 1)
@@ -16,7 +16,11 @@ def bin_data_general(array_x, array_y, array_x_bin, x_limit):
 
     for i in range(0, len(array_x_bin) - 1):
         mask = (array_x > array_x_bin[i]) & (array_x < array_x_bin[i + 1])
-        y_array_bin[i] = np.median(array_y[mask])
+        y_array_bin[i] = np.nanmedian(array_y[mask])
+        if print_stuff:
+            print(array_x_bin[i])
+            print(array_y[mask])
+            print(stats.describe(array_y[mask]))
         try:
             y_array_bin_std_up[i], y_array_bin_std_down[i] = np.transpose(
                 np.percentile(array_y[mask], [16, 84])
@@ -83,7 +87,9 @@ class ObservationalData(object):
             surface_density_limit,
         )
 
-    def bin_data_KS_molecular(self, surface_density_bin_array, surface_density_limit):
+    def bin_data_KS_molecular(
+        self, surface_density_bin_array, surface_density_limit, print_stuff=False
+    ):
         """
         Return the binned KS relation for the observation.
         """
@@ -95,6 +101,7 @@ class ObservationalData(object):
             obs_SFR_surface_density,
             surface_density_bin_array,
             surface_density_limit,
+            print_stuff,
         )
 
     def bin_data_KS_atomic(self, surface_density_bin_array, surface_density_limit):
@@ -165,13 +172,12 @@ class ObservationalData(object):
 
 
 def read_obs_data(path="obs_data"):
+
     output = []
 
     # Load the data from Kennicutt 1998 (part 1, Normal spiral galaxies)
-    file = f"{path}/KS_relation_Kennicutt1998.txt"
-    filecp = codecs.open(file, encoding="cp1252")
     galaxy_name, D, sigma_HI, sigma_H2, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(
-        filecp, unpack=True, comments="#"
+        f"{path}/KS_relation_Kennicutt1998.txt", unpack=True
     )
 
     output.append(
@@ -190,10 +196,8 @@ def read_obs_data(path="obs_data"):
     )
 
     # Load the data from Kennicutt 1998 (part 2, circumnuclear starbursts)
-    file = f"{path}/KS_relation_Kennicutt1998b.txt"
-    filecp = codecs.open(file, encoding="cp1252")
     D, sigma_H2, sigma_SFR, tdepl = np.genfromtxt(
-        filecp, unpack=True, comments="#", usecols=(2, 3, 4, 5)
+        f"{path}/KS_relation_Kennicutt1998b.txt", unpack=True, usecols=(2, 3, 4, 5)
     )
 
     output.append(
@@ -212,10 +216,8 @@ def read_obs_data(path="obs_data"):
     )
 
     # Load the data from Freundlich et al. 2013 (high redshift z=1.2 galaxies)
-    file = f"{path}/KS_relation_freundlich2013.txt"
-    filecp = codecs.open(file, encoding="cp1252")
     Mgas, SFR, sigma_gas, sigma_SFR, tdepl = np.genfromtxt(
-        filecp, unpack=True, usecols=(2, 3, 4, 5, 6), comments="#"
+        f"{path}/KS_relation_freundlich2013.txt", unpack=True, usecols=(2, 3, 4, 5, 6)
     )
 
     output.append(
@@ -234,8 +236,6 @@ def read_obs_data(path="obs_data"):
     )
 
     # Load the data from Leroy et al. (2008) and Frank et al. (2016)
-    file = f"{path}/surfdens_online.txt"
-    filecp = codecs.open(file, encoding="cp1252")
     (
         sigma_HI,
         sigma_HI_err,
@@ -243,7 +243,9 @@ def read_obs_data(path="obs_data"):
         sigma_H2_err,
         sigma_SFR,
         sigma_SFR_err,
-    ) = np.genfromtxt(filecp, unpack=True, usecols=(2, 3, 4, 5, 6, 7), comments="#")
+    ) = np.genfromtxt(
+        f"{path}/surfdens_online.txt", unpack=True, usecols=(2, 3, 4, 5, 6, 7)
+    )
 
     sigma_gas = sigma_H2 + sigma_HI
 
@@ -262,10 +264,8 @@ def read_obs_data(path="obs_data"):
         )
     )
 
-    file = f"{path}/KS_relation_genzel2010.txt"
-    filecp = codecs.open(file, encoding="cp1252")
     sigma_H2, sigma_SFR = np.genfromtxt(
-        filecp, unpack=True, usecols=(11, 13), comments="#"
+        f"{path}/KS_relation_genzel2010.txt", unpack=True, usecols=(11, 13)
     )
     sigma_gas = sigma_H2
 
@@ -427,8 +427,6 @@ def read_obs_data(path="obs_data"):
         )
     )
 
-    file = f"{path}/data_schruba2011.txt"
-    filecp = codecs.open(file, encoding="cp1252")
     (
         sigma_SFR,
         sigma_SFR_err,
@@ -437,7 +435,9 @@ def read_obs_data(path="obs_data"):
         sigma_H2,
         sigma_H2_err,
         quality,
-    ) = np.genfromtxt(filecp, unpack=True, usecols=(3, 4, 5, 6, 7, 8, 10), comments="#")
+    ) = np.genfromtxt(
+        f"{path}/data_schruba2011.txt", unpack=True, usecols=(3, 4, 5, 6, 7, 8, 10)
+    )
 
     sigma_gas = sigma_HI + sigma_H2
 
@@ -447,14 +447,261 @@ def read_obs_data(path="obs_data"):
         ObservationalData(
             sigma_HI[mask],
             sigma_HI_err[mask],
-            sigma_H2[mask],
+            sigma_H2[mask] / 1.36,
             sigma_H2_err[mask],
             sigma_gas[mask],
             None,
             sigma_SFR[mask],
-            sigma_SFR[mask],
+            sigma_SFR_err[mask],
             None,
             "Schruba et al. (2011)",
+        )
+    )
+
+    sigma_H2, sigma_H2_err, sigma_SFR, sigma_SFR_err = np.genfromtxt(
+        f"{path}/data_pessa_100pc.dat", unpack=True
+    )
+    sigma_H2 = 10 ** (sigma_H2 - 6) / 1.36
+    sigma_SFR = 10 ** (sigma_SFR)
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2,
+            None,
+            None,
+            None,
+            sigma_SFR,
+            None,
+            None,
+            "Pessa et al. (2021) [100 pc]",
+        )
+    )
+
+    sigma_H2, sigma_H2_err, sigma_SFR, sigma_SFR_err = np.genfromtxt(
+        f"{path}/data_pessa_500pc.dat", unpack=True
+    )
+    sigma_H2 = 10 ** (sigma_H2 - 6) / 1.36
+    sigma_SFR = 10 ** (sigma_SFR)
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2,
+            None,
+            None,
+            None,
+            sigma_SFR,
+            None,
+            None,
+            "Pessa et al. (2021) [500 pc]",
+        )
+    )
+
+    sigma_H2, sigma_H2_err, sigma_SFR, sigma_SFR_err = np.genfromtxt(
+        f"{path}/data_pessa_1000pc.dat", unpack=True
+    )
+    sigma_H2 = 10 ** (sigma_H2 - 6) / 1.36
+    sigma_SFR = 10 ** (sigma_SFR)
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2,
+            None,
+            None,
+            None,
+            sigma_SFR,
+            None,
+            None,
+            "Pessa et al. (2021) [1 kpc]",
+        )
+    )
+
+    # load the Querejeta data
+
+    (
+        sigma_SFR_bar,
+        sigma_H2_bar,
+        sigma_H2_4p3_bar,
+        sigma_H2_N12_bar,
+        sigma_H2_B13_bar,
+    ) = np.genfromtxt(
+        f"{path}/data_querejeta_bar.txt",
+        unpack=True,
+        usecols=(7, 9, 10, 11, 12),
+        comments="#",
+    )
+
+    (
+        sigma_SFR_center,
+        sigma_H2_center,
+        sigma_H2_4p3_center,
+        sigma_H2_N12_center,
+        sigma_H2_B13_center,
+    ) = np.genfromtxt(
+        f"{path}/data_querejeta_center.txt",
+        unpack=True,
+        usecols=(7, 9, 10, 11, 12),
+        comments="#",
+    )
+
+    (
+        sigma_SFR_disk,
+        sigma_H2_disk,
+        sigma_H2_4p3_disk,
+        sigma_H2_N12_disk,
+        sigma_H2_B13_disk,
+    ) = np.genfromtxt(
+        f"{path}/data_querejeta_disk.txt",
+        unpack=True,
+        usecols=(7, 9, 10, 11, 12),
+        comments="#",
+    )
+
+    (
+        sigma_SFR_interarm,
+        sigma_H2_interarm,
+        sigma_H2_4p3_interarm,
+        sigma_H2_N12_interarm,
+        sigma_H2_B13_interarm,
+    ) = np.genfromtxt(
+        f"{path}/data_querejeta_interarm.txt",
+        unpack=True,
+        usecols=(7, 9, 10, 11, 12),
+        comments="#",
+    )
+
+    (
+        sigma_SFR_spiral_arms,
+        sigma_H2_spiral_arms,
+        sigma_H2_4p3_spiral_arms,
+        sigma_H2_N12_spiral_arms,
+        sigma_H2_B13_spiral_arms,
+    ) = np.genfromtxt(
+        f"{path}/data_querejeta_spiral_arms.txt",
+        unpack=True,
+        usecols=(7, 9, 10, 11, 12),
+        comments="#",
+    )
+
+    sigma_SFR_total = np.append(sigma_SFR_bar, sigma_SFR_center)
+    sigma_SFR_total = np.append(sigma_SFR_total, sigma_SFR_disk)
+    sigma_SFR_total = np.append(sigma_SFR_total, sigma_SFR_interarm)
+    sigma_SFR_total = np.append(sigma_SFR_total, sigma_SFR_spiral_arms)
+
+    sigma_H2_total = np.append(sigma_H2_bar, sigma_H2_center)
+    sigma_H2_total = np.append(sigma_H2_total, sigma_H2_disk)
+    sigma_H2_total = np.append(sigma_H2_total, sigma_H2_interarm)
+    sigma_H2_total = np.append(sigma_H2_total, sigma_H2_spiral_arms)
+
+    sigma_H2_4p3_total = np.append(sigma_H2_4p3_bar, sigma_H2_4p3_center)
+    sigma_H2_4p3_total = np.append(sigma_H2_4p3_total, sigma_H2_4p3_disk)
+    sigma_H2_4p3_total = np.append(sigma_H2_4p3_total, sigma_H2_4p3_interarm)
+    sigma_H2_4p3_total = np.append(sigma_H2_4p3_total, sigma_H2_4p3_spiral_arms)
+
+    sigma_H2_N12_total = np.append(sigma_H2_N12_bar, sigma_H2_N12_center)
+    sigma_H2_N12_total = np.append(sigma_H2_N12_total, sigma_H2_N12_disk)
+    sigma_H2_N12_total = np.append(sigma_H2_N12_total, sigma_H2_N12_interarm)
+    sigma_H2_N12_total = np.append(sigma_H2_N12_total, sigma_H2_N12_spiral_arms)
+
+    sigma_H2_B13_total = np.append(sigma_H2_B13_bar, sigma_H2_B13_center)
+    sigma_H2_B13_total = np.append(sigma_H2_B13_total, sigma_H2_B13_disk)
+    sigma_H2_B13_total = np.append(sigma_H2_B13_total, sigma_H2_B13_interarm)
+    sigma_H2_B13_total = np.append(sigma_H2_B13_total, sigma_H2_B13_spiral_arms)
+
+    sigma_SFR_total[~np.isfinite(sigma_SFR_total)] = 1e-20
+    sigma_SFR_total[sigma_SFR_total <= 0] = 1e-20
+    sigma_H2_total[~np.isfinite(sigma_H2_total)] = 1e-20
+    sigma_H2_total[sigma_H2_total <= 0] = 1e-20
+    sigma_H2_4p3_total[~np.isfinite(sigma_H2_4p3_total)] = 1e-20
+    sigma_H2_4p3_total[sigma_H2_4p3_total <= 0] = 1e-20
+    sigma_H2_N12_total[~np.isfinite(sigma_H2_N12_total)] = 1e-20
+    sigma_H2_N12_total[sigma_H2_N12_total <= 0] = 1e-20
+    sigma_H2_B13_total[~np.isfinite(sigma_H2_B13_total)] = 1e-20
+    sigma_H2_B13_total[sigma_H2_B13_total <= 0] = 1e-20
+
+    print(
+        len(sigma_SFR_total),
+        len(sigma_H2_total),
+        len(sigma_H2_4p3_total),
+        len(sigma_H2_N12_total),
+        len(sigma_H2_B13_total),
+    )
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2_total / 1.36,
+            None,
+            None,
+            None,
+            sigma_SFR_total,
+            None,
+            None,
+            "Querejeta et al. (2021) fid $\\alpha_{\\rm CO}$ [1 kpc]",
+        )
+    )
+
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2_4p3_total / 1.36,
+            None,
+            None,
+            None,
+            sigma_SFR_total,
+            None,
+            None,
+            "Querejeta et al. (2021) const. $\\alpha_{\\rm CO}$ [1 kpc]",
+        )
+    )
+
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2_N12_total / 1.36,
+            None,
+            None,
+            None,
+            sigma_SFR_total,
+            None,
+            None,
+            "Querejeta et al. (2021) N12 $\\alpha_{\\rm CO}$ [1 kpc]",
+        )
+    )
+
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            sigma_H2_B13_total / 1.36,
+            None,
+            None,
+            None,
+            sigma_SFR_total,
+            None,
+            None,
+            "Querejeta et al. (2021) B13 $\\alpha_{\\rm CO}$ [1 kpc]",
+        )
+    )
+
+    sigma_H2, sigma_SFR = np.genfromtxt(f"{path}/data_Ellison_2020.txt", unpack=True)
+
+    output.append(
+        ObservationalData(
+            None,
+            None,
+            10 ** (sigma_H2 - 6.0) / 1.36,
+            None,
+            None,
+            None,
+            10 ** sigma_SFR / 1.6,
+            None,
+            None,
+            "Ellison et al. (2020)",
         )
     )
 

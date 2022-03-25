@@ -31,6 +31,15 @@
     <p style="font-size:18px;">{{ section.caption }}</p>
     <div class="plot-container">
         {% for plot in section.plots %}
+        {% if section.title == "Gallery" %}"
+        <div class="lplot">
+            <a class="lightbox" href="#{{ plot.hash }}">
+                <img src="{{ plot.filename }}" />
+            </a>
+            <h3>{{ plot.title }}</h3>
+            <p>{{ plot.caption }}</p>
+        </div>
+        {% else %}
         <div class="plot">
             <a class="lightbox" href="#{{ plot.hash }}">
                 <img src="{{ plot.filename }}" />
@@ -38,6 +47,7 @@
             <h3>{{ plot.title }}</h3>
             <p>{{ plot.caption }}</p>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>

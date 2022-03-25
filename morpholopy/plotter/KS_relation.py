@@ -9,14 +9,20 @@ import numpy as np
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 import scipy.stats as stat
 from .loadObservationalData import read_obs_data
+from swiftsimio.visualisation.projection_backends import backends, backends_parallel
 
 
-def project_pixel_grid(data, mode, res, region, rotation_matrix):
+def project_pixel_grid(data, mode, res, region, rotation_matrix, backend):
 
     x_min, x_max = region
     y_min, y_max = region
     x_range = x_max - x_min
     y_range = y_max - y_min
+
+    if not np.isclose(x_range, y_range):
+        raise AttributeError(
+            "Projection code is currently not able to handle non-square images"
+        )
 
     if mode == 0:
         m = data[:, 9]  # H2
@@ -37,17 +43,12 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix):
     maximal_array_index = res
     inverse_cell_area = res * res
 
-    for x_pos, y_pos, mass in zip(x, y, m):
-        particle_cell_x = int(res * x_pos)
-        particle_cell_y = int(res * y_pos)
+    if backend == "histogram":
+        h = np.empty_like(m)
+    else:
+        h = data[:, 7] / x_range
 
-        if not (
-            particle_cell_x < 0
-            or particle_cell_x >= maximal_array_index
-            or particle_cell_y < 0
-            or particle_cell_y >= maximal_array_index
-        ):
-            image[particle_cell_x, particle_cell_y] += mass * inverse_cell_area
+    image = backends[backend](x=x, y=y, m=m, h=h, res=res)
     return image
 
 
@@ -88,9 +89,9 @@ def integrate_metallicity_using_grid(data, res, region, rotation_matrix):
     return image
 
 
-def project_gas(data, mode, resolution, region, rotation_matrix):
+def project_gas(data, mode, resolution, region, rotation_matrix, backend="subsampled"):
 
-    image = project_pixel_grid(data, mode, resolution, region, rotation_matrix)
+    image = project_pixel_grid(data, mode, resolution, region, rotation_matrix, backend)
 
     x_range = region[1] - region[0]
     y_range = region[1] - region[0]
@@ -120,10 +121,7 @@ def project_metals_with_azimuthal_average(data, rotation_matrix, bin_size):
     # Define radial bins [log scale, kpc units]
     radial_bins = np.arange(0, 40, bin_size)
     MeanMetals, _, _ = stat.binned_statistic(
-        x=r,
-        values=m,
-        statistic="mean",
-        bins=radial_bins,
+        x=r, values=m, statistic="mean", bins=radial_bins
     )
 
     return MeanMetals
@@ -147,10 +145,7 @@ def project_gas_with_azimuthal_average(data, mode, rotation_matrix, bin_size):
     # Define radial bins [log scale, kpc units]
     radial_bins = np.arange(0, 30, bin_size)
     SumMode, _, _ = stat.binned_statistic(
-        x=r,
-        values=m,
-        statistic="sum",
-        bins=radial_bins,
+        x=r, values=m, statistic="sum", bins=radial_bins
     )
     surface_density = SumMode / bin_surface(radial_bins)  # Msun/kpc^2
 
@@ -202,8 +197,8 @@ def KS_relation(data, ang_momentum, mode, method, size):
             map_SFR = np.zeros(len(map_mass))
 
     # Bounds
-    map_SFR[map_SFR <= 0] = 1e-6
-    map_mass[map_mass <= 0] = 1e-6
+    map_SFR[map_SFR <= 0] = 3e-7
+    map_mass[map_mass <= 0] = 3e-7
 
     surface_density = np.log10(map_mass.flatten())  # Msun / kpc^2
     surface_density -= 6  # Msun / pc^2
@@ -254,7 +249,7 @@ def make_KS_data(
 
     # Plotting KS relations with size
     method = "grid"
-    size = 0.25  # kpc
+    size = 0.75  # kpc
 
     # Get the surface densities
     surface_density, SFR_surface_density, tgas, metals = KS_relation(
@@ -311,17 +306,46 @@ def make_KS_data(
             np.transpose([surface_density, tgas]),
         )
 
+    elif mode == 3:
+
+        combined_data.atomic_gas_surface_density = np.append(
+            combined_data.neutral_gas_surface_density, surface_density
+        )
+        combined_data.depletion_time_atomic_gas = np.append(
+            combined_data.depletion_time_neutral_gas, tgas
+        )
+
+        np.savetxt(
+            f"{output_path}/KS_atomic_relation_grid_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, SFR_surface_density]),
+        )
+
+        np.savetxt(
+            f"{output_path}/atomic_gas_depletion_timescale_grid_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, tgas]),
+        )
+
     ###### Making KS plots with azimuthally averaged method #################
 
     # Plotting KS relations with size
     method = "radii"
-    size = 0.8  # kpc
+    size = 0.75  # kpc
 
     surface_density, SFR_surface_density, tgas, metals = KS_relation(
         particles_data, ang_momentum, mode, method, size
     )
 
     if mode == 0:
+        combined_data.radii_molecular_gas_surface_density = np.append(
+            combined_data.radii_molecular_gas_surface_density, surface_density
+        )
+        combined_data.radii_depletion_time_molecular_gas = np.append(
+            combined_data.radii_depletion_time_molecular_gas, tgas
+        )
         np.savetxt(
             f"{output_path}/KS_molecular_relation_radii_%i_" % (index)
             + simulation_name
@@ -337,6 +361,12 @@ def make_KS_data(
         )
 
     elif mode == 1:
+        combined_data.radii_depletion_time_neutral_gas = np.append(
+            combined_data.radii_depletion_time_neutral_gas, tgas
+        )
+        combined_data.radii_SFR_surface_density = np.append(
+            combined_data.radii_SFR_surface_density, SFR_surface_density
+        )
         np.savetxt(
             f"{output_path}/KS_relation_best_radii_%i_" % (index)
             + simulation_name
@@ -346,6 +376,27 @@ def make_KS_data(
 
         np.savetxt(
             f"{output_path}/gas_depletion_timescale_best_radii_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, tgas]),
+        )
+
+    elif mode == 3:
+        combined_data.radii_atomic_gas_surface_density = np.append(
+            combined_data.radii_neutral_gas_surface_density, surface_density
+        )
+        combined_data.radii_depletion_time_atomic_gas = np.append(
+            combined_data.radii_depletion_time_neutral_gas, tgas
+        )
+        np.savetxt(
+            f"{output_path}/KS_atomic_relation_radii_%i_" % (index)
+            + simulation_name
+            + ".txt",
+            np.transpose([surface_density, SFR_surface_density]),
+        )
+
+        np.savetxt(
+            f"{output_path}/atomic_gas_depletion_timescale_radii_%i_" % (index)
             + simulation_name
             + ".txt",
             np.transpose([surface_density, tgas]),
@@ -379,8 +430,8 @@ def surface_ratios(data, ang_momentum, method, size):
     map_gas = map_H2 + map_HI
 
     # Bounds
-    map_H2[map_H2 <= 0] = 1e-6
-    map_gas[map_gas <= 0] = 1e-6
+    map_H2[map_H2 <= 0] = 3e-7
+    map_gas[map_gas <= 0] = 3e-7
     H2_to_neutral_ratio = map_H2 / map_gas
 
     neutral_gas_surface_density = np.log10(map_gas.flatten())  # HI+H2 Msun / kpc^2
@@ -418,7 +469,7 @@ def make_surface_density_ratios(
 
     # Get the surface densities
     method = "grid"
-    binsize = 0.25  # kpc
+    binsize = 0.75  # kpc
     Sigma_gas_neutral, Sigma_gas_molecular, Sigma_ratio = surface_ratios(
         data, ang_momentum, method, binsize
     )
@@ -445,7 +496,7 @@ def make_surface_density_ratios(
         Sigma_ratio_250pc,
     ) = surface_ratios(data, ang_momentum, method, binsize)
 
-    binsize = 0.8  # kpc
+    binsize = 0.75  # kpc
     (
         Sigma_gas_800pc_neutral,
         Sigma_gas_800pc_molecular,
@@ -496,8 +547,8 @@ def calculate_integrated_quantities(data, ang_momentum, radius, mode):
         Sigma_SFR = np.log10(np.sum(sfr) / surface)  # Msun / yr / kpc^2
 
     else:
-        Sigma_gas = -6
-        Sigma_SFR = -6
+        Sigma_gas = -6.5
+        Sigma_SFR = -6.5
 
     return Sigma_gas, Sigma_SFR
 
@@ -507,8 +558,15 @@ def make_KS_plots(
 ):
 
     for mode, project in enumerate(
-        ["molecular_hydrogen_masses", "not_ionized_hydrogen_masses"]
+        [
+            "molecular_hydrogen_masses",
+            "not_ionized_hydrogen_masses",
+            "atomic_hydrogen_masses",
+        ]
     ):
+        if mode == 2:
+            mode += 1
+
         make_KS_data(
             data, ang_momentum, mode, index, output_path, simulation_name, combined_data
         )

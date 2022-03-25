@@ -14,12 +14,7 @@ class PlotsInPipeline:
         self.plots_details = []
 
     def load_plots(self, title, caption, filename, id):
-        some_details = dict(
-            title=title,
-            caption=caption,
-            filename=filename,
-            hash=id,
-        )
+        some_details = dict(title=title, caption=caption, filename=filename, hash=id)
         self.plots_details.append(some_details)
 
     def reset_plots_list(self):
@@ -31,9 +26,7 @@ def add_metadata_to_web(web, snapshot: SWIFTDataset):
     TEMPLATE_FILE = "description.html"
     description_template = web.environment.get_template(TEMPLATE_FILE)
     web.variables["runs"].append(
-        dict(
-            description=description_template.render(data=snapshot),
-        )
+        dict(description=description_template.render(data=snapshot))
     )
     return
 
@@ -47,12 +40,7 @@ def make_web(snapshot: SWIFTDataset):
 
 def add_web_section(web, title, caption, id, plots):
     web.variables["sections"].append(
-        dict(
-            title=title,
-            caption=caption,
-            id=id,
-            plots=plots,
-        )
+        dict(title=title, caption=caption, id=id, plots=plots)
     )
     return
 
@@ -219,9 +207,7 @@ class WebpageCreator(object):
 
         description_template = self.environment.get_template(TEMPLATE_FILE)
         self.variables["runs"] = [
-            dict(
-                description=description_template.render(data=data),
-            )
+            dict(description=description_template.render(data=data))
         ]
 
         return
