@@ -103,6 +103,32 @@ h1 {
     margin-bottom: 0.0em;
 }
 
+.lplot {
+    width: 100em;
+
+    padding: 1em;
+    margin-bottom: 1em;
+    margin-right: 1em;
+
+    border: 1px solid grey;
+    border-radius: 2px;
+    box-shadow: 1px 1px 5px #BBBBBB;
+}
+
+.lplot img {
+    width: 100%;
+}
+
+.lplot p {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.lplot h3 {
+    margin-top: 0.5em;
+    margin-bottom: 0.0em;
+}
+
 /* Runs */
 
 .run {
