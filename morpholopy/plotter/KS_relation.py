@@ -19,6 +19,11 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix, backend):
     x_range = x_max - x_min
     y_range = y_max - y_min
 
+    if not np.isclose(x_range, y_range):
+        raise AttributeError(
+            "Projection code is currently not able to handle non-square images"
+        )
+
     if mode == 0:
         m = data[:, 9]  # H2
     if mode == 1:
@@ -41,8 +46,8 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix, backend):
     if backend=="histogram":
         h = np.empty_like(m)
     else:
-        h = data[:,7]
-    
+        h = data[:,7] / x_range
+
     image = backends[backend](x=x, y=y, m=m, h=h, res=res)
     return image
 
