@@ -43,10 +43,10 @@ def project_pixel_grid(data, mode, res, region, rotation_matrix, backend):
     maximal_array_index = res
     inverse_cell_area = res * res
 
-    if backend=="histogram":
+    if backend == "histogram":
         h = np.empty_like(m)
     else:
-        h = data[:,7] / x_range
+        h = data[:, 7] / x_range
 
     image = backends[backend](x=x, y=y, m=m, h=h, res=res)
     return image
@@ -121,10 +121,7 @@ def project_metals_with_azimuthal_average(data, rotation_matrix, bin_size):
     # Define radial bins [log scale, kpc units]
     radial_bins = np.arange(0, 40, bin_size)
     MeanMetals, _, _ = stat.binned_statistic(
-        x=r,
-        values=m,
-        statistic="mean",
-        bins=radial_bins,
+        x=r, values=m, statistic="mean", bins=radial_bins
     )
 
     return MeanMetals
@@ -148,10 +145,7 @@ def project_gas_with_azimuthal_average(data, mode, rotation_matrix, bin_size):
     # Define radial bins [log scale, kpc units]
     radial_bins = np.arange(0, 30, bin_size)
     SumMode, _, _ = stat.binned_statistic(
-        x=r,
-        values=m,
-        statistic="sum",
-        bins=radial_bins,
+        x=r, values=m, statistic="sum", bins=radial_bins
     )
     surface_density = SumMode / bin_surface(radial_bins)  # Msun/kpc^2
 
@@ -564,10 +558,14 @@ def make_KS_plots(
 ):
 
     for mode, project in enumerate(
-        ["molecular_hydrogen_masses", "not_ionized_hydrogen_masses", "atomic_hydrogen_masses"]
+        [
+            "molecular_hydrogen_masses",
+            "not_ionized_hydrogen_masses",
+            "atomic_hydrogen_masses",
+        ]
     ):
-        if mode ==2:
-            mode+= 1
+        if mode == 2:
+            mode += 1
 
         make_KS_data(
             data, ang_momentum, mode, index, output_path, simulation_name, combined_data

@@ -18,6 +18,7 @@ from tqdm import tqdm
 from plotter.surface_maps_face_edge import surface_densities_overview
 from plotter.species_transitions import species_transitions_combined
 
+
 def compute_galaxy_morpholopy(
     sim_info: simulation_data.SimInfo,
     halo_counter: int,
@@ -69,7 +70,7 @@ def compute_galaxy_morpholopy(
 
     # Make plots for individual galaxies, perhaps.. only first 10
     if halo_counter < num_galaxies:
-        '''
+        """
         visualize_galaxy(
             stars_data,
             gas_data,
@@ -81,7 +82,7 @@ def compute_galaxy_morpholopy(
             output_path,
             sim_info.simulation_name,
         )
-        '''
+        """
 
         make_KS_plots(
             gas_data,
@@ -144,20 +145,20 @@ def main(config: ArgumentParser):
         print("Computing morphological properties...")
 
         surface_densities_overview(
-                sim_name = sim_name,
-                directory = directory,
-                snapshot = snapshot,
-                catalogue_file = catalogue,
-                output_path=config.output_directory,
-                nhalos = sim_info.halo_data.number_of_haloes,
-                halo_min_stellar_mass = config.min_stellar_mass,
-                halo_ids_sample = sim_info.halo_data.halo_ids,
+            sim_name=sim_name,
+            directory=directory,
+            snapshot=snapshot,
+            catalogue_file=catalogue,
+            output_path=config.output_directory,
+            nhalos=sim_info.halo_data.number_of_haloes,
+            halo_min_stellar_mass=config.min_stellar_mass,
+            halo_ids_sample=sim_info.halo_data.halo_ids,
         )
 
         species_transitions_combined(
-                sim_name = sim_name,
-                output_path=config.output_directory,
-                halo_min_stellar_mass = config.min_stellar_mass,
+            sim_name=sim_name,
+            output_path=config.output_directory,
+            halo_min_stellar_mass=config.min_stellar_mass,
         )
 
         for i in tqdm(range(sim_info.halo_data.number_of_haloes)):
@@ -189,10 +190,7 @@ def main(config: ArgumentParser):
         name_list=output_name_list,
         num_of_galaxies_to_show=num_galaxies_to_show,
     )
-    plot_morphology(
-        output_path=config.output_directory,
-        name_list=output_name_list,
-    )
+    plot_morphology(output_path=config.output_directory, name_list=output_name_list)
 
     # Load galaxy plots
     loadGalaxyPlots(
