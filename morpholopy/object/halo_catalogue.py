@@ -93,6 +93,9 @@ class HaloCatalogue:
         self.sigma_gas = np.zeros(self.number_of_haloes)
         self.sigma_SFR = np.zeros(self.number_of_haloes)
 
+        self.HI_size = np.zeros(self.number_of_haloes)
+        self.HI_mass = np.zeros(self.number_of_haloes)
+
         self.xminpot = catalogue.positions.xcminpot.to("kpc").value[mask]
         self.yminpot = catalogue.positions.ycminpot.to("kpc").value[mask]
         self.zminpot = catalogue.positions.zcminpot.to("kpc").value[mask]
@@ -140,3 +143,7 @@ class HaloCatalogue:
         self.sigma_SFR[index] = data[2]
 
         return
+
+    def add_HI_size_mass(self, HI_size, HI_mass, index):
+        self.HI_size[index] = HI_size
+        self.HI_mass[index] = HI_mass

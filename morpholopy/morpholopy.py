@@ -9,6 +9,7 @@ from plotter.KS_relation import make_KS_plots, calculate_surface_densities
 from plotter.KS_comparison import make_comparison_plots
 from plotter.plot_morphology import write_morphology_data_to_file, plot_morphology
 from plotter.plot_surface_densities import plot_surface_densities
+from plotter.HI_size import calculate_HI_size, plot_HI_size_mass
 from object import simulation_data
 from plotter.loadplots import loadGalaxyPlots
 from plotter import html
@@ -66,6 +67,10 @@ def compute_galaxy_morpholopy(
     # Calculate surface densities for HI+H2 gas ..
     calculate_surface_densities(
         gas_data, gas_ang_momentum, sim_info.halo_data, halo_counter
+    )
+
+    calculate_HI_size(
+        gas_data, gas_ang_momentum, sim_info.halo_data, output_path, halo_counter
     )
 
     # Make plots for individual galaxies, perhaps.. only first 10
@@ -191,6 +196,7 @@ def main(config: ArgumentParser):
         num_of_galaxies_to_show=num_galaxies_to_show,
     )
     plot_morphology(output_path=config.output_directory, name_list=output_name_list)
+    plot_HI_size_mass(output_path=config.output_directory, name_list=output_name_list)
 
     # Load galaxy plots
     loadGalaxyPlots(

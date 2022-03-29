@@ -91,6 +91,19 @@ def loadGalaxyPlots(
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
 
+    title = "HI size vs HI mass"
+    caption = "HI size as a function of stellar mass"
+    filename = "HI_size_mass.png"
+    id = abs(hash("HI size vs mass"))
+    PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "HI size"
+    id = abs(hash("HI size"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
     for name in name_list:
         title = "Integrated surface densities (" + name + ")"
         caption = "Integrated surface densities of H2+HI gas and star-forming gas for each individual galaxy. "
