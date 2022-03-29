@@ -4,7 +4,11 @@ from typing import List
 
 
 def loadGalaxyPlots(
-    web, output_path: str, num_galaxies_to_show: int, name_list: List[int], min_stellar_mass
+    web,
+    output_path: str,
+    num_galaxies_to_show: int,
+    name_list: List[int],
+    min_stellar_mass,
 ):
     """
     @TODO Create separate .yaml config containing all necessary information about the plots
@@ -116,14 +120,16 @@ def loadGalaxyPlots(
             + name
             + ")"
         )
-   
+
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
-        caption += "\nAzimuthally averaged measurements, color coded by the mean oxygen abundance of the diffuse component" 
-        caption += ( 
-                  " (i.e. excluding the oxygen in dust) for each bin. Each galaxy is binned with three"
-                  " different radial bin sizes (see legend). The grey crosses (triangles) show the detections"
-                  " (upper limits) from Schruba et al. (2011)"
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "\nAzimuthally averaged measurements, color coded by the mean oxygen abundance of the diffuse component"
+        caption += (
+            " (i.e. excluding the oxygen in dust) for each bin. Each galaxy is binned with three"
+            " different radial bin sizes (see legend). The grey crosses (triangles) show the detections"
+            " (upper limits) from Schruba et al. (2011)"
         )
         filename = "Species_transition_" + name + "_Schruba2011.png"
         id = abs(hash("species_transition_Schruba2011" + name))
@@ -136,12 +142,14 @@ def loadGalaxyPlots(
             + ")"
         )
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
-        caption += "\nAzimuthally averaged measurements, color coded by the stellar surface density for each bin." 
-        caption += ( 
-                  " Each galaxy is binned with three"
-                  " different radial bin sizes (see legend). The grey crosses (triangles) show the detections"
-                  " (upper limits) from Schruba et al. (2011)"
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "\nAzimuthally averaged measurements, color coded by the stellar surface density for each bin."
+        caption += (
+            " Each galaxy is binned with three"
+            " different radial bin sizes (see legend). The grey crosses (triangles) show the detections"
+            " (upper limits) from Schruba et al. (2011)"
         )
         filename = "Species_transition_" + name + "_Schruba2011_Sigma_star.png"
         id = abs(hash("species_transition_Schruba2011_Sigma_star" + name))
@@ -154,11 +162,13 @@ def loadGalaxyPlots(
             + ")"
         )
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
         caption += "\nSpatially resolved (grid averaged) measurements of galaxies."
-        caption += ( 
-                  " The grey crosses show the detections"
-                  " from Bigiel et al. (2008). The simulation data is displayed with points."
+        caption += (
+            " The grey crosses show the detections"
+            " from Bigiel et al. (2008). The simulation data is displayed with points."
         )
         filename = "Species_transition_" + name + "_Bigiel2008_scatter.png"
         id = abs(hash("species_transition_Bigiel2008 scatter" + name))
@@ -171,34 +181,33 @@ def loadGalaxyPlots(
             + ")"
         )
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
         caption += "\nSpatially resolved (grid averaged) measurements of galaxies."
-        caption += ( 
-                  " The grey crosses show the detections"
-                  " from Bigiel et al. (2008). The simulation data is displayed with"
-                  " contours of a kernel-density estimate using Gaussian kernels (scipy.stats.gaussian_kde)."
+        caption += (
+            " The grey crosses show the detections"
+            " from Bigiel et al. (2008). The simulation data is displayed with"
+            " contours of a kernel-density estimate using Gaussian kernels (scipy.stats.gaussian_kde)."
         )
         filename = "Species_transition_" + name + "_Bigiel2008_contour.png"
         id = abs(hash("species_transition_Bigiel2008 contour" + name))
         PlotsInWeb.load_plots(title, caption, filename, id)
 
     for name in name_list:
-        title = (
-            "Molecular surface density vs. stellar surface density ("
-            + name
-            + ")"
-        )
+        title = "Molecular surface density vs. stellar surface density (" + name + ")"
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
-        caption += "\nSpatially resolved (grid averaged) measurements."   
-        caption += ( 
-                  " Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
-                  " if points saturate."
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "\nSpatially resolved (grid averaged) measurements."
+        caption += (
+            " Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
+            " if points saturate."
         )
         filename = "Grid_averaged_" + name + "_Mmol_Mstar.png"
         id = abs(hash("Grid_averaged_" + name + "_Mmol_Mstar"))
         PlotsInWeb.load_plots(title, caption, filename, id)
-
 
     for name in name_list:
         title = (
@@ -207,11 +216,13 @@ def loadGalaxyPlots(
             + ")"
         )
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
-        caption += "\nSpatially resolved (grid averaged) measurements."   
-        caption += ( 
-                  " Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
-                  " if enough points are present."
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "\nSpatially resolved (grid averaged) measurements."
+        caption += (
+            " Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
+            " if enough points are present."
         )
         filename = "Grid_averaged_" + name + "_SFR_Mmol.png"
         id = abs(hash("Grid_averaged_" + name + "_SFR_Mmol"))
@@ -222,13 +233,15 @@ def loadGalaxyPlots(
             " Star formation rate surface density vs. stellar surface density ("
             + name
             + ")"
-        )   
+        )
         caption = "Combined galaxy sample: central galaxies with stellar masses "
-        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f."%(np.log10(min_stellar_mass))
-        caption += "\nSpatially resolved (grid averaged) measurements."   
-        caption += ( 
-                  " Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
-                  " if enough points are present."
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "\nSpatially resolved (grid averaged) measurements."
+        caption += (
+            " Simulation data is shown in grey circles and/or a greyscale 2d histogram,"
+            " if enough points are present."
         )
         filename = "Grid_averaged_" + name + "_SFR_Mstar.png"
         id = abs(hash("Grid_averaged_" + name + "_SFR_Mstar"))
@@ -389,15 +402,13 @@ def loadGalaxyPlots(
     caption = " "
     add_web_section(web, title, caption, id, plots)
     PlotsInWeb.reset_plots_list()
- 
+
     # Individual galaxy gallery
     for index in range(num_galaxies_to_show):
 
         for name in name_list:
             title = "Overview plot (" + name + ")"
-            caption = (
-                "Surface brightness (gri-composite) and surface density maps"
-            )
+            caption = "Surface brightness (gri-composite) and surface density maps"
             id = abs(hash("galaxy overview %i " % (index) + name))
 
             outfile = "surface_overview_halo%3.3i_" % (index) + name + ".png"
@@ -422,7 +433,7 @@ def loadGalaxyPlots(
             id = abs(hash("galaxy gas %i " % (index) + name))
             outfile = "galaxy_gas_%i_" % (index) + name + ".png"
             # Don't show these plots
-            #PlotsInWeb.load_plots(title, caption, outfile, id)
+            # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         for name in name_list:
             title = "Stellar component (" + name + ")"
@@ -433,7 +444,7 @@ def loadGalaxyPlots(
             id = abs(hash("stars galaxy %i " % (index) + name))
             outfile = "galaxy_stars_%i_" % (index) + name + ".png"
             # Don't show these plots
-            #PlotsInWeb.load_plots(title, caption, outfile, id)
+            # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         for name in name_list:
             title = "Star particles (" + name + ")"
@@ -442,7 +453,7 @@ def loadGalaxyPlots(
             id = abs(hash("galaxy stars parts %i " % (index) + name))
             outfile = "galaxy_sparts_%i_" % (index) + name + ".png"
             # Don't show these plots
-            #PlotsInWeb.load_plots(title, caption, outfile, id)
+            # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         for name in name_list:
             title = "Gas particles (" + name + ")"
@@ -451,7 +462,7 @@ def loadGalaxyPlots(
             id = abs(hash("galaxy gas parts %i " % (index) + name))
             outfile = "galaxy_parts_%i_" % (index) + name + ".png"
             # Don't show these plots
-            #PlotsInWeb.load_plots(title, caption, outfile, id)
+            # PlotsInWeb.load_plots(title, caption, outfile, id)
 
         for name in name_list:
             for filtname in ["u", "r", "K"]:

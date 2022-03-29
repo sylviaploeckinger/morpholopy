@@ -3,6 +3,7 @@ import unyt
 from velociraptor import load
 import glob
 
+
 class HaloCatalogue:
     """
     General class containing halo properties
@@ -26,7 +27,7 @@ class HaloCatalogue:
 
         # Load catalogue using velociraptor python library
         # sometimes VR produces files with trailing 0
-        fcat      = glob.glob(f"{self.path_to_catalogue}*")[0]
+        fcat = glob.glob(f"{self.path_to_catalogue}*")[0]
         catalogue = load(fcat)
 
         # Selecting central galaxies whose stellar mass is larger than
