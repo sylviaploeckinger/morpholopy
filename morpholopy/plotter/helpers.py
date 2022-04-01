@@ -25,13 +25,18 @@ from astropy.visualization import make_lupton_rgb
 
 from scipy.optimize import curve_fit
 
+# scale height is calculated from all particles within 
+# +/- r_abs_max_kpc_height  
+r_abs_max_kpc_height = 7.5
+# scale length is calculated from all particles within 
+# +/- r_abs_max_kpc_length
+r_abs_max_kpc_length = 3.0
 
 def exponential(x, Sigma0, H, offset):
     return Sigma0 * np.exp(-np.abs(x + offset) / H)
 
 
-def calculate_scaleheight_fit(mass_map, r_img_kpc):
-    r_abs_max_kpc = 7.5
+def calculate_scaleheight_fit(mass_map, r_img_kpc, r_abs_max_kpc):
     xx = np.linspace(
         -r_img_kpc.value, r_img_kpc.value, len(mass_map[:, 0]), endpoint=True
     )
@@ -39,9 +44,14 @@ def calculate_scaleheight_fit(mass_map, r_img_kpc):
     z_1D = np.ravel(z[:, (np.abs(xx) < r_abs_max_kpc)])
     S_1D = np.ravel(mass_map[:, (np.abs(xx) < r_abs_max_kpc)])
 
-    popt, pcov = curve_fit(
-        exponential, z_1D[np.isfinite(S_1D)], S_1D[np.isfinite(S_1D)]
-    )
+    p0 = (mass_map.max(), 1., 0.)
+
+    try:
+        popt, pcov = curve_fit(
+                exponential, z_1D[np.isfinite(S_1D)], S_1D[np.isfinite(S_1D)]
+        )
+    except:
+        return -1
 
     return popt[1]
 
@@ -414,6 +424,7 @@ def get_stars_surface_brightness_map(
     image_face[mask_circle, :] = 255
 
     H_kpc_gri = np.zeros(len(luminosities))
+    L_kpc_gri = np.zeros(len(luminosities))
     rgb_image_edge = np.zeros((npix, npix, len(luminosities)))
     for ilum in range(len(luminosities)):
         # Face on projection
@@ -447,12 +458,16 @@ def get_stars_surface_brightness_map(
             mass_map_edge[mass_map_edge == 0.0] = 1.0e-10
 
         try:
-            H_kpc_gri[ilum] = calculate_scaleheight_fit(mass_map_edge.T, r_img_kpc)
+            H_kpc_gri[ilum] = calculate_scaleheight_fit(mass_map_edge.T, r_img_kpc, r_abs_max_kpc_height)
         except:
             H_kpc_gri[ilum] = -1.0
-        rgb_image_edge[:, :, ilum] = mass_map_edge.T
+        try: 
+            L_kpc_gri[ilum] = calculate_scaleheight_fit(mass_map_edge, r_img_kpc, r_abs_max_kpc_length)
+        except:
+            L_kpc_gri[ilum] = -1.0
 
-    print("H (gri): ", H_kpc_gri)
+
+        rgb_image_edge[:, :, ilum] = mass_map_edge.T
 
     image_edge = make_lupton_rgb(
         rgb_image_edge[:, :, 0],
@@ -467,7 +482,7 @@ def get_stars_surface_brightness_map(
     mask_circle = (X - lx / 2) ** 2 + (Y - ly / 2) ** 2 > lx * ly / 4
     image_edge[mask_circle, :] = 255
 
-    return image_face, image_edge, visualise_region, x, y, -1.0, H_kpc_gri
+    return image_face, image_edge, visualise_region, x, y, -1.0, H_kpc_gri, L_kpc_gri
 
 
 def get_stars_surface_density_map(

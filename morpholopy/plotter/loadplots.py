@@ -128,6 +128,62 @@ def loadGalaxyPlots(
     PlotsInWeb.reset_plots_list()
 
     for name in name_list:
+        title = "Scale height of stars in different GAMA bands (" + name + ")"
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "Scale height fit to the stellar surface brightness edge-on maps in GAMA g,r,i," 
+        caption += " based on unattenuated g,r,i luminosities, vs. stellar mass (30kpc aperture)."
+        filename = "Scale_height_stars_" + name + ".png"
+        id = abs(hash("Scale_height_stars_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Scale height of gas species (HI, H2) vs. stellar mass (" + name + ")"
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "Scale height fit to the gas surface density edge-on maps for "
+        caption += "neutral gas (individual fits for HI and H2) vs. stellar mass (30kpc aperture)"
+        filename = "Scale_height_gas_" + name + ".png"
+        id = abs(hash("Scale_height_gas_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+
+    for name in name_list:
+        title = "Scale height over scale length of stars in different GAMA bands (" + name + ")"
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "Scale height and scale length fit to the stellar surface brightness edge-on maps in GAMA g,r,i," 
+        caption += " based on unattenuated g,r,i luminosities, vs. stellar mass (30kpc aperture)."
+        filename = "Scale_height_length_stars_" + name + ".png"
+        id = abs(hash("Scale_height_length_stars_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    for name in name_list:
+        title = "Scale height over scale length of gas species (HI, H2) vs. stellar mass (" + name + ")"
+        caption = "Combined galaxy sample: central galaxies with stellar masses "
+        caption += r"log M$_{\star}$ [M$_{\odot}$] > %.2f." % (
+            np.log10(min_stellar_mass)
+        )
+        caption += "Scale height and scale length fit to the gas surface density edge-on maps for "
+        caption += "neutral gas (individual fits for HI and H2) vs. stellar mass (30kpc aperture)"
+        filename = "Scale_height_length_gas_" + name + ".png"
+        id = abs(hash("Scale_height_length_gas_" + name))
+        PlotsInWeb.load_plots(title, caption, filename, id)
+
+    title = "Scale height"
+    id = abs(hash("Scale height"))
+    plots = PlotsInWeb.plots_details
+    caption = " "
+    add_web_section(web, title, caption, id, plots)
+    PlotsInWeb.reset_plots_list()
+
+    for name in name_list:
         title = (
             "Ratio between molecular and atomic neutral surface density vs. neutral gas surface density ("
             + name
@@ -221,6 +277,7 @@ def loadGalaxyPlots(
         filename = "Grid_averaged_" + name + "_Mmol_Mstar.png"
         id = abs(hash("Grid_averaged_" + name + "_Mmol_Mstar"))
         PlotsInWeb.load_plots(title, caption, filename, id)
+
 
     for name in name_list:
         title = (

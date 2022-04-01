@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 from plotter.surface_maps_face_edge import surface_densities_overview
 from plotter.species_transitions import species_transitions_combined
-
+from plotter.scale_height_length import scale_height_length_plots
 
 def compute_galaxy_morpholopy(
     sim_info: simulation_data.SimInfo,
@@ -161,6 +161,12 @@ def main(config: ArgumentParser):
         )
 
         species_transitions_combined(
+            sim_name=sim_name,
+            output_path=config.output_directory,
+            halo_min_stellar_mass=config.min_stellar_mass,
+        )
+
+        scale_height_length_plots(
             sim_name=sim_name,
             output_path=config.output_directory,
             halo_min_stellar_mass=config.min_stellar_mass,

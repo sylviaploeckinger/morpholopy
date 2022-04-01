@@ -15,6 +15,8 @@ from plotter.helpers import (
     get_Schruba_data,
     get_Schruba_upperlimits,
     sci_notation,
+    r_abs_max_kpc_height,
+    r_abs_max_kpc_length,
 )
 
 
@@ -66,6 +68,7 @@ usergreen = cmap(0.7)
 cmap = matplotlib.cm.get_cmap("Blues")
 userblue = cmap(0.7)
 
+min_mass_for_scale_lengths = 5.e8 # in Msol
 
 def surface_densities_overview(
     sim_name,
@@ -104,6 +107,27 @@ def surface_densities_overview(
     f2.write("# column 8: log10 Stellar mass surface density [Msol pc-2]\n")
     f2.close()
 
+    filename_text_f3 = output_path + "/Scale_height_length_" + sim_name + ".dat"
+    f3 = open(filename_text_f3, "w")
+    f3.write("# column 0: Simulations name\n")
+    f3.write("# column 1: Snapshot number\n")
+    f3.write("# column 2: Redshift\n")
+    f3.write("# column 3: Halo id\n")
+    f3.write("# column 4: Stellar mass (30kpc aperture)\n")
+    f3.write("# column 5: HI mass (30kpc aperture)\n")
+    f3.write("# column 6: H2 mass (30kpc aperture)\n")
+    f3.write("# column 7: g luminosity scale height [kpc]\n")
+    f3.write("# column 8: r luminosity scale height [kpc]\n")
+    f3.write("# column 9: i luminosity scale height [kpc]\n")
+    f3.write("# column 10: HI surface density scale height [kpc]\n")
+    f3.write("# column 11: H2 surface density scale height [kpc]\n")
+    f3.write("# column 12: g luminosity scale length [kpc]\n")
+    f3.write("# column 13: r luminosity scale length [kpc]\n")
+    f3.write("# column 14: i luminosity scale length [kpc]\n")
+    f3.write("# column 15: HI surface density scale length [kpc]\n")
+    f3.write("# column 16: H2 surface density scale length [kpc]\n")
+    f3.close()
+
     snapshot_filename = directory + "/" + snapshot
 
     catalogue_filename = glob.glob(directory + catalogue_file + "*")[0]
@@ -120,7 +144,7 @@ def surface_densities_overview(
     ColdGas = catalogue.cold_dense_gas_properties.cold_dense_gas_mass_100_kpc
     twelve_plus_logOH = np.log10(Zdiffuse / (Zsun * ColdGas)) + twelve_plus_log_OH_solar
 
-    snapnum = "".join([s for s in snapshot if s.isdigit()])
+    snapnum = "".join([s for s in snapshot[:-1] if s.isdigit()])
 
     for ihalo, halo_id in enumerate(halo_ids_sample):
 
@@ -210,6 +234,7 @@ def surface_densities_overview(
             y,
             totalmass,
             H_kpc_gri,
+            L_kpc_gri,
         ) = get_stars_surface_brightness_map(
             catalogue, halo_id, snapshot_filename, size, npix, r_img_kpc
         )
@@ -259,10 +284,12 @@ def surface_densities_overview(
             linewidth=2,
         )
         ax.add_artist(circle)
+        scaletext = r"H$_{\mathrm{r}}$ = %.2f kpc" % (H_kpc_gri[1]) + "\n" + r"L$_{\mathrm{r}}$ = %.2f kpc" % (L_kpc_gri[1])
+
         ax.text(
             0.5,
-            0.2,
-            r"H$_{r}$ = %.2f kpc" % (H_kpc_gri[1]),
+            0.25,
+            scaletext,
             ha="center",
             va="top",
             color="white",
@@ -334,20 +361,24 @@ def surface_densities_overview(
             linewidth=2,
         )
         ax.add_artist(circle)
-        try:
-            H_kpc = calculate_scaleheight_fit(mass_map_edge.value)
+
+        if catalogue.gas_hydrogen_species_masses.HI_mass_30_kpc[halo_id].value > min_mass_for_scale_lengths:
+            H_kpc_HI = calculate_scaleheight_fit(mass_map_edge.value, r_img_kpc, r_abs_max_kpc_height)
+            L_kpc_HI = calculate_scaleheight_fit(mass_map_edge.T.value, r_img_kpc, r_abs_max_kpc_length)
+            scaletext = r"H$_{\mathrm{HI}}$ = %.2f kpc" % (H_kpc_HI) + "\n" + r"L$_{\mathrm{HI}}$ = %.2f kpc" % (L_kpc_HI)
             ax.text(
                 0.5,
-                0.2,
-                r"H$_{\mathrm{HI}}$ = %.2f kpc" % (H_kpc),
+                0.25,
+                scaletext,
                 ha="center",
                 va="top",
                 color="black",
                 transform=ax.transAxes,
                 fontsize=8,
             )
-        except:
-            H_kpc = -1.0
+        else:
+            H_kpc_HI = -1.0
+            L_kpc_HI = -1.0
 
         # HI colorbar
         cax = plt.subplot(gs[3:5])
@@ -420,20 +451,24 @@ def surface_densities_overview(
             linewidth=2,
         )
         ax.add_artist(circle)
-        try:
-            H_kpc = calculate_scaleheight_fit(mass_map_edge.value)
+
+        if catalogue.gas_hydrogen_species_masses.H2_mass_30_kpc[halo_id].value > min_mass_for_scale_lengths:
+            H_kpc_H2 = calculate_scaleheight_fit(mass_map_edge.value, r_img_kpc, r_abs_max_kpc_height)
+            L_kpc_H2 = calculate_scaleheight_fit(mass_map_edge.T.value, r_img_kpc, r_abs_max_kpc_length)
+            scaletext = r"H$_{\mathrm{H2}}$ = %.2f kpc" % (H_kpc_H2) + "\n" + r"L$_{\mathrm{H2}}$ = %.2f kpc" % (L_kpc_H2)
             ax.text(
                 0.5,
-                0.2,
-                r"H$_{\mathrm{H2}}$ = %.2f kpc" % (H_kpc),
+                0.25,
+                scaletext,
                 ha="center",
                 va="top",
                 color="black",
                 transform=ax.transAxes,
                 fontsize=8,
             )
-        except:
-            H_kpc = -1.0
+        else:
+            H_kpc_H2 = -1.0
+            L_kpc_H2 = -1.0
 
         # H2 colorbar
         cax = plt.subplot(gs[5:7])
@@ -603,6 +638,27 @@ def surface_densities_overview(
             dpi=150,
         )
         plt.close()
+
+        f3 = open(filename_text_f3, "a")
+        f3.write(
+                    sim_name
+                    + "\t"
+                    + snapnum
+                    + "\t%.2f\t%i\t%.2e\t%.2e\t%.2e\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n"
+                    % (
+                        catalogue.redshift,
+                        halo_id,
+                        catalogue.masses.mass_star_30kpc[halo_id].value,
+                        catalogue.gas_hydrogen_species_masses.HI_mass_30_kpc[halo_id].value,
+                        catalogue.gas_hydrogen_species_masses.H2_mass_30_kpc[halo_id].value,
+                        H_kpc_gri[0], H_kpc_gri[1], H_kpc_gri[2],
+                        H_kpc_HI, H_kpc_H2,
+                        L_kpc_gri[0], L_kpc_gri[1], L_kpc_gri[2],
+                        L_kpc_HI, L_kpc_H2,
+                    )
+                )
+
+        f3.close()
 
         # produce the grid averaged properties
 
